@@ -1,0 +1,12 @@
+{
+  "required": true,
+  "package": "com.lgmrszd.anshar.mixin",
+  "compatibilityLevel": "JAVA_17",
+  "mixins": [
+    "BeaconBlockEntityMixin",
+    "ExampleMixin"
+  ],
+  "injectors": {
+    "defaultRequire": 1
+	}
+}
