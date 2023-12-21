@@ -1,12 +1,10 @@
 package com.lgmrszd.anshar.mixin;
 
-import com.lgmrszd.anshar.Frequency;
+import com.lgmrszd.anshar.PyramidFrequencer;
 import com.llamalad7.mixinextras.sugar.Local;
 import net.minecraft.block.entity.BeaconBlockEntity;
 import net.minecraft.text.Text;
-import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Vec3d;
-import net.minecraft.util.math.Vec3i;
 import net.minecraft.world.World;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.injection.At;
@@ -21,8 +19,12 @@ public class BeaconBlockEntityMixin {
             if (world.isClient()) return;
             if (i == 0) return;
             if (playerEntity.getPos().isInRange(new Vec3d(x, y, z), 8d)) {
-                Frequency freq = Frequency.fromPosAndLevel(world, x, y, z, i);
-                playerEntity.sendMessage(Text.literal(String.format("Beacon frequency: %s", freq)));
+                PyramidFrequencer freq = new PyramidFrequencer(world, x, y, z, i);
+                playerEntity.sendMessage(Text.literal(String.format("Beacon xyz: %d %d %d, frequency: %s",
+                        x,
+                        y,
+                        z,
+                        freq.getFrequency().getBaseHash())));
             }
         });
     }
