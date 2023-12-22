@@ -1,6 +1,8 @@
 package com.lgmrszd.anshar;
 
 import net.minecraft.block.Block;
+import net.minecraft.registry.Registries;
+import net.minecraft.util.Identifier;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.World;
 
@@ -9,12 +11,11 @@ import java.util.Collections;
 import java.util.List;
 
 
-public class PyramidFrequencer {
-    private final List<List<Block>> topBlocks;
-    private final List<List<Block>> bottomBlocks;
-    private final PyramidFrequency frequency;
+public class FrequencyIdentifier {
+    private final List<List<Identifier>> topBlocks;
+    private final List<List<Identifier>> bottomBlocks;
 
-    public PyramidFrequencer(World world, int x, int y, int z, int level) {
+    public FrequencyIdentifier(World world, int x, int y, int z, int level) {
         if (level < 1)
             throw new RuntimeException("Can't have Beacon Frequency of level less than 1");
 
@@ -44,13 +45,15 @@ public class PyramidFrequencer {
                     int level_x_abs = layer_x + x - up_level;
                     int level_z_abs = layer_z + z - up_level;
                     topBlocks.get(layer_x).set(layer_z,
-                            world.getBlockState(
-                                    new BlockPos(
-                                            level_x_abs,
-                                            level_y_abs,
-                                            level_z_abs
-                                    )
-                            ).getBlock()
+                            Registries.BLOCK.getId(
+                                world.getBlockState(
+                                        new BlockPos(
+                                                level_x_abs,
+                                                level_y_abs,
+                                                level_z_abs
+                                        )
+                                ).getBlock()
+                            )
                     );
                 }
         }
@@ -61,26 +64,23 @@ public class PyramidFrequencer {
                 int level_x_abs = layer_x + x - level;
                 int level_z_abs = layer_z + z - level;
                 bottomBlocks.get(layer_x).set(layer_z,
-                        world.getBlockState(
-                                new BlockPos(
-                                        level_x_abs,
-                                        level_y_abs,
-                                        level_z_abs
-                                )
-                        ).getBlock()
+                        Registries.BLOCK.getId(
+                            world.getBlockState(
+                                    new BlockPos(
+                                            level_x_abs,
+                                            level_y_abs,
+                                            level_z_abs
+                                    )
+                            ).getBlock()
+                        )
                 );
             }
-
-        frequency = recalculateFrequency();
     }
 
-    private PyramidFrequency recalculateFrequency() {
+    @Override
+    public int hashCode() {
         int blockHash = topBlocks.hashCode();
         blockHash = 31 * blockHash + bottomBlocks.hashCode();
-        return new PyramidFrequency(blockHash);
-    }
-
-    public PyramidFrequency getFrequency() {
-        return frequency;
+        return blockHash;
     }
 }
