@@ -5,7 +5,7 @@
 	"name": "Anshar",
 	"description": "This is an example description! Tell everyone what your mod is about!",
 	"authors": [
-		"Me!"
+		"Lgmrszd, hama and comp500"
 	],
 	"contact": {
 		"homepage": "https://fabricmc.net/",
@@ -40,5 +40,5 @@
 	},
 	"suggests": {
 		"another-mod": "*"
-	}
+    }
 }
