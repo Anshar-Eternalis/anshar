@@ -23,6 +23,9 @@
 		],
 		"fabric-datagen": [
 			"com.lgmrszd.anshar.AnsharDataGenerator"
+		],
+		"cardinal-components": [
+			"com.lgmrszd.anshar.MyComponents"
 		]
 	},
 	"mixins": [
@@ -32,6 +35,11 @@
 			"environment": "client"
 		}
 	],
+	"custom": {
+		"cardinal-components" : [
+			"anshar:beacon"
+		]
+	},
 	"depends": {
 		"fabricloader": ">=0.15.3",
 		"minecraft": "~1.20.4",

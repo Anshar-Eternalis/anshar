@@ -1,6 +1,7 @@
 package com.lgmrszd.anshar;
 
 import com.lgmrszd.anshar.freq.IBeaconComponent;
+import net.minecraft.block.entity.BeaconBlockEntity;
 import net.minecraft.nbt.NbtCompound;
 import net.minecraft.registry.Registries;
 import net.minecraft.util.Identifier;
@@ -16,9 +17,11 @@ import java.util.List;
 public class BeaconComponent implements IBeaconComponent {
     private List<List<Identifier>> topBlocks;
     private List<List<Identifier>> bottomBlocks;
+    private BeaconBlockEntity beaconBlockEntity;
     private int level;
 
-    public BeaconComponent() {
+    public BeaconComponent(BeaconBlockEntity beaconBlockEntity) {
+        this.beaconBlockEntity = beaconBlockEntity;
         level = 0;
         topBlocks = Collections.emptyList();
         bottomBlocks = Collections.emptyList();
@@ -31,7 +34,8 @@ public class BeaconComponent implements IBeaconComponent {
     public void rescanPyramid(World world, int x, int y, int z, int level) {
         this.level = level;
         if (level < 1)
-            throw new RuntimeException("Can't have Beacon Frequency of level less than 1");
+            return;
+//            throw new RuntimeException("Can't have Beacon Frequency of level less than 1");
 
         // Set up arrays
 
@@ -57,6 +61,7 @@ public class BeaconComponent implements IBeaconComponent {
                             up_level - Math.abs(layer_x - up_level),
                             up_level - Math.abs(layer_z - up_level)
                     );
+                    if (level_y_abs == y) level_y_abs = y-1;
                     int level_x_abs = layer_x + x - up_level;
                     int level_z_abs = layer_z + z - up_level;
                     topBlocks.get(layer_x).set(layer_z,
@@ -116,7 +121,8 @@ public class BeaconComponent implements IBeaconComponent {
     public void fromFlattenedList(List<Identifier> flattenedList, int level) {
         int size = flattenedList.size();
         if (size < 9)
-            throw new RuntimeException("Trying to unflatten list smaller than 9");
+            return;
+//            throw new RuntimeException("Trying to unflatten list smaller than 9");
         if (size == 9 && level != 1)
             throw new RuntimeException(String.format("Unflattening error: wrong size %d for level %d", size, level));
         if (size > 9 && (8*level*level + 2) != size)
