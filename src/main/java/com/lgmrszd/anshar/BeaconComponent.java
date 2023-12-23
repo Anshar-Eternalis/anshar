@@ -20,7 +20,7 @@ import static com.lgmrszd.anshar.Anshar.LOGGER;
 public class BeaconComponent implements IBeaconComponent {
     private List<List<Identifier>> topBlocks;
     private List<List<Identifier>> bottomBlocks;
-    private BeaconBlockEntity beaconBlockEntity;
+    private final BeaconBlockEntity beaconBlockEntity;
     private int level;
 
     public BeaconComponent(BeaconBlockEntity beaconBlockEntity) {
@@ -30,31 +30,27 @@ public class BeaconComponent implements IBeaconComponent {
         bottomBlocks = Collections.emptyList();
     }
 
-    public int getLevel() {
-        return level;
-    }
-
     public void rescanPyramid() {
-        this.level = ((BeaconBlockEntityAccessor) beaconBlockEntity).getLevel();
+//        this.level = ((BeaconBlockEntityAccessor) beaconBlockEntity).getLevel();
         World world = beaconBlockEntity.getWorld();
+        if (world == null) return;
         BlockPos pos = beaconBlockEntity.getPos();
         int x = pos.getX();
         int y = pos.getY();
         int z = pos.getZ();
-//        this.level = level;
-        if (level < 1)
+        this.level = BeaconBlockEntityAccessor.updateLevel(world, x, y, z);
+        if (level == 0) {
+            topBlocks = Collections.emptyList();
+            bottomBlocks = Collections.emptyList();
             return;
-//            throw new RuntimeException("Can't have Beacon Frequency of level less than 1");
-
-        // Set up arrays
-
+        }
         if (level == 1) {
             topBlocks = Collections.emptyList();
         } else {
-            int uplevel = level - 1;
-            topBlocks = new ArrayList<>(uplevel * 2 + 1);
-            for (int i = 0; i < uplevel * 2 + 1; i++)
-                topBlocks.add(new ArrayList<>(Collections.nCopies(uplevel * 2 + 1, null)));
+            int up_level = level - 1;
+            topBlocks = new ArrayList<>(up_level * 2 + 1);
+            for (int i = 0; i < up_level * 2 + 1; i++)
+                topBlocks.add(new ArrayList<>(Collections.nCopies(up_level * 2 + 1, null)));
         }
         bottomBlocks = new ArrayList<>(level * 2 + 1);
         for (int i = 0; i < level * 2 + 1; i++)
@@ -179,5 +175,14 @@ public class BeaconComponent implements IBeaconComponent {
                 .toString();
         tag.putInt("level", level);
         tag.putString("blocks", blockList);
+    }
+
+    @Override
+    public void serverTick() {
+        World world = beaconBlockEntity.getWorld();
+        if (world == null) return;
+        if (world.getTime() % 80L == 0L) {
+            rescanPyramid();
+        }
     }
 }
