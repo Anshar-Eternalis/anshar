@@ -18,5 +18,6 @@ public class Anshar implements ModInitializer {
 		// Proceed with mild caution.
 
 		LOGGER.info("Hello Fabric world!");
+		MyEvents.register();
 	}
 }

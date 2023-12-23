@@ -18,6 +18,7 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
 
 @Mixin(BeaconBlockEntity.class)
 public class BeaconBlockEntityMixin {
+
     @Inject(at = @At("RETURN"), method = "updateLevel")
     private static void inUpdate(World world, int x, int y, int z, CallbackInfoReturnable<Integer> cir, @Local(index = 4) int i) {
         if (world.isClient()) return;
@@ -25,16 +26,6 @@ public class BeaconBlockEntityMixin {
         BlockEntity be = world.getBlockEntity(new BlockPos(x, y, z));
         if (!(be instanceof BeaconBlockEntity bbe)) return;
         IBeaconComponent freq = MyComponents.BEACON.get(bbe);
-        world.getPlayers().forEach(playerEntity -> {
-            if (playerEntity.getPos().isInRange(new Vec3d(x, y, z), 8d)) {
-                freq.rescanPyramid(world, x, y, z, i);
-                playerEntity.sendMessage(Text.literal(String.format("Beacon xyz: %d %d %d, frequency: %s",
-                        x,
-                        y,
-                        z,
-                        freq.arraysHashCode()))
-                );
-            }
-        });
+        freq.rescanPyramid();
     }
 }

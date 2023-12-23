@@ -1,6 +1,7 @@
 package com.lgmrszd.anshar;
 
 import com.lgmrszd.anshar.freq.IBeaconComponent;
+import com.lgmrszd.anshar.mixin.BeaconBlockEntityAccessor;
 import net.minecraft.block.entity.BeaconBlockEntity;
 import net.minecraft.nbt.NbtCompound;
 import net.minecraft.registry.Registries;
@@ -12,6 +13,8 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
+
+import static com.lgmrszd.anshar.Anshar.LOGGER;
 
 
 public class BeaconComponent implements IBeaconComponent {
@@ -31,8 +34,14 @@ public class BeaconComponent implements IBeaconComponent {
         return level;
     }
 
-    public void rescanPyramid(World world, int x, int y, int z, int level) {
-        this.level = level;
+    public void rescanPyramid() {
+        this.level = ((BeaconBlockEntityAccessor) beaconBlockEntity).getLevel();
+        World world = beaconBlockEntity.getWorld();
+        BlockPos pos = beaconBlockEntity.getPos();
+        int x = pos.getX();
+        int y = pos.getY();
+        int z = pos.getZ();
+//        this.level = level;
         if (level < 1)
             return;
 //            throw new RuntimeException("Can't have Beacon Frequency of level less than 1");
@@ -123,10 +132,14 @@ public class BeaconComponent implements IBeaconComponent {
         if (size < 9)
             return;
 //            throw new RuntimeException("Trying to unflatten list smaller than 9");
-        if (size == 9 && level != 1)
-            throw new RuntimeException(String.format("Unflattening error: wrong size %d for level %d", size, level));
-        if (size > 9 && (8*level*level + 2) != size)
-            throw new RuntimeException(String.format("Unflattening error: wrong size %d for level %d", size, level));
+        if (size == 9 && level != 1) {
+            LOGGER.warn(String.format("Unflattening error: wrong size %d for level %d, for Beacon at %s", size, level, beaconBlockEntity.getPos()));
+            return;
+        }
+        if (size > 9 && (8*level*level + 2) != size) {
+            LOGGER.warn(String.format("Unflattening error: wrong size %d for level %d, for Beacon at %s", size, level, beaconBlockEntity.getPos()));
+            return;
+        }
 
         int bottomEdge = level * 2 + 1;
         bottomBlocks = new ArrayList<>(bottomEdge);
