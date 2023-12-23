@@ -1,6 +1,7 @@
 package com.lgmrszd.anshar;
 
 import com.lgmrszd.anshar.freq.IBeaconComponent;
+import com.lgmrszd.anshar.freq.IBeaconFrequency;
 import com.lgmrszd.anshar.mixin.BeaconBlockEntityAccessor;
 import net.minecraft.block.entity.BeaconBlockEntity;
 import net.minecraft.nbt.NbtCompound;
@@ -21,6 +22,7 @@ public class BeaconComponent implements IBeaconComponent {
     private List<List<Identifier>> topBlocks;
     private List<List<Identifier>> bottomBlocks;
     private final BeaconBlockEntity beaconBlockEntity;
+    private IBeaconFrequency frequency;
     private int level;
 
     public BeaconComponent(BeaconBlockEntity beaconBlockEntity) {
@@ -40,6 +42,7 @@ public class BeaconComponent implements IBeaconComponent {
         int z = pos.getZ();
         this.level = BeaconBlockEntityAccessor.updateLevel(world, x, y, z);
         if (level == 0) {
+            frequency = null;
             topBlocks = Collections.emptyList();
             bottomBlocks = Collections.emptyList();
             return;
@@ -101,13 +104,18 @@ public class BeaconComponent implements IBeaconComponent {
                         )
                 );
             }
-
+        frequency = new BeaconFrequency(arraysHashCode());
     }
 
-    public int arraysHashCode() {
+    private int arraysHashCode() {
         int blockHash = topBlocks.hashCode();
         blockHash = 31 * blockHash + bottomBlocks.hashCode();
         return blockHash;
+    }
+
+    @Override
+    public IBeaconFrequency getFrequency() {
+        return frequency;
     }
 
     private static List<Identifier> flattenList(List<List<Identifier>> topBlocks, List<List<Identifier>> bottomBlocks) {

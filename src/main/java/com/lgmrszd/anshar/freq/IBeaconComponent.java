@@ -5,5 +5,6 @@ import dev.onyxstudios.cca.api.v3.component.tick.ServerTickingComponent;
 
 public interface IBeaconComponent extends Component, ServerTickingComponent {
     void rescanPyramid();
-    int arraysHashCode();
+
+    IBeaconFrequency getFrequency();
 }

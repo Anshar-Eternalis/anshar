@@ -23,10 +23,15 @@ public class MyEvents {
                             || !player.isHolding(Items.STICK)
             ) return ActionResult.PASS;
             IBeaconComponent freq = MyComponents.BEACON.get(bbe);
-            player.sendMessage(Text.literal(String.format("Beacon pos: %s, frequency: %s",
-                    pos,
-                    freq.arraysHashCode()))
-            );
+            if (freq.getFrequency() == null)
+                player.sendMessage(Text.literal(String.format("Beacon pos: %s, no frequency!",
+                        pos))
+                );
+            else
+                player.sendMessage(Text.literal(String.format("Beacon pos: %s, frequency: %s",
+                        pos,
+                        freq.getFrequency().hashCode()))
+                );
             return ActionResult.SUCCESS;
         }));
     }
