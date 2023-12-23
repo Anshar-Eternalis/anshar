@@ -1,6 +1,6 @@
 package com.lgmrszd.anshar.mixin;
 
-import com.lgmrszd.anshar.FrequencyIdentifier;
+import com.lgmrszd.anshar.BeaconComponent;
 import com.llamalad7.mixinextras.sugar.Local;
 import net.minecraft.block.entity.BeaconBlockEntity;
 import net.minecraft.nbt.NbtCompound;
@@ -20,9 +20,9 @@ public class BeaconBlockEntityMixin {
             if (world.isClient()) return;
             if (i == 0) return;
             if (playerEntity.getPos().isInRange(new Vec3d(x, y, z), 8d)) {
-                FrequencyIdentifier freq = new FrequencyIdentifier();
+                BeaconComponent freq = new BeaconComponent();
                 freq.rescanPyramid(world, x, y, z, i);
-                FrequencyIdentifier newfreq = new FrequencyIdentifier();
+                BeaconComponent newfreq = new BeaconComponent();
                 NbtCompound tag = new NbtCompound();
                 freq.writeToNbt(tag);
                 newfreq.readFromNbt(tag);

@@ -13,12 +13,12 @@ import java.util.Collections;
 import java.util.List;
 
 
-public class FrequencyIdentifier implements IBeaconComponent {
+public class BeaconComponent implements IBeaconComponent {
     private List<List<Identifier>> topBlocks;
     private List<List<Identifier>> bottomBlocks;
     private int level;
 
-    public FrequencyIdentifier() {
+    public BeaconComponent() {
         level = 0;
         topBlocks = Collections.emptyList();
         bottomBlocks = Collections.emptyList();
