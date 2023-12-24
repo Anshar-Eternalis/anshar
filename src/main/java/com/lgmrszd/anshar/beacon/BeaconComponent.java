@@ -9,11 +9,9 @@ import net.minecraft.text.Text;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.World;
+import net.minecraft.world.WorldProperties;
 
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Collections;
-import java.util.List;
+import java.util.*;
 
 import static com.lgmrszd.anshar.Anshar.LOGGER;
 
@@ -34,8 +32,6 @@ public class BeaconComponent implements IBeaconComponent {
     }
 
     public void rescanPyramid() {
-//        this.level = ((BeaconBlockEntityAccessor) beaconBlockEntity).getLevel();
-        
         World world = beaconBlockEntity.getWorld();
         if (world == null) return;
 
@@ -49,6 +45,9 @@ public class BeaconComponent implements IBeaconComponent {
             getFreqComponent().clear();
             topBlocks = Collections.emptyList();
             bottomBlocks = Collections.emptyList();
+            IFrequencyIdentifier oldFreqID = getFreqComponent().get();
+            IFrequencyIdentifier newFreqID = generateFrequencyID();
+            if (!oldFreqID.equals(newFreqID)) onFrequencyIDUpdate(oldFreqID, newFreqID);
             return;
         }
         if (level == 1) {
@@ -116,13 +115,26 @@ public class BeaconComponent implements IBeaconComponent {
 
     private void onFrequencyIDUpdate(IFrequencyIdentifier oldFreqID, IFrequencyIdentifier newFreqID) {
         World world = beaconBlockEntity.getWorld();
-        if (world != null) beaconBlockEntity.getWorld().getPlayers().forEach(playerEntity -> {
+        if (world == null) {
+            return;
+        }
+        NetworkManagerComponent networkManagerComponent = world.getLevelProperties().getComponent(NetworkManagerComponent.KEY);
+        getFreqComponent().set(newFreqID);
+        if (frequencyNetwork != null) {
+            frequencyNetwork.getBeacons().remove(beaconBlockEntity.getPos());
+        }
+        if (!newFreqID.isValid()) {
+            frequencyNetwork = null;
+            return;
+        }
+        frequencyNetwork = networkManagerComponent.getOrCreateNetwork(newFreqID);
+        frequencyNetwork.getBeacons().add(beaconBlockEntity.getPos());
+        beaconBlockEntity.getWorld().getPlayers().forEach(playerEntity -> {
             playerEntity.sendMessage(Text.of(
                     String.format("Frequency updated!!\nOld: %s\nNew: %s", oldFreqID, newFreqID))
             );
         });
-        getFreqComponent().set(newFreqID);
-//        LOGGER.debug();
+        //        LOGGER.debug();
     }
 
     private int arraysHashCode() {
@@ -146,6 +158,11 @@ public class BeaconComponent implements IBeaconComponent {
     @Override
     public IFrequencyIdentifier getFrequencyID() {
         return getFreqComponent().get();
+    }
+
+    @Override
+    public Optional<FrequencyNetwork> getFrequencyNetwork() {
+        return Optional.ofNullable(frequencyNetwork);
     }
 
     private static List<Identifier> flattenList(List<List<Identifier>> topBlocks, List<List<Identifier>> bottomBlocks) {

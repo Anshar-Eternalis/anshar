@@ -33,7 +33,7 @@ public class NetworkManagerComponent implements Component {
         if (matchedNetworks.isEmpty()) {
             UUID randuuid = UUID.randomUUID();
             while (networksByUUID.containsKey(randuuid)) randuuid = UUID.randomUUID();
-            FrequencyNetwork frequencyNetwork = new FrequencyNetwork(randuuid);
+            FrequencyNetwork frequencyNetwork = new FrequencyNetwork(randuuid, query);
             networksByUUID.put(randuuid, frequencyNetwork);
             return frequencyNetwork;
         }
@@ -55,16 +55,13 @@ public class NetworkManagerComponent implements Component {
 
     @Override
     public void readFromNbt(NbtCompound tag) {
+        if (true) return;
         try {
             NbtCompound networksTag = tag.getCompound("networks");
             for (String uuid_string : networksTag.getKeys()) {
                 UUID uuid = UUID.fromString(uuid_string);
-                FrequencyNetwork network = new FrequencyNetwork(uuid);
                 NbtCompound networkTag = networksTag.getCompound(uuid_string);
-                network.readFromNbt(networkTag);
-//            if (network.getId() != uuid) {
-//                LOGGER.warn("Error adding network: stored key ");
-//            }
+                FrequencyNetwork network = FrequencyNetwork.fromNbt(uuid, networkTag);
                 networksByUUID.put(uuid, network);
             }
         } catch (CrashException e) {

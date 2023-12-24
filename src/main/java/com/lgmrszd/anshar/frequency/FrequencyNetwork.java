@@ -1,8 +1,8 @@
 package com.lgmrszd.anshar.frequency;
 
+import java.util.HashSet;
 import java.util.Set;
 
-import net.minecraft.block.entity.BeaconBlockEntity;
 import net.minecraft.nbt.NbtCompound;
 import net.minecraft.util.math.BlockPos;
 
@@ -12,12 +12,14 @@ import com.lgmrszd.anshar.storage.EmbeddedStorage;
 
 public class FrequencyNetwork {
     private UUID id;
-    private IFrequencyIdentifier FreqID;
+    private IFrequencyIdentifier freqID;
     private EmbeddedStorage storage;
     private Set<BlockPos> beacons;
 
-    public FrequencyNetwork(UUID id) {
+    public FrequencyNetwork(UUID id, IFrequencyIdentifier FreqID) {
         this.id = id;
+        this.freqID = FreqID;
+        beacons = new HashSet<>();
     }
 
     public UUID getId() {
@@ -25,7 +27,7 @@ public class FrequencyNetwork {
     }
 
     public IFrequencyIdentifier getFreqID() {
-        return FreqID;
+        return freqID;
     }
 
     public Set<BlockPos> getBeacons(){
@@ -36,12 +38,19 @@ public class FrequencyNetwork {
         return this.storage;
     }
 
-    public void readFromNbt(NbtCompound tag) {
+//    public void readFromNbt(NbtCompound tag) {
+//
+//    }
 
+    // TODO: store key as constant
+    // TODO: generalize to an interface
+    public static FrequencyNetwork fromNbt(UUID id, NbtCompound tag) {
+        HashFrequencyIdentifier freqID = new HashFrequencyIdentifier(tag.getInt("frequency"));
+        return new FrequencyNetwork(id, freqID);
     }
 
     public void writeToNbt(NbtCompound tag) {
-
+        tag.putInt("frequency", freqID.hashCode());
     }
 
 }

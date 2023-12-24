@@ -4,6 +4,8 @@ import net.fabricmc.fabric.api.event.player.UseBlockCallback;
 import net.minecraft.block.entity.BeaconBlockEntity;
 import net.minecraft.block.entity.BlockEntity;
 import net.minecraft.entity.player.PlayerEntity;
+import net.minecraft.entity.projectile.FireworkRocketEntity;
+import net.minecraft.item.ItemStack;
 import net.minecraft.item.Items;
 import net.minecraft.text.Text;
 import net.minecraft.util.ActionResult;
@@ -25,19 +27,32 @@ public final class BeaconEvents {
                         || !player.isSneaking()
                         || !(be instanceof BeaconBlockEntity bbe)
                         || hand == Hand.OFF_HAND
-                        || !player.isHolding(Items.STICK)
+                        || !(player.isHolding(Items.STICK) || player.isHolding(Items.FIREWORK_ROCKET))
         ) return ActionResult.PASS;
-        IBeaconComponent freq = IBeaconComponent.KEY.get(bbe);
-        if (freq.getFrequencyID().isValid())
-            player.sendMessage(Text.literal(
-                String.format("Beacon pos: %s, frequency: %s", pos, freq.getFrequencyID().hashCode())
-            ));
-        else {
-            player.sendMessage(Text.literal(
-                String.format("Beacon pos: %s, no frequency!", pos)
-            ));
+        if (player.isHolding(Items.STICK)) {
+            IBeaconComponent beacComp = IBeaconComponent.KEY.get(bbe);
+            if (beacComp.getFrequencyID().isValid())
+                player.sendMessage(Text.literal(
+                        String.format("Beacon pos: %s, frequency: %s", pos, beacComp.getFrequencyID().hashCode())
+                ));
+            else {
+                player.sendMessage(Text.literal(
+                        String.format("Beacon pos: %s, no frequency!", pos)
+                ));
+            }
+            return ActionResult.SUCCESS;
         }
-        return ActionResult.SUCCESS;
+        if (player.isHolding(Items.FIREWORK_ROCKET)) {
+            IBeaconComponent beacComp = IBeaconComponent.KEY.get(bbe);
+            beacComp.getFrequencyNetwork().ifPresent(frequencyNetwork -> {
+                frequencyNetwork.getBeacons().forEach(blockPos -> {
+                    FireworkRocketEntity fireworkRocketEntity = new FireworkRocketEntity(world, blockPos.getX() + 0.5, blockPos.getY() + 1.5, blockPos.getZ() + 0.5, player.getMainHandStack());
+                    world.spawnEntity(fireworkRocketEntity);
+                });
+            });
+            return ActionResult.SUCCESS;
+        }
+        return ActionResult.PASS;
     }
     
 }

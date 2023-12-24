@@ -2,12 +2,15 @@ package com.lgmrszd.anshar.beacon;
 
 import static com.lgmrszd.anshar.Anshar.MOD_ID;
 
+import com.lgmrszd.anshar.frequency.FrequencyNetwork;
 import com.lgmrszd.anshar.frequency.IFrequencyIdentifier;
 
 import dev.onyxstudios.cca.api.v3.component.ComponentKey;
 import dev.onyxstudios.cca.api.v3.component.ComponentRegistry;
 import dev.onyxstudios.cca.api.v3.component.tick.ServerTickingComponent;
 import net.minecraft.util.Identifier;
+
+import java.util.Optional;
 
 public interface IBeaconComponent extends ServerTickingComponent {
     public static final ComponentKey<IBeaconComponent> KEY = ComponentRegistry.getOrCreate(
@@ -16,4 +19,6 @@ public interface IBeaconComponent extends ServerTickingComponent {
 
     void rescanPyramid();
     IFrequencyIdentifier getFrequencyID();
+
+    Optional<FrequencyNetwork> getFrequencyNetwork();
 }
