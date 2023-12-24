@@ -8,7 +8,7 @@ import net.minecraft.block.entity.BeaconBlockEntity;
 
 import com.lgmrszd.anshar.frequency.HashFrequencyIdentifierComponent;
 import com.lgmrszd.anshar.frequency.IFrequencyIdentifierComponent;
-import com.lgmrszd.anshar.storage.LevelStorageComponent;
+import com.lgmrszd.anshar.frequency.NetworkManagerComponent;
 import com.lgmrszd.anshar.beacon.BeaconComponent;
 import com.lgmrszd.anshar.beacon.IBeaconComponent;
 
@@ -22,6 +22,6 @@ public final class ModComponents implements BlockComponentInitializer, LevelComp
 
     @Override
     public void registerLevelComponentFactories(LevelComponentFactoryRegistry registry) {
-        registry.register(LevelStorageComponent.KEY, p -> new LevelStorageComponent());
+        registry.register(NetworkManagerComponent.KEY, p -> new NetworkManagerComponent());
     }
 }
