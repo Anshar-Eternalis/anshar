@@ -9,7 +9,6 @@ import net.minecraft.text.Text;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.World;
-import net.minecraft.world.WorldProperties;
 
 import java.util.*;
 
@@ -22,6 +21,7 @@ public class BeaconComponent implements IBeaconComponent {
     private IFrequencyIdentifierComponent frequency;
 
     private FrequencyNetwork frequencyNetwork;
+    private boolean shouldRestoreFrequencyNetwork;
     private int level;
 
     public BeaconComponent(BeaconBlockEntity beaconBlockEntity) {
@@ -29,6 +29,7 @@ public class BeaconComponent implements IBeaconComponent {
         level = 0;
         topBlocks = Collections.emptyList();
         bottomBlocks = Collections.emptyList();
+        shouldRestoreFrequencyNetwork = true;
     }
 
     public void rescanPyramid() {
@@ -118,23 +119,45 @@ public class BeaconComponent implements IBeaconComponent {
         if (world == null) {
             return;
         }
-        NetworkManagerComponent networkManagerComponent = world.getLevelProperties().getComponent(NetworkManagerComponent.KEY);
         getFreqComponent().set(newFreqID);
-        if (frequencyNetwork != null) {
-            frequencyNetwork.getBeacons().remove(beaconBlockEntity.getPos());
-        }
-        if (!newFreqID.isValid()) {
-            frequencyNetwork = null;
-            return;
-        }
-        frequencyNetwork = networkManagerComponent.getOrCreateNetwork(newFreqID);
-        frequencyNetwork.getBeacons().add(beaconBlockEntity.getPos());
+        shouldRestoreFrequencyNetwork = true;
+//        NetworkManagerComponent networkManagerComponent = world.getLevelProperties().getComponent(NetworkManagerComponent.KEY);
+//        getFreqComponent().set(newFreqID);
+//        if (frequencyNetwork != null) {
+//            frequencyNetwork.getBeacons().remove(beaconBlockEntity.getPos());
+//        }
+//        if (!newFreqID.isValid()) {
+//            frequencyNetwork = null;
+//            return;
+//        }
+//        frequencyNetwork = networkManagerComponent.getOrCreateNetwork(newFreqID);
+//        frequencyNetwork.getBeacons().add(beaconBlockEntity.getPos());
         beaconBlockEntity.getWorld().getPlayers().forEach(playerEntity -> {
             playerEntity.sendMessage(Text.of(
                     String.format("Frequency updated!!\nOld: %s\nNew: %s", oldFreqID, newFreqID))
             );
         });
         //        LOGGER.debug();
+    }
+
+    private void tryUpdateFrequencyNetwork() {
+        if (!shouldRestoreFrequencyNetwork) return;
+        World world = beaconBlockEntity.getWorld();
+        if (world == null) {
+            LOGGER.warn("Tried to restore frequency network and epic failed!!");
+            return;
+        }
+        if (frequencyNetwork != null) {
+            frequencyNetwork.getBeacons().remove(beaconBlockEntity.getPos());
+        }
+        if (!getFrequencyID().isValid()) {
+            frequencyNetwork = null;
+            return;
+        }
+        NetworkManagerComponent networkManagerComponent = world.getLevelProperties().getComponent(NetworkManagerComponent.KEY);
+        frequencyNetwork = networkManagerComponent.getOrCreateNetwork(getFrequencyID());
+        frequencyNetwork.getBeacons().add(beaconBlockEntity.getPos());
+        shouldRestoreFrequencyNetwork = false;
     }
 
     private int arraysHashCode() {
@@ -219,6 +242,7 @@ public class BeaconComponent implements IBeaconComponent {
                 .map(Identifier::tryParse)
                 .toList();
         fromFlattenedList(flatList, level);
+        shouldRestoreFrequencyNetwork = true;
     }
 
     @Override
@@ -235,6 +259,7 @@ public class BeaconComponent implements IBeaconComponent {
     @Override
     public void serverTick() {
         World world = beaconBlockEntity.getWorld();
+        tryUpdateFrequencyNetwork();
         if (world == null) return;
         if (world.getTime() % 80L == 0L) {
             rescanPyramid();
