@@ -1,12 +1,11 @@
 package com.lgmrszd.anshar.beacon;
 
-import com.lgmrszd.anshar.frequency.HashFrequencyIdentifierComponent;
-import com.lgmrszd.anshar.frequency.IFrequencyIdentifier;
-import com.lgmrszd.anshar.frequency.IFrequencyIdentifierComponent;
+import com.lgmrszd.anshar.frequency.*;
 import com.lgmrszd.anshar.mixin.BeaconBlockEntityAccessor;
 import net.minecraft.block.entity.BeaconBlockEntity;
 import net.minecraft.nbt.NbtCompound;
 import net.minecraft.registry.Registries;
+import net.minecraft.text.Text;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.World;
@@ -22,6 +21,9 @@ public class BeaconComponent implements IBeaconComponent {
     private List<List<Identifier>> topBlocks;
     private List<List<Identifier>> bottomBlocks;
     private final BeaconBlockEntity beaconBlockEntity;
+    private IFrequencyIdentifierComponent frequency;
+
+    private FrequencyNetwork frequencyNetwork;
     private int level;
 
     public BeaconComponent(BeaconBlockEntity beaconBlockEntity) {
@@ -106,7 +108,21 @@ public class BeaconComponent implements IBeaconComponent {
                         )
                 );
             }
-        getFreqComponent().set(arraysHashCode());
+        IFrequencyIdentifier oldFreqID = getFreqComponent().get();
+        IFrequencyIdentifier newFreqID = generateFrequencyID();
+        if (!oldFreqID.equals(newFreqID)) onFrequencyIDUpdate(oldFreqID, newFreqID);
+//        getFreqComponent().set(arraysHashCode());
+    }
+
+    private void onFrequencyIDUpdate(IFrequencyIdentifier oldFreqID, IFrequencyIdentifier newFreqID) {
+        World world = beaconBlockEntity.getWorld();
+        if (world != null) beaconBlockEntity.getWorld().getPlayers().forEach(playerEntity -> {
+            playerEntity.sendMessage(Text.of(
+                    String.format("Frequency updated!!\nOld: %s\nNew: %s", oldFreqID, newFreqID))
+            );
+        });
+        getFreqComponent().set(newFreqID);
+//        LOGGER.debug();
     }
 
     private int arraysHashCode() {
@@ -115,11 +131,15 @@ public class BeaconComponent implements IBeaconComponent {
         return blockHash;
     }
 
+    private IFrequencyIdentifier generateFrequencyID() {
+        if (level == 0) return NullFrequencyIdentifier.get();
+        return new HashFrequencyIdentifier(arraysHashCode());
+    }
+
     // components may not be ready in order, so get this lazily and cache
-    private HashFrequencyIdentifierComponent frequency;
-    private HashFrequencyIdentifierComponent getFreqComponent(){
+    private IFrequencyIdentifierComponent getFreqComponent(){
         if (this.frequency == null)
-            this.frequency = (HashFrequencyIdentifierComponent) IFrequencyIdentifierComponent.KEY.get(beaconBlockEntity);
+            this.frequency = (FrequencyIdentifierComponent) IFrequencyIdentifierComponent.KEY.get(beaconBlockEntity);
         return this.frequency;
     }
 

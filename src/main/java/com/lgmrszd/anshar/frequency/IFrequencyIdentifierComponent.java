@@ -8,9 +8,12 @@ import dev.onyxstudios.cca.api.v3.component.ComponentRegistry;
 import net.minecraft.util.Identifier;
 
 public interface IFrequencyIdentifierComponent extends Component {
-    public static final ComponentKey<IFrequencyIdentifierComponent> KEY = ComponentRegistry.getOrCreate(
+    ComponentKey<IFrequencyIdentifierComponent> KEY = ComponentRegistry.getOrCreate(
         new Identifier(MOD_ID, "frequency_identifier"), IFrequencyIdentifierComponent.class
     );
 
-    public IFrequencyIdentifier get();
+    IFrequencyIdentifier get();
+    void set(IFrequencyIdentifier newFreqID);
+
+    void clear();
 }
