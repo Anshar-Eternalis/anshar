@@ -12,7 +12,7 @@ import com.lgmrszd.anshar.storage.EmbeddedStorage;
 
 public class FrequencyNetwork {
     private UUID id;
-    private IFrequencyIdentifier IFreqID;
+    private IFrequencyIdentifier FreqID;
     private EmbeddedStorage storage;
     private Set<BlockPos> beacons;
 
@@ -22,6 +22,10 @@ public class FrequencyNetwork {
 
     public UUID getId() {
         return id;
+    }
+
+    public IFrequencyIdentifier getFreqID() {
+        return FreqID;
     }
 
     public Set<BlockPos> getBeacons(){
