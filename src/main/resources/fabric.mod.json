@@ -38,7 +38,8 @@
 	"custom": {
 		"cardinal-components" : [
 			"anshar:frequency_identifier",
-			"anshar:beacon"
+			"anshar:beacon",
+			"anshar:level_storage"
 		]
 	},
 	"depends": {
