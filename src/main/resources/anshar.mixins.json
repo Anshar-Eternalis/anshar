@@ -4,8 +4,7 @@
   "compatibilityLevel": "JAVA_17",
   "mixins": [
     "BeaconBlockEntityAccessor",
-    "BeaconBlockEntityMixin",
-    "ExampleMixin"
+    "BeaconBlockEntityMixin"
   ],
   "injectors": {
     "defaultRequire": 1

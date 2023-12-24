@@ -25,7 +25,7 @@
 			"com.lgmrszd.anshar.AnsharDataGenerator"
 		],
 		"cardinal-components": [
-			"com.lgmrszd.anshar.MyComponents"
+			"com.lgmrszd.anshar.ModComponents"
 		]
 	},
 	"mixins": [
@@ -37,6 +37,7 @@
 	],
 	"custom": {
 		"cardinal-components" : [
+			"anshar:frequency_identifier",
 			"anshar:beacon"
 		]
 	},

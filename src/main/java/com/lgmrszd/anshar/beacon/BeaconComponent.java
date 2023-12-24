@@ -1,7 +1,8 @@
-package com.lgmrszd.anshar;
+package com.lgmrszd.anshar.beacon;
 
-import com.lgmrszd.anshar.freq.IBeaconComponent;
-import com.lgmrszd.anshar.freq.IBeaconFrequency;
+import com.lgmrszd.anshar.frequency.HashFrequencyIdentifierComponent;
+import com.lgmrszd.anshar.frequency.IFrequencyIdentifier;
+import com.lgmrszd.anshar.frequency.IFrequencyIdentifierComponent;
 import com.lgmrszd.anshar.mixin.BeaconBlockEntityAccessor;
 import net.minecraft.block.entity.BeaconBlockEntity;
 import net.minecraft.nbt.NbtCompound;
@@ -17,12 +18,10 @@ import java.util.List;
 
 import static com.lgmrszd.anshar.Anshar.LOGGER;
 
-
 public class BeaconComponent implements IBeaconComponent {
     private List<List<Identifier>> topBlocks;
     private List<List<Identifier>> bottomBlocks;
     private final BeaconBlockEntity beaconBlockEntity;
-    private IBeaconFrequency frequency;
     private int level;
 
     public BeaconComponent(BeaconBlockEntity beaconBlockEntity) {
@@ -34,15 +33,18 @@ public class BeaconComponent implements IBeaconComponent {
 
     public void rescanPyramid() {
 //        this.level = ((BeaconBlockEntityAccessor) beaconBlockEntity).getLevel();
+        
         World world = beaconBlockEntity.getWorld();
         if (world == null) return;
+
         BlockPos pos = beaconBlockEntity.getPos();
         int x = pos.getX();
         int y = pos.getY();
         int z = pos.getZ();
         this.level = BeaconBlockEntityAccessor.updateLevel(world, x, y, z);
+
         if (level == 0) {
-            frequency = null;
+            getFreqComponent().clear();
             topBlocks = Collections.emptyList();
             bottomBlocks = Collections.emptyList();
             return;
@@ -104,7 +106,7 @@ public class BeaconComponent implements IBeaconComponent {
                         )
                 );
             }
-        frequency = new BeaconFrequency(arraysHashCode());
+        getFreqComponent().set(arraysHashCode());
     }
 
     private int arraysHashCode() {
@@ -113,9 +115,17 @@ public class BeaconComponent implements IBeaconComponent {
         return blockHash;
     }
 
+    // components may not be ready in order, so get this lazily and cache
+    private HashFrequencyIdentifierComponent frequency;
+    private HashFrequencyIdentifierComponent getFreqComponent(){
+        if (this.frequency == null)
+            this.frequency = (HashFrequencyIdentifierComponent) IFrequencyIdentifierComponent.KEY.get(beaconBlockEntity);
+        return this.frequency;
+    }
+
     @Override
-    public IBeaconFrequency getFrequency() {
-        return frequency;
+    public IFrequencyIdentifier getFrequencyID() {
+        return getFreqComponent().get();
     }
 
     private static List<Identifier> flattenList(List<List<Identifier>> topBlocks, List<List<Identifier>> bottomBlocks) {
