@@ -153,7 +153,9 @@ public class BeaconComponent implements IBeaconComponent {
             frequencyNetwork = null;
             return;
         }
-        NetworkManagerComponent networkManagerComponent = world.getLevelProperties().getComponent(NetworkManagerComponent.KEY);
+        // TODO: basically the same thing, but the commented one is a weird mixin thingy that VSCode doesn't like, need to figure out if its safe
+//        NetworkManagerComponent networkManagerComponent = world.getLevelProperties().getComponent(NetworkManagerComponent.KEY);
+        NetworkManagerComponent networkManagerComponent = NetworkManagerComponent.KEY.get(world.getLevelProperties());
         frequencyNetwork = networkManagerComponent.getOrCreateNetwork(getFrequencyID());
         frequencyNetwork.getBeacons().add(beaconBlockEntity.getPos());
         shouldRestoreFrequencyNetwork = false;

@@ -72,6 +72,7 @@ public class NetworkManagerComponent implements Component {
                 .map(pos1 -> {
                     return world.getBlockEntity(pos1) instanceof BeaconBlockEntity bbe ? bbe : null;
                 })
+                .filter(Objects::nonNull)
                 .findFirst();
     }
 
