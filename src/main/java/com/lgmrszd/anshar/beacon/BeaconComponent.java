@@ -43,7 +43,6 @@ public class BeaconComponent implements IBeaconComponent {
         this.level = BeaconBlockEntityAccessor.updateLevel(world, x, y, z);
 
         if (level == 0) {
-            getFreqComponent().clear();
             topBlocks = Collections.emptyList();
             bottomBlocks = Collections.emptyList();
             IFrequencyIdentifier oldFreqID = getFreqComponent().get();
