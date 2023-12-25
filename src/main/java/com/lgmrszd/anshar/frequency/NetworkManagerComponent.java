@@ -3,18 +3,20 @@ package com.lgmrszd.anshar.frequency;
 import static com.lgmrszd.anshar.Anshar.LOGGER;
 import static com.lgmrszd.anshar.Anshar.MOD_ID;
 
-import java.util.HashMap;
-import java.util.List;
-import java.util.Optional;
-import java.util.UUID;
+import java.util.*;
 import java.util.stream.Collectors;
 
+import com.lgmrszd.anshar.beacon.IBeaconComponent;
 import dev.onyxstudios.cca.api.v3.component.Component;
 import dev.onyxstudios.cca.api.v3.component.ComponentKey;
 import dev.onyxstudios.cca.api.v3.component.ComponentRegistry;
+import net.minecraft.block.entity.BeaconBlockEntity;
 import net.minecraft.nbt.NbtCompound;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.crash.CrashException;
+import net.minecraft.util.math.BlockPos;
+import net.minecraft.util.math.ChunkSectionPos;
+import net.minecraft.world.World;
 
 public class NetworkManagerComponent implements Component {
     private final HashMap<UUID, FrequencyNetwork> networksByUUID;
@@ -51,6 +53,26 @@ public class NetworkManagerComponent implements Component {
 
     public Optional<FrequencyNetwork> getNetwork(UUID uuid){
         return Optional.ofNullable(networksByUUID.get(uuid));
+    }
+
+    public Optional<BeaconBlockEntity> getNearestConnectedBeacon(World world, BlockPos pos) {
+        if (world == null) return Optional.empty();
+        return networksByUUID.values().stream()
+                .map(FrequencyNetwork::getBeacons)
+                .flatMap(Collection::stream)
+                .sorted((pos1, pos2) -> {
+                    double distance1 = pos.getSquaredDistance(pos1);
+                    double distance2 = pos.getSquaredDistance(pos2);
+                    return Double.compare(distance1, distance2);
+                })
+                .filter(blockPos -> world.isChunkLoaded(
+                        ChunkSectionPos.getSectionCoord(blockPos.getX()),
+                                ChunkSectionPos.getSectionCoord(blockPos.getY()))
+                )
+                .map(pos1 -> {
+                    return world.getBlockEntity(pos1) instanceof BeaconBlockEntity bbe ? bbe : null;
+                })
+                .findFirst();
     }
 
     @Override
