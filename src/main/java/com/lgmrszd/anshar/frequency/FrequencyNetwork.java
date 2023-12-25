@@ -1,5 +1,6 @@
 package com.lgmrszd.anshar.frequency;
 
+import java.util.Collections;
 import java.util.HashSet;
 import java.util.Set;
 
@@ -31,6 +32,8 @@ public class FrequencyNetwork {
     }
 
     public Set<BlockPos> getBeacons(){
+        // TODO: use this instead when proper beacon handling code is in place
+//        return Collections.unmodifiableSet(this.beacons);
         return this.beacons;
     }
 
