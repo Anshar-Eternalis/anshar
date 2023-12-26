@@ -60,20 +60,33 @@ public class NetworkManagerComponent implements Component {
         return networksByUUID.values().stream()
                 .map(FrequencyNetwork::getBeacons)
                 .flatMap(Collection::stream)
+                .filter(blockPos -> world.isChunkLoaded(
+                        ChunkSectionPos.getSectionCoord(blockPos.getX()),
+                        ChunkSectionPos.getSectionCoord(blockPos.getY()))
+                )
                 .sorted((pos1, pos2) -> {
                     double distance1 = pos.getSquaredDistance(pos1);
                     double distance2 = pos.getSquaredDistance(pos2);
                     return Double.compare(distance1, distance2);
                 })
-                .filter(blockPos -> world.isChunkLoaded(
-                        ChunkSectionPos.getSectionCoord(blockPos.getX()),
-                                ChunkSectionPos.getSectionCoord(blockPos.getY()))
-                )
-                .map(pos1 -> {
-                    return world.getBlockEntity(pos1) instanceof BeaconBlockEntity bbe ? bbe : null;
-                })
+                .map(pos1 -> world.getBlockEntity(pos1) instanceof BeaconBlockEntity bbe ? bbe : null)
                 .filter(Objects::nonNull)
                 .findFirst();
+    }
+
+    public List<BeaconBlockEntity> getConnectedBeaconsInRadius(World world, BlockPos pos, Double radius) {
+        if (world == null) return Collections.emptyList();
+        return networksByUUID.values().stream()
+                .map(FrequencyNetwork::getBeacons)
+                .flatMap(Collection::stream)
+                .filter(blockPos -> pos.getSquaredDistance(blockPos) <= radius
+                        && world.isChunkLoaded(
+                        ChunkSectionPos.getSectionCoord(blockPos.getX()),
+                        ChunkSectionPos.getSectionCoord(blockPos.getY()))
+                )
+                .map(pos1 -> world.getBlockEntity(pos1) instanceof BeaconBlockEntity bbe ? bbe : null)
+                .filter(Objects::nonNull)
+                .toList();
     }
 
     @Override
