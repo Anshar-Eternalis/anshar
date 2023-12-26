@@ -5,13 +5,15 @@
 	"name": "Anshar",
 	"description": "This is an example description! Tell everyone what your mod is about!",
 	"authors": [
-		"Lgmrszd, hama and comp500"
+		"Lgmrszd",
+		"hama",
+		"comp500"
 	],
 	"contact": {
 		"homepage": "https://fabricmc.net/",
 		"sources": "https://github.com/FabricMC/fabric-example-mod"
 	},
-	"license": "CC0-1.0",
+	"license": "LGPL-3.0-only",
 	"icon": "assets/anshar/icon.png",
 	"environment": "*",
 	"entrypoints": {
