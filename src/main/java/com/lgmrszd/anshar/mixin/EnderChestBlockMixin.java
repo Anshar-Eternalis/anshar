@@ -29,7 +29,11 @@ import net.minecraft.world.World;
 
 @Mixin(EnderChestBlock.class)
 public abstract class EnderChestBlockMixin {
-   private static final Text EMBED_CONTAINER_NAME = Text.translatable("container.embeddedstorage");
+   private static final Text EMBED_CONTAINER_NAME =
+           Text.literal("[")
+                   .append(Text.translatable("block.minecraft.beacon"))
+                   .append("] ")
+                   .append(Text.translatable("container.enderchest"));
 
    private boolean isBeaconValidStorageTarget(BlockPos pos, World world, BeaconBlockEntity beacon){
       var diff = beacon.getPos().subtract(pos);
