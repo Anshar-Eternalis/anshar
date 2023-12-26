@@ -39,7 +39,8 @@
 		"cardinal-components" : [
 			"anshar:frequency_identifier",
 			"anshar:beacon",
-			"anshar:network_manager"
+			"anshar:network_manager",
+			"anshar:end_crystal"
 		]
 	},
 	"depends": {
