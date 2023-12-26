@@ -35,6 +35,9 @@ public class FrequencyNetwork {
     }
 
     public EmbeddedStorage getStorage(){
+        if (this.storage == null){
+            this.storage = new EmbeddedStorage();
+        }
         return this.storage;
     }
 
@@ -46,11 +49,14 @@ public class FrequencyNetwork {
     // TODO: generalize to an interface
     public static FrequencyNetwork fromNbt(UUID id, NbtCompound tag) {
         HashFrequencyIdentifier freqID = new HashFrequencyIdentifier(tag.getInt("frequency"));
-        return new FrequencyNetwork(id, freqID);
+        var network = new FrequencyNetwork(id, freqID);
+        network.getStorage().readNbtList(tag.getList("storage", NbtCompound.COMPOUND_TYPE));
+        return network;
     }
 
     public void writeToNbt(NbtCompound tag) {
         tag.putInt("frequency", freqID.hashCode());
+        tag.put("storage", this.getStorage().toNbtList());
     }
 
 }

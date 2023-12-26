@@ -1,5 +1,7 @@
 package com.lgmrszd.anshar.storage;
 
-public class EmbeddedStorage {
+import net.minecraft.inventory.EnderChestInventory;
+
+public class EmbeddedStorage extends EnderChestInventory {
     
 }
