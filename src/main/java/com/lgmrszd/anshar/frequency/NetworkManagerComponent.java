@@ -4,9 +4,7 @@ import static com.lgmrszd.anshar.Anshar.LOGGER;
 import static com.lgmrszd.anshar.Anshar.MOD_ID;
 
 import java.util.*;
-import java.util.stream.Collectors;
 
-import com.lgmrszd.anshar.beacon.IBeaconComponent;
 import dev.onyxstudios.cca.api.v3.component.Component;
 import dev.onyxstudios.cca.api.v3.component.ComponentKey;
 import dev.onyxstudios.cca.api.v3.component.ComponentRegistry;
@@ -26,6 +24,10 @@ public class NetworkManagerComponent implements Component {
 
     public NetworkManagerComponent() {
         networksByUUID = new HashMap<>();
+    }
+
+    public Collection<FrequencyNetwork> getNetworks() {
+        return networksByUUID.values();
     }
 
     public FrequencyNetwork getOrCreateNetwork(IFrequencyIdentifier query){
