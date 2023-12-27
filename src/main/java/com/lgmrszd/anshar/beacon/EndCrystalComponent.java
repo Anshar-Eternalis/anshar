@@ -1,4 +1,4 @@
-package com.lgmrszd.anshar.EndCrystal;
+package com.lgmrszd.anshar.beacon;
 
 import net.minecraft.entity.decoration.EndCrystalEntity;
 import net.minecraft.nbt.NbtCompound;

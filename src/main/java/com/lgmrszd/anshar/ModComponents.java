@@ -1,7 +1,5 @@
 package com.lgmrszd.anshar;
 
-import com.lgmrszd.anshar.EndCrystal.EndCrystalComponent;
-import com.lgmrszd.anshar.EndCrystal.IEndCrystalComponent;
 import dev.onyxstudios.cca.api.v3.block.BlockComponentFactoryRegistry;
 import dev.onyxstudios.cca.api.v3.block.BlockComponentInitializer;
 import dev.onyxstudios.cca.api.v3.entity.EntityComponentFactoryRegistry;
@@ -14,7 +12,10 @@ import com.lgmrszd.anshar.frequency.FrequencyIdentifierComponent;
 import com.lgmrszd.anshar.frequency.IFrequencyIdentifierComponent;
 import com.lgmrszd.anshar.frequency.NetworkManagerComponent;
 import com.lgmrszd.anshar.beacon.BeaconComponent;
+import com.lgmrszd.anshar.beacon.EndCrystalComponent;
 import com.lgmrszd.anshar.beacon.IBeaconComponent;
+import com.lgmrszd.anshar.beacon.IEndCrystalComponent;
+
 import net.minecraft.entity.decoration.EndCrystalEntity;
 
 public final class ModComponents implements BlockComponentInitializer, LevelComponentInitializer, EntityComponentInitializer {

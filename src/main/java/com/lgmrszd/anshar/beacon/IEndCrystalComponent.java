@@ -1,4 +1,4 @@
-package com.lgmrszd.anshar.EndCrystal;
+package com.lgmrszd.anshar.beacon;
 
 import dev.onyxstudios.cca.api.v3.component.Component;
 import dev.onyxstudios.cca.api.v3.component.ComponentKey;
