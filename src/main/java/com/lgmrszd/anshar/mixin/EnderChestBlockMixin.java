@@ -1,6 +1,8 @@
 package com.lgmrszd.anshar.mixin;
 
 import java.lang.Object;
+import java.lang.ref.WeakReference;
+import java.util.Optional;
 
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.injection.At;
@@ -8,6 +10,7 @@ import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
 
 import com.lgmrszd.anshar.beacon.BeaconComponent;
+import com.lgmrszd.anshar.frequency.FrequencyNetwork;
 import com.lgmrszd.anshar.frequency.NetworkManagerComponent;
 import com.lgmrszd.anshar.storage.EmbeddedStorage;
 
@@ -29,32 +32,51 @@ import net.minecraft.world.World;
 
 @Mixin(EnderChestBlock.class)
 public abstract class EnderChestBlockMixin {
+   private static int CONNECTION_RADIUS = 20;
    private static final Text EMBED_CONTAINER_NAME =
            Text.literal("[")
                    .append(Text.translatable("block.minecraft.beacon"))
                    .append("] ")
                    .append(Text.translatable("container.enderchest"));
 
+   /*
+    * Two modes:
+    * - if on a networked pyramid: override default, connect to network
+    * - if connected to a networked crystal: override above, connect to crystal network
+    */
+
    private boolean isBeaconValidStorageTarget(BlockPos pos, World world, BeaconBlockEntity beacon){
       var diff = beacon.getPos().subtract(pos);
       var tier = diff.getY() + 1;
-      return tier+1 >= ((BeaconBlockEntityAccessor)(Object)beacon).getLevel() && (
+      return tier <= ((BeaconBlockEntityAccessor)(Object)beacon).getLevel() && (
          (tier == Math.abs(diff.getX()) && Math.abs(diff.getZ()) <= tier) || 
          (tier == Math.abs(diff.getZ()) && Math.abs(diff.getX()) <= tier)
       );
-      
+   }
+
+   private Optional<BeaconBlockEntity> getConnectedBeacon(World world, BlockPos pos, EnderChestBlockEntity blockEnt) {
+      // check for crystal
+      // ...
+
+      // if no crystal, check for pyramid (closer the better)
+      for (BeaconBlockEntity beacon : NetworkManagerComponent.KEY.get(world.getLevelProperties()).getConnectedBeaconsInRadius(world, pos, CONNECTION_RADIUS * 1.0)) {
+         if (isBeaconValidStorageTarget(pos, world, beacon)) return Optional.of(beacon);
+      }
+      System.out.println("no valid beacons found");
+      return Optional.empty();
    }
 
    @Inject(method = "onUse", at = @At("HEAD"), cancellable = true)
    public void Anshar_onUse(BlockState state, World world, BlockPos pos, PlayerEntity player, Hand hand, BlockHitResult hit, CallbackInfoReturnable<ActionResult> ci) {
 
-      BlockEntity blockEntity = world.getBlockEntity(pos);
-      BlockPos blockPos = pos.up();
-      if (blockEntity instanceof EnderChestBlockEntity chestEntity
-      && !world.getBlockState(blockPos).isSolidBlock(world, blockPos)) {
+      if (world.isClient) return;
 
-         var success = world.getLevelProperties().getComponent(NetworkManagerComponent.KEY).getNearestConnectedBeacon(world, pos).map(
-            beacon ->  isBeaconValidStorageTarget(pos, world, beacon) && BeaconComponent.KEY.get(beacon).getFrequencyNetwork().map(
+      BlockEntity blockEntity = world.getBlockEntity(pos);
+      BlockPos topBlockPos = pos.up();
+      if (blockEntity instanceof EnderChestBlockEntity chestEntity
+      && !world.getBlockState(topBlockPos).isSolidBlock(world, pos)) {
+         var success = getConnectedBeacon(world, pos, chestEntity).map(
+            beacon ->  BeaconComponent.KEY.get(beacon).getFrequencyNetwork().map(
                network -> {
                   EmbeddedStorage inventory = network.getStorage();
                   inventory.setActiveBlockEntity(chestEntity);
