@@ -5,7 +5,8 @@
   "mixins": [
     "BeaconBlockEntityAccessor",
     "BeaconBlockEntityMixin",
-    "EnderChestBlockMixin"
+    "EnderChestBlockMixin",
+    "EndCrystalItemMixin"
   ],
   "injectors": {
     "defaultRequire": 1
