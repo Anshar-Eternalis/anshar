@@ -120,17 +120,6 @@ public class BeaconComponent implements IBeaconComponent {
         }
         getFreqComponent().set(newFreqID);
         shouldRestoreFrequencyNetwork = true;
-//        NetworkManagerComponent networkManagerComponent = world.getLevelProperties().getComponent(NetworkManagerComponent.KEY);
-//        getFreqComponent().set(newFreqID);
-//        if (frequencyNetwork != null) {
-//            frequencyNetwork.getBeacons().remove(beaconBlockEntity.getPos());
-//        }
-//        if (!newFreqID.isValid()) {
-//            frequencyNetwork = null;
-//            return;
-//        }
-//        frequencyNetwork = networkManagerComponent.getOrCreateNetwork(newFreqID);
-//        frequencyNetwork.getBeacons().add(beaconBlockEntity.getPos());
         beaconBlockEntity.getWorld().getPlayers().forEach(playerEntity -> {
             playerEntity.sendMessage(Text.of(
                     String.format("Frequency updated!!\nOld: %s\nNew: %s", oldFreqID, newFreqID))
@@ -143,22 +132,19 @@ public class BeaconComponent implements IBeaconComponent {
         if (!shouldRestoreFrequencyNetwork) return;
         World world = beaconBlockEntity.getWorld();
         if (world == null) {
-            LOGGER.warn("Tried to restore frequency network and epic failed!!");
+            LOGGER.warn("Tried to update frequency in a null world o.O");
             return;
         }
-        if (frequencyNetwork != null) {
-            frequencyNetwork.getBeacons().remove(beaconBlockEntity.getPos());
-        }
-        if (!getFrequencyID().isValid()) {
-            frequencyNetwork = null;
-            return;
-        }
-        // TODO: basically the same thing, but the commented one is a weird mixin thingy that VSCode doesn't like, need to figure out if its safe
-//        NetworkManagerComponent networkManagerComponent = world.getLevelProperties().getComponent(NetworkManagerComponent.KEY);
         NetworkManagerComponent networkManagerComponent = NetworkManagerComponent.KEY.get(world.getLevelProperties());
-        frequencyNetwork = networkManagerComponent.getOrCreateNetwork(getFrequencyID());
-        frequencyNetwork.getBeacons().add(beaconBlockEntity.getPos());
+        networkManagerComponent.updateBeaconNetwork(this, getFrequencyID(), frequencyNetwork1 -> {
+            frequencyNetwork = frequencyNetwork1;
+        });
         shouldRestoreFrequencyNetwork = false;
+    }
+
+    @Override
+    public BlockPos getBeaconPos() {
+        return beaconBlockEntity.getPos();
     }
 
     private int arraysHashCode() {

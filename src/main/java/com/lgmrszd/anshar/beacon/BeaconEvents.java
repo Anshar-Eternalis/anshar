@@ -36,7 +36,14 @@ public final class BeaconEvents {
             IBeaconComponent beacComp = IBeaconComponent.KEY.get(bbe);
             if (beacComp.getFrequencyID().isValid())
                 player.sendMessage(Text.literal(
-                        String.format("Beacon pos: %s, frequency: %s", pos, beacComp.getFrequencyID().hashCode())
+                        String.format(
+                                "Beacon pos: %s, frequency: %s, network: %s",
+                                pos,
+                                beacComp.getFrequencyID().hashCode(),
+                                beacComp.getFrequencyNetwork()
+                                        .map(frequencyNetwork -> frequencyNetwork.getId().toString())
+                                        .orElse("None")
+                        )
                 ));
             else {
                 player.sendMessage(Text.literal(

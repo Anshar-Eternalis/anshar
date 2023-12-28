@@ -31,10 +31,17 @@ public class FrequencyNetwork {
         return freqID;
     }
 
-    public Set<BlockPos> getBeacons(){
-        // TODO: use this instead when proper beacon handling code is in place
-//        return Collections.unmodifiableSet(this.beacons);
-        return this.beacons;
+    public Set<BlockPos> getBeacons() {
+        return Collections.unmodifiableSet(this.beacons);
+    }
+
+    // TODO: find a way to make it protected?
+    public boolean removeBeacon (BlockPos beaconPos) {
+        return beacons.remove(beaconPos);
+    }
+
+    protected boolean addBeacon (BlockPos beaconPos) {
+        return beacons.add(beaconPos);
     }
 
     public EmbeddedStorage getStorage(){

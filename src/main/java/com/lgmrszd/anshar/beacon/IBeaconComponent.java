@@ -9,6 +9,7 @@ import dev.onyxstudios.cca.api.v3.component.ComponentKey;
 import dev.onyxstudios.cca.api.v3.component.ComponentRegistry;
 import dev.onyxstudios.cca.api.v3.component.tick.ServerTickingComponent;
 import net.minecraft.util.Identifier;
+import net.minecraft.util.math.BlockPos;
 
 import java.util.Optional;
 
@@ -21,4 +22,6 @@ public interface IBeaconComponent extends ServerTickingComponent {
     IFrequencyIdentifier getFrequencyID();
 
     Optional<FrequencyNetwork> getFrequencyNetwork();
+
+    BlockPos getBeaconPos();
 }

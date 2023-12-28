@@ -4,7 +4,9 @@ import static com.lgmrszd.anshar.Anshar.LOGGER;
 import static com.lgmrszd.anshar.Anshar.MOD_ID;
 
 import java.util.*;
+import java.util.function.Consumer;
 
+import com.lgmrszd.anshar.beacon.BeaconComponent;
 import dev.onyxstudios.cca.api.v3.component.Component;
 import dev.onyxstudios.cca.api.v3.component.ComponentKey;
 import dev.onyxstudios.cca.api.v3.component.ComponentRegistry;
@@ -89,6 +91,39 @@ public class NetworkManagerComponent implements Component {
                 .map(pos1 -> world.getBlockEntity(pos1) instanceof BeaconBlockEntity bbe ? bbe : null)
                 .filter(Objects::nonNull)
                 .toList();
+    }
+
+    public void updateBeaconNetwork(BeaconComponent beaconComponent, IFrequencyIdentifier frequencyIdentifier, Consumer<FrequencyNetwork> consumer) {
+        // Check if it's actually the same frequency as before
+        if (beaconComponent.getFrequencyNetwork()
+                // continue if there's network with different frequency
+                .map(frequencyNetwork -> frequencyNetwork.getFreqID().equals(frequencyIdentifier))
+                // continue if no network on the beacon component
+                .orElse(false)
+        ) return;
+        BlockPos beaconPos = beaconComponent.getBeaconPos();
+        // Remove beacon from the old network if present
+        beaconComponent.getFrequencyNetwork().ifPresent(frequencyNetwork -> {
+            if (!frequencyNetwork.removeBeacon(beaconPos)) {
+                LOGGER.warn(String.format(
+                        "ANSHAR WARNING: Tried to remove beacon %s from network %s but it's already not there",
+                        beaconPos,
+                        frequencyNetwork
+                ));
+            }
+        });
+        // Add beacon to the new network
+        if (frequencyIdentifier.isValid()) {
+            FrequencyNetwork network = getOrCreateNetwork(frequencyIdentifier);
+            if (!network.addBeacon(beaconPos)) {
+                LOGGER.warn(String.format(
+                        "ANSHAR WARNING: Tried to add beacon %s to network %s but it's already there!",
+                        beaconPos,
+                        network
+                ));
+            }
+            consumer.accept(network);
+        }
     }
 
     @Override

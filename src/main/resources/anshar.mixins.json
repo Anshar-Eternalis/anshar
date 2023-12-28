@@ -4,9 +4,9 @@
   "compatibilityLevel": "JAVA_17",
   "mixins": [
     "BeaconBlockEntityAccessor",
-    "BeaconBlockEntityMixin",
-    "EnderChestBlockMixin",
-    "EndCrystalItemMixin"
+    "AbstractBlockMixin",
+    "EndCrystalItemMixin",
+    "EnderChestBlockMixin"
   ],
   "injectors": {
     "defaultRequire": 1
