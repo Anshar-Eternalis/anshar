@@ -42,7 +42,8 @@
 			"anshar:frequency_identifier",
 			"anshar:beacon",
 			"anshar:network_manager",
-			"anshar:end_crystal"
+			"anshar:end_crystal",
+			"anshar:player_transport"
 		]
 	},
 	"depends": {

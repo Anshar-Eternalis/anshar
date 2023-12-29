@@ -15,8 +15,10 @@ import com.lgmrszd.anshar.beacon.BeaconComponent;
 import com.lgmrszd.anshar.beacon.EndCrystalComponent;
 import com.lgmrszd.anshar.beacon.IBeaconComponent;
 import com.lgmrszd.anshar.beacon.IEndCrystalComponent;
+import com.lgmrszd.anshar.beacon.PlayerTransportComponent;
 
 import net.minecraft.entity.decoration.EndCrystalEntity;
+import net.minecraft.entity.player.PlayerEntity;
 
 public final class ModComponents implements BlockComponentInitializer, LevelComponentInitializer, EntityComponentInitializer {
 
@@ -34,5 +36,6 @@ public final class ModComponents implements BlockComponentInitializer, LevelComp
     @Override
     public void registerEntityComponentFactories(EntityComponentFactoryRegistry registry) {
         registry.registerFor(EndCrystalEntity.class, IEndCrystalComponent.KEY, EndCrystalComponent::new);
+        registry.registerFor(PlayerEntity.class, PlayerTransportComponent.KEY, p -> new PlayerTransportComponent());
     }
 }

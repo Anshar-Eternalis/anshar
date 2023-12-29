@@ -1,7 +1,6 @@
 package com.lgmrszd.anshar.mixin;
 
 import java.lang.Object;
-import java.lang.ref.WeakReference;
 import java.util.Optional;
 
 import org.spongepowered.asm.mixin.Mixin;
@@ -10,7 +9,6 @@ import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
 
 import com.lgmrszd.anshar.beacon.BeaconComponent;
-import com.lgmrszd.anshar.frequency.FrequencyNetwork;
 import com.lgmrszd.anshar.frequency.NetworkManagerComponent;
 import com.lgmrszd.anshar.storage.EmbeddedStorage;
 

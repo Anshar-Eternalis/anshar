@@ -10,7 +10,6 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
 import net.minecraft.block.BlockState;
 import net.minecraft.block.Blocks;
 import net.minecraft.entity.Entity;
-import net.minecraft.entity.boss.dragon.EnderDragonFight;
 import net.minecraft.entity.decoration.EndCrystalEntity;
 import net.minecraft.item.EndCrystalItem;
 import net.minecraft.item.ItemUsageContext;
