@@ -3,6 +3,7 @@ package com.lgmrszd.anshar.mixin;
 import java.util.List;
 
 import com.lgmrszd.anshar.ModApi;
+import com.lgmrszd.anshar.beacon.EndCrystalComponent;
 import com.lgmrszd.anshar.beacon.EndCrystalItemContainer;
 import net.minecraft.client.item.TooltipContext;
 import net.minecraft.item.Item;
@@ -57,6 +58,9 @@ public abstract class EndCrystalItemMixin extends Item {
                 EndCrystalEntity endCrystalEntity = new EndCrystalEntity(world, d + 0.5, e, f + 0.5);
                 endCrystalEntity.setShowBottom(false);
                 world.spawnEntity(endCrystalEntity);
+                EndCrystalItemContainer container = ModApi.END_CRYSTAL_ITEM.find(context.getStack(), null);
+                if (container != null)
+                    container.getBeaconPos().ifPresent(pos -> EndCrystalComponent.KEY.get(endCrystalEntity).setBeacon(pos));
                 world.emitGameEvent(context.getPlayer(), GameEvent.ENTITY_PLACE, up);
             }
 

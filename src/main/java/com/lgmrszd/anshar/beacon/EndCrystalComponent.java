@@ -36,6 +36,13 @@ public class EndCrystalComponent implements IEndCrystalComponent {
     }
 
     @Override
+    public void setBeacon(BlockPos pos) {
+        shouldUpdateBeacon = false;
+        beaconPos = pos;
+        endCrystal.setBeamTarget(pos.offset(Direction.DOWN, 2));
+    }
+
+    @Override
     public void serverTick() {
         tryUpdateBeacon();
     }

@@ -15,5 +15,7 @@ public interface IEndCrystalComponent extends ServerTickingComponent {
             new Identifier(MOD_ID, "end_crystal"), IEndCrystalComponent.class
     );
 
+    public void setBeacon(BlockPos pos);
+
     Optional<BlockPos> getConnectedBeacon();
 }
