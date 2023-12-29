@@ -86,7 +86,7 @@ public class NetworkManagerComponent implements Component {
                 .filter(blockPos -> pos.isWithinDistance(blockPos, radius)
                         && world.isChunkLoaded(
                         ChunkSectionPos.getSectionCoord(blockPos.getX()),
-                        ChunkSectionPos.getSectionCoord(blockPos.getY()))
+                        ChunkSectionPos.getSectionCoord(blockPos.getZ()))
                 )
                 .map(pos1 -> world.getBlockEntity(pos1) instanceof BeaconBlockEntity bbe ? bbe : null)
                 .filter(Objects::nonNull)
