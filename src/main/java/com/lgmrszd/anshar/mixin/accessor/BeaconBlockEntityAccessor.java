@@ -1,4 +1,4 @@
-package com.lgmrszd.anshar.mixin;
+package com.lgmrszd.anshar.mixin.accessor;
 
 import net.minecraft.block.entity.BeaconBlockEntity;
 import net.minecraft.world.World;

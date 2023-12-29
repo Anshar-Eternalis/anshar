@@ -10,6 +10,7 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
 
 import com.lgmrszd.anshar.beacon.BeaconComponent;
 import com.lgmrszd.anshar.frequency.NetworkManagerComponent;
+import com.lgmrszd.anshar.mixin.accessor.BeaconBlockEntityAccessor;
 import com.lgmrszd.anshar.storage.EmbeddedStorage;
 
 import net.minecraft.block.BlockState;

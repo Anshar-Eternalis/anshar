@@ -1,7 +1,8 @@
 package com.lgmrszd.anshar.beacon;
 
 import com.lgmrszd.anshar.frequency.*;
-import com.lgmrszd.anshar.mixin.BeaconBlockEntityAccessor;
+import com.lgmrszd.anshar.mixin.accessor.BeaconBlockEntityAccessor;
+
 import net.minecraft.block.entity.BeaconBlockEntity;
 import net.minecraft.nbt.NbtCompound;
 import net.minecraft.registry.Registries;

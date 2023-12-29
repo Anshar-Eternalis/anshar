@@ -36,6 +36,6 @@ public final class ModComponents implements BlockComponentInitializer, LevelComp
     @Override
     public void registerEntityComponentFactories(EntityComponentFactoryRegistry registry) {
         registry.registerFor(EndCrystalEntity.class, IEndCrystalComponent.KEY, EndCrystalComponent::new);
-        registry.registerFor(PlayerEntity.class, PlayerTransportComponent.KEY, p -> new PlayerTransportComponent());
+        registry.registerFor(PlayerEntity.class, PlayerTransportComponent.KEY, PlayerTransportComponent::new);
     }
 }
