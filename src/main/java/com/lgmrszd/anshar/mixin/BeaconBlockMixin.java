@@ -33,7 +33,7 @@ public abstract class BeaconBlockMixin extends BlockWithEntity {
     @Intrinsic @Override public void onStateReplaced(BlockState state, World world, BlockPos pos, BlockState newState, boolean moved) { super.onStateReplaced(state, world, pos, newState, moved); }
 
     @Inject(method = "onSteppedOn", at = @At("HEAD"))
-    public void Anshar_BeaconBlock_onSteppedOn(World world, BlockPos pos, BlockState state, Entity entity, CallbackInfo ci) {
+    public void Anshar_onSteppedOn(World world, BlockPos pos, BlockState state, Entity entity, CallbackInfo ci) {
         if (world.getTime() % 5L == 0L && entity instanceof PlayerEntity player) {
             world.getBlockEntity(pos, BlockEntityType.BEACON).ifPresent(
                 beacon -> IBeaconComponent.KEY.get(beacon).getFrequencyNetwork().ifPresent(
@@ -44,7 +44,7 @@ public abstract class BeaconBlockMixin extends BlockWithEntity {
     }
 
     @Inject(at = @At("HEAD"), method = "onStateReplaced")
-    public void anshar_onStateReplaced(BlockState state, World world, BlockPos pos, BlockState newState, boolean moved, CallbackInfo ci) {
+    public void Anshar_onStateReplaced(BlockState state, World world, BlockPos pos, BlockState newState, boolean moved, CallbackInfo ci) {
         if (state.getBlock().equals(Blocks.BEACON) && !newState.getBlock().equals(Blocks.BEACON)) {
             LOGGER.debug("Detected Beacon Block removed...");
             if (!(world.getBlockEntity(pos) instanceof BeaconBlockEntity bbe)) return;
