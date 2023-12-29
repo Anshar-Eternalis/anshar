@@ -4,6 +4,7 @@ import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NbtCompound;
 import net.minecraft.nbt.NbtHelper;
+import net.minecraft.text.Text;
 import net.minecraft.util.ActionResult;
 import net.minecraft.util.Hand;
 import net.minecraft.util.hit.BlockHitResult;
@@ -19,7 +20,13 @@ public class EndCrystalItemContainer {
     }
 
     public ActionResult onUse(PlayerEntity player, World world, Hand hand, BlockHitResult hitResult) {
-        getBeaconPos().ifPresentOrElse(pos -> clearBeaconPos(), () -> saveBeaconPos(hitResult.getBlockPos()));
+        getBeaconPos().ifPresentOrElse(pos -> {
+            clearBeaconPos();
+            player.sendMessage(Text.literal("Cleared Beacon position"));
+        }, () -> {
+            saveBeaconPos(hitResult.getBlockPos());
+            player.sendMessage(Text.literal("Saved Beacon position"));
+        });
         return ActionResult.SUCCESS;
     }
 

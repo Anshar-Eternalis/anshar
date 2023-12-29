@@ -22,7 +22,6 @@ public class EndCrystalEvents {
                             player.getMainHandStack().getCount() == 1
             )) return ActionResult.PASS;
             if (world.isClient()) return ActionResult.SUCCESS;
-            LOGGER.info("Valid End Crystal click!");
             EndCrystalItemContainer container = ModApi.END_CRYSTAL_ITEM.find(heldStack, null);
             if (container == null) return ActionResult.FAIL;
             return container.onUse(player, world, hand, hitResult);

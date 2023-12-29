@@ -2,9 +2,18 @@ package com.lgmrszd.anshar.mixin;
 
 import java.util.List;
 
+import com.lgmrszd.anshar.ModApi;
+import com.lgmrszd.anshar.beacon.EndCrystalItemContainer;
+import net.minecraft.client.item.TooltipContext;
+import net.minecraft.item.Item;
+import net.minecraft.item.ItemStack;
+import net.minecraft.text.Text;
+import org.jetbrains.annotations.Nullable;
+import org.spongepowered.asm.mixin.Intrinsic;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
+import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
 
 import net.minecraft.block.BlockState;
@@ -21,7 +30,12 @@ import net.minecraft.world.World;
 import net.minecraft.world.event.GameEvent;
 
 @Mixin(EndCrystalItem.class)
-public class EndCrystalItemMixin {
+public abstract class EndCrystalItemMixin extends Item {
+
+    public EndCrystalItemMixin(Settings settings) {
+        super(settings);
+    }
+
     @Inject(method = "useOnBlock", at = @At("HEAD"), cancellable = true)
     public void anshar$useOnBlock(ItemUsageContext context, CallbackInfoReturnable<ActionResult> ci){
         // copy from: vanilla
@@ -50,5 +64,23 @@ public class EndCrystalItemMixin {
             ci.setReturnValue(ActionResult.success(world.isClient));
             ci.cancel();
         }
+    }
+
+    @Intrinsic
+    @Override
+    public void appendTooltip(ItemStack stack, @Nullable World world, List<Text> tooltip, TooltipContext context) {
+        super.appendTooltip(stack, world, tooltip, context);
+    }
+
+    @Inject(method = "appendTooltip", at = @At("HEAD"))
+    public void anshar$addToTooltip(ItemStack stack, @Nullable World world, List<Text> tooltip, TooltipContext context, CallbackInfo ci) {
+        EndCrystalItemContainer container = ModApi.END_CRYSTAL_ITEM.find(stack, null);
+        // TODO make prettier
+        container.getBeaconPos().ifPresent(pos -> {
+            tooltip.add(Text.literal(String.format(
+                    "Stored position: %s",
+                    pos
+            )));
+        });
     }
 }
