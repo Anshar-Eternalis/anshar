@@ -7,7 +7,9 @@
     "EndCrystalItemMixin",
     "EnderChestBEVCMMixin",
     "EnderChestBlockMixin",
-    "accessor.BeaconBlockEntityAccessor"
+    "PlayerEntityMixin",
+    "accessor.BeaconBlockEntityAccessor",
+    "accessor.ServerPlayNetworkHandlerAccessor"
   ],
   "injectors": {
     "defaultRequire": 1

@@ -4,11 +4,13 @@ import java.util.Collections;
 import java.util.HashSet;
 import java.util.Set;
 
+import net.minecraft.block.Block;
 import net.minecraft.nbt.NbtCompound;
 import net.minecraft.util.math.BlockPos;
 
 import java.util.UUID;
 
+import com.lgmrszd.anshar.beacon.BeaconNode;
 import com.lgmrszd.anshar.storage.EmbeddedStorage;
 
 import static com.lgmrszd.anshar.Anshar.LOGGER;
@@ -45,6 +47,9 @@ public class FrequencyNetwork {
     protected boolean addBeacon (BlockPos beaconPos) {
         return beacons.add(beaconPos);
     }
+
+    public BeaconNode getNode(BlockPos pos) { return null; }
+    public Set<BeaconNode> getAllNodes(BlockPos pos) { return null; }
 
     public EmbeddedStorage getStorage(){
         if (this.storage == null){
