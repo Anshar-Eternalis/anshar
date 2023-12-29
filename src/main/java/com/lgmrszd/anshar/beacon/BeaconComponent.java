@@ -126,7 +126,14 @@ public class BeaconComponent implements IBeaconComponent {
                     String.format("Frequency updated!!\nOld: %s\nNew: %s", oldFreqID, newFreqID))
             );
         });
-        //        LOGGER.debug();
+        LOGGER.info("TESTING PyramidFrequency!!");
+        PyramidFrequencyIdentifier pfID = PyramidFrequencyIdentifier.scanForPyramid(world, getBeaconPos(), level);
+        if (pfID == null) return;
+        NbtCompound tag = new NbtCompound();
+        pfID.toNbt(tag);
+        PyramidFrequencyIdentifier pfID2 = PyramidFrequencyIdentifier.fromNbt(tag);
+        LOGGER.info("Hashes: {} {}", pfID.hashCode(), pfID2.hashCode());
+        LOGGER.info("ARE equal: {}", pfID.equals(pfID2));
     }
 
     private void tryUpdateFrequencyNetwork() {
