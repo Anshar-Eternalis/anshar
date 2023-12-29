@@ -37,7 +37,7 @@ public abstract class BeaconBlockMixin extends BlockWithEntity {
         if (world.getTime() % 5L == 0L && entity instanceof PlayerEntity player) {
             world.getBlockEntity(pos, BlockEntityType.BEACON).ifPresent(
                 beacon -> IBeaconComponent.KEY.get(beacon).getFrequencyNetwork().ifPresent(
-                    network -> PlayerTransportComponent.KEY.get(player).enterNetwork(network, beacon)
+                    network -> PlayerTransportComponent.KEY.get(player).enterNetwork(network, beacon.getPos())
                 )
             );
         }

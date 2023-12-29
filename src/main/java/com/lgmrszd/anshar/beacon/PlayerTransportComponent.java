@@ -1,10 +1,12 @@
 package com.lgmrszd.anshar.beacon;
 
+import static com.lgmrszd.anshar.Anshar.LOGGER;
 import static com.lgmrszd.anshar.Anshar.MOD_ID;
 
 import java.lang.ref.WeakReference;
 
 import com.lgmrszd.anshar.frequency.FrequencyNetwork;
+import com.lgmrszd.anshar.frequency.NetworkManagerComponent;
 import com.lgmrszd.anshar.mixin.accessor.ServerPlayNetworkHandlerAccessor;
 import com.lgmrszd.anshar.util.WeakRef;
 
@@ -19,6 +21,7 @@ import net.minecraft.server.network.ServerPlayNetworkHandler;
 import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.math.BlockPos;
+import net.minecraft.util.math.Vec3i;
 
 /*
  * Manages player transport between beacons via Star Gates.
@@ -41,9 +44,15 @@ public class PlayerTransportComponent implements Component {
     private final PlayerEntity player;
     private WeakRef<FrequencyNetwork> network = new WeakRef<>(null);
     private BlockPos target; // make optional? idk
+    private final boolean isClient;
 
-    public PlayerTransportComponent(PlayerEntity entity) {
-        this.player = entity;
+    public PlayerTransportComponent(PlayerEntity player) {
+        this.player = player;
+        this.isClient = player.getServer() == null;
+    }
+
+    private NetworkManagerComponent getNetworkManager(){
+        return NetworkManagerComponent.KEY.get(this.player.getWorld().getLevelProperties());
     }
 
     /*
@@ -57,12 +66,11 @@ public class PlayerTransportComponent implements Component {
     + play animations during states
     */
 
-    public void enterNetwork(FrequencyNetwork network, BeaconBlockEntity through) {
+    public void enterNetwork(FrequencyNetwork network, BlockPos through) {
         // network enter animation
         // transition to embed state
         this.network = new WeakRef<FrequencyNetwork>(network);
-        this.target = through.getPos();
-        moveToCurrentTarget();
+        this.target = through;
     }
 
     private void exitNetwork() {
@@ -73,12 +81,22 @@ public class PlayerTransportComponent implements Component {
 
     @Override
     public void readFromNbt(NbtCompound tag) {
-        
+        if (!isClient) getNetworkManager().getNetwork(tag.getUuid("network")).ifPresent(net -> {
+            var tgt = tag.getIntArray("target");
+            if (tgt != null && tgt.length == 3) {
+                enterNetwork(net, new BlockPos(tgt[0], tgt[1], tgt[2]));
+            } else {
+                LOGGER.debug("Player transport component tried to enter network of id [" + net.getId() + "] with invalid target coords: " + tgt);
+            }
+        });
     }
 
     @Override
     public void writeToNbt(NbtCompound tag) {
-        
+        if (!isClient && isInNetwork()) this.network.ifPresent(net -> {
+            tag.putUuid("network", net.getId());
+            tag.putIntArray("target", new int[] {target.getX(), target.getY(), target.getZ()});
+        });
     }
 
     private boolean isInNetwork() {
