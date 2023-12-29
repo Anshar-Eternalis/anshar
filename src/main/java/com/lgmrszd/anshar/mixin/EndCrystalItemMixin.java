@@ -23,7 +23,7 @@ import net.minecraft.world.event.GameEvent;
 @Mixin(EndCrystalItem.class)
 public class EndCrystalItemMixin {
     @Inject(method = "useOnBlock", at = @At("HEAD"), cancellable = true)
-    public void Anshar_EndCrystalItem_useOnBlock(ItemUsageContext context, CallbackInfoReturnable<ActionResult> ci){
+    public void anshar$useOnBlock(ItemUsageContext context, CallbackInfoReturnable<ActionResult> ci){
         // copy from: vanilla
         World world = context.getWorld();
         BlockPos blockPos = context.getBlockPos();

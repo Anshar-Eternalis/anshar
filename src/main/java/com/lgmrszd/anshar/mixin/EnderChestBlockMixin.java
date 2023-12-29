@@ -65,7 +65,7 @@ public abstract class EnderChestBlockMixin {
    }
 
    @Inject(method = "onUse", at = @At("HEAD"), cancellable = true)
-   public void Anshar_onUse(BlockState state, World world, BlockPos pos, PlayerEntity player, Hand hand, BlockHitResult hit, CallbackInfoReturnable<ActionResult> ci) {
+   public void anshar$onUse(BlockState state, World world, BlockPos pos, PlayerEntity player, Hand hand, BlockHitResult hit, CallbackInfoReturnable<ActionResult> ci) {
 
       if (world.isClient) return;
 
