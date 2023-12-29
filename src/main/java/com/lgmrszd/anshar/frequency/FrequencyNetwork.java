@@ -11,6 +11,8 @@ import java.util.UUID;
 
 import com.lgmrszd.anshar.storage.EmbeddedStorage;
 
+import static com.lgmrszd.anshar.Anshar.LOGGER;
+
 public class FrequencyNetwork {
     private UUID id;
     private IFrequencyIdentifier freqID;
@@ -59,6 +61,10 @@ public class FrequencyNetwork {
     // TODO: generalize to an interface
     public static FrequencyNetwork fromNbt(UUID id, NbtCompound tag) {
         IFrequencyIdentifier freqID = PyramidFrequencyIdentifier.fromNbt(tag.getCompound("frequency"));
+        if (freqID == null) {
+            LOGGER.error("Failed to retrieve Frequency! Frequency Compound: {}", tag.getCompound("frequency"));
+            return null;
+        }
         var network = new FrequencyNetwork(id, freqID);
         network.getStorage().readNbtList(tag.getList("storage", NbtCompound.COMPOUND_TYPE));
         return network;

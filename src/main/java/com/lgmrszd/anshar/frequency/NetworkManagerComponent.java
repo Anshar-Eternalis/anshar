@@ -136,6 +136,10 @@ public class NetworkManagerComponent implements Component {
                 UUID uuid = UUID.fromString(uuid_string);
                 NbtCompound networkTag = networksTag.getCompound(uuid_string);
                 FrequencyNetwork network = FrequencyNetwork.fromNbt(uuid, networkTag);
+                if (network == null) {
+                    LOGGER.error("Failed to load Network! Network Compound: {}", networkTag);
+                    continue;
+                }
                 networksByUUID.put(uuid, network);
             }
         } catch (CrashException e) {
