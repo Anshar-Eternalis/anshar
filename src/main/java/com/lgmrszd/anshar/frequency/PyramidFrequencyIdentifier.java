@@ -166,16 +166,7 @@ public final class PyramidFrequencyIdentifier implements IFrequencyIdentifier {
         int y = pos.getY();
         int z = pos.getZ();
 
-//        List<List<Identifier>> pyramidArrangements = Arrays.asList(
-//                Arrays.asList(new Identifier[level]),
-//                Arrays.asList(new Identifier[level]),
-//                Arrays.asList(new Identifier[level]),
-//                Arrays.asList(new Identifier[level])
-//        );
-
-
         int bottomEdge = level * 2 + 1;
-//        Identifier[][][] bottomBlocks = new Identifier[4][bottomEdge][bottomEdge]
 
         List<List<List<Identifier>>> bottomBlocks = new ArrayList<>(4);
 
@@ -206,10 +197,6 @@ public final class PyramidFrequencyIdentifier implements IFrequencyIdentifier {
                 bottomBlocks.get(1).get(layer_z).set(bottomEdgeMinus1-layer_x, blockId);
                 bottomBlocks.get(2).get(bottomEdgeMinus1-layer_x).set(bottomEdgeMinus1-layer_z, blockId);
                 bottomBlocks.get(3).get(bottomEdgeMinus1-layer_z).set(layer_x, blockId);
-//                bottomBlocks[0][layer_x][layer_z] = blockId;
-//                bottomBlocks[1][layer_z][1-layer_x] = blockId;
-//                bottomBlocks[2][1-layer_x][1-layer_z] = blockId;
-//                bottomBlocks[3][1-layer_z][layer_x] = blockId;
             }
 
 //        Identifier[][][] topBlocks;

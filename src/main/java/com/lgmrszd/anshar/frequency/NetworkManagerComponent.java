@@ -83,7 +83,7 @@ public class NetworkManagerComponent implements Component {
         return networksByUUID.values().stream()
                 .map(FrequencyNetwork::getBeacons)
                 .flatMap(Collection::stream)
-                .filter(blockPos -> pos.getSquaredDistance(blockPos) <= radius
+                .filter(blockPos -> pos.isWithinDistance(blockPos, radius)
                         && world.isChunkLoaded(
                         ChunkSectionPos.getSectionCoord(blockPos.getX()),
                         ChunkSectionPos.getSectionCoord(blockPos.getY()))

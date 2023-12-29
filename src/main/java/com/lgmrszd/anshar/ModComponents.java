@@ -24,7 +24,7 @@ public final class ModComponents implements BlockComponentInitializer, LevelComp
 
     @Override
     public void registerBlockComponentFactories(BlockComponentFactoryRegistry registry) {
-        registry.registerFor(BeaconBlockEntity.class, IFrequencyIdentifierComponent.KEY, b -> new FrequencyIdentifierComponent());
+//        registry.registerFor(BeaconBlockEntity.class, IFrequencyIdentifierComponent.KEY, b -> new FrequencyIdentifierComponent());
         registry.registerFor(BeaconBlockEntity.class, IBeaconComponent.KEY, BeaconComponent::new);
     }
 

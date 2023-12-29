@@ -58,14 +58,20 @@ public class FrequencyNetwork {
     // TODO: store key as constant
     // TODO: generalize to an interface
     public static FrequencyNetwork fromNbt(UUID id, NbtCompound tag) {
-        HashFrequencyIdentifier freqID = new HashFrequencyIdentifier(tag.getInt("frequency"));
+        IFrequencyIdentifier freqID = PyramidFrequencyIdentifier.fromNbt(tag.getCompound("frequency"));
         var network = new FrequencyNetwork(id, freqID);
         network.getStorage().readNbtList(tag.getList("storage", NbtCompound.COMPOUND_TYPE));
         return network;
     }
 
     public void writeToNbt(NbtCompound tag) {
-        tag.putInt("frequency", freqID.hashCode());
+        NbtCompound pfIDTag = new NbtCompound();
+        // TODO improve this
+        if (freqID instanceof PyramidFrequencyIdentifier pfID) {
+            pfID.toNbt(pfIDTag);
+            tag.put("frequency", pfIDTag);
+        } else
+            tag.putInt("frequency", freqID.hashCode());
         tag.put("storage", this.getStorage().toNbtList());
     }
 

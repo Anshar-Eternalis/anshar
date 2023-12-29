@@ -10,4 +10,9 @@ public final class NullFrequencyIdentifier implements IFrequencyIdentifier {
 
     private static final NullFrequencyIdentifier INSTANCE = new NullFrequencyIdentifier();
     public static NullFrequencyIdentifier get() { return INSTANCE; }
+
+    @Override
+    public String toString() {
+        return "NullFreq";
+    }
 }
