@@ -7,7 +7,6 @@
     "BeaconBlockMixin",
     "EnderChestBlockMixin",
     "EndCrystalItemMixin",
-    "AbstractBlockMixin",
     "EndCrystalItemMixin",
     "EnderChestBlockMixin"
   ],
