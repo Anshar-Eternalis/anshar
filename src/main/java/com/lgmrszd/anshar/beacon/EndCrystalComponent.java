@@ -50,12 +50,14 @@ public class EndCrystalComponent implements IEndCrystalComponent {
 
     @Override
     public void readFromNbt(NbtCompound tag) {
-        beaconPos = NbtHelper.toBlockPos(tag.getCompound("beaconPos"));
+        if (tag.contains("beaconPos"))
+            beaconPos = NbtHelper.toBlockPos(tag.getCompound("beaconPos"));
     }
 
     @Override
     public void writeToNbt(NbtCompound tag) {
-        tag.put("beaconPos", NbtHelper.fromBlockPos(beaconPos));
+        if (beaconPos != null)
+            tag.put("beaconPos", NbtHelper.fromBlockPos(beaconPos));
     }
 
     @Override
