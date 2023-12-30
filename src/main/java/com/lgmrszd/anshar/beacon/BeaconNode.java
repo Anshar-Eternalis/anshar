@@ -2,10 +2,20 @@ package com.lgmrszd.anshar.beacon;
 
 import java.util.Optional;
 
+import com.mojang.serialization.DataResult;
+import com.mojang.serialization.DynamicOps;
+import com.mojang.serialization.JsonOps;
+
 import net.minecraft.block.entity.BeaconBlockEntity;
+import net.minecraft.nbt.NbtCompound;
+import net.minecraft.nbt.NbtElement;
+import net.minecraft.nbt.NbtOps;
+import net.minecraft.nbt.NbtSizeTracker;
 import net.minecraft.network.PacketByteBuf;
 import net.minecraft.text.Text;
+import net.minecraft.text.TextCodecs;
 import net.minecraft.util.DyeColor;
+import net.minecraft.util.Util;
 import net.minecraft.util.math.BlockPos;
 
 /**
@@ -15,14 +25,6 @@ public class BeaconNode {
     private final Text name;
     private final DyeColor color;
     private final BlockPos pos;
-
-
-    public BeaconNode(BlockPos pos){
-        // should really be passed a BeaconBlockEntity to construct, but you'll need to make frequencynetwork changes to allow that first
-        this.pos = pos;
-        this.name = Text.literal("placeholder");
-        this.color = DyeColor.WHITE;
-    }
 
     public BeaconNode(IBeaconComponent beaconComponent) {
         this.pos = beaconComponent.getBeaconPos();
@@ -36,17 +38,26 @@ public class BeaconNode {
         this.color = color;
     }
 
-    public static BeaconNode fromPBF(PacketByteBuf buffer) {
-        BlockPos pos = buffer.readBlockPos();
-        Text name = buffer.readText();
-        DyeColor color = buffer.readEnumConstant(DyeColor.class);
-        return new BeaconNode(pos, name, color);
+    public static BeaconNode fromNBT(NbtCompound tag) {
+        DyeColor tagColor;
+        try {
+            tagColor = DyeColor.byId(tag.getInt("color"));
+        } catch (IllegalArgumentException e) {
+            tagColor = DyeColor.WHITE;
+        }
+        return new BeaconNode(
+            BlockPos.fromLong(tag.getLong("pos")),
+            Text.Serialization.fromJson(tag.getString("name")),
+            tagColor
+        );
     }
 
-    public void toPBF(PacketByteBuf buffer) {
-        buffer.writeBlockPos(pos);
-        buffer.writeText(name);
-        buffer.writeEnumConstant(color);
+    public NbtCompound toNBT() {
+        var tag = new NbtCompound();
+        tag.putLong("pos", pos.asLong());
+        tag.putString("name", Text.Serialization.toJsonString(this.name));
+        tag.putInt("color", color.getId());
+        return tag;
     }
 
     public Text getName() {return name;}

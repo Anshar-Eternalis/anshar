@@ -44,10 +44,6 @@ public class FrequencyNetwork {
         return beacons.remove(beaconComponent.getBeaconPos()) != null;
     }
 
-    protected boolean addBeacon (BlockPos beaconPos) {
-        return beacons.put(beaconPos, new BeaconNode(beaconPos)) == null;
-    }
-
     protected boolean addBeacon (BeaconComponent beaconComponent) {
         BeaconNode node = new BeaconNode(beaconComponent);
         return beacons.put(node.getPos(), node) == null;

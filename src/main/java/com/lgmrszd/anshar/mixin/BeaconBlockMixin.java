@@ -34,7 +34,7 @@ public abstract class BeaconBlockMixin extends BlockWithEntity {
 
     @Inject(method = "onSteppedOn", at = @At("HEAD"))
     public void anshar$onSteppedOn(World world, BlockPos pos, BlockState state, Entity entity, CallbackInfo ci) {
-        if (world.getTime() % 5L == 0L && entity instanceof PlayerEntity player) {
+        if (world.getTime() % 5L == 0L && !world.isClient && entity instanceof PlayerEntity player) {
             world.getBlockEntity(pos, BlockEntityType.BEACON).ifPresent(
                 beacon -> IBeaconComponent.KEY.get(beacon).getFrequencyNetwork().ifPresent(
                     network -> PlayerTransportComponent.KEY.get(player).enterNetwork(network, beacon.getPos())
