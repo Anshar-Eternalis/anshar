@@ -4,7 +4,6 @@ import java.util.HashSet;
 import java.util.Set;
 
 import com.lgmrszd.anshar.beacon.BeaconNode;
-import com.lgmrszd.anshar.beacon.PlayerTransportComponent;
 import com.lgmrszd.anshar.beacon.PlayerTransportNetworking;
 
 import net.fabricmc.api.ClientModInitializer;
@@ -21,16 +20,19 @@ public class AnsharClient implements ClientModInitializer {
 		ClientPlayNetworking.registerGlobalReceiver(PlayerTransportNetworking.BEACON_TRANSPORT_CHANNEL, AnsharClient::receiveNodeListPacketS2C);
 	}
 
-	public static final void receiveNodeListPacketS2C(MinecraftClient client, ClientPlayNetworkHandler handler, PacketByteBuf buf, PacketSender responseSender) {
+	public static void receiveNodeListPacketS2C(MinecraftClient client, ClientPlayNetworkHandler handler, PacketByteBuf buf, PacketSender responseSender) {
         setClientJumpCandidates(
-            buf.readCollection(HashSet<BeaconNode>::new, buffer -> new BeaconNode(buffer.readBlockPos()))
+            buf.readCollection(HashSet<BeaconNode>::new, BeaconNode::fromPBF)
         );
 	}
 
 	private static void setClientJumpCandidates(Set<BeaconNode> nodes) {
         System.out.println("recv'd beacon nodes packet. candidates:");
         for (var node : nodes){
-            System.out.println(node.getPos());
+            System.out.printf(
+                    "%s %s %s%n",
+                    node.getPos(), node.getName(), node.getColor().asString()
+            );
         }
     }
 

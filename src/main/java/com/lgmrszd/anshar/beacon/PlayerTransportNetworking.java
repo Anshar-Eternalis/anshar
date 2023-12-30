@@ -23,7 +23,7 @@ public class PlayerTransportNetworking {
 
     public static void sendNodeListS2C(ServerPlayerEntity player, Set<BeaconNode> nodes) {
         PacketByteBuf buf = PacketByteBufs.create();
-        buf.writeCollection(nodes, (buffer, node) -> buffer.writeBlockPos(node.getPos()));
+        buf.writeCollection(nodes, (buffer, node) -> node.toPBF(buffer));
         ServerPlayNetworking.send(player, BEACON_TRANSPORT_CHANNEL, buf);
     }
 }
