@@ -14,10 +14,14 @@ import com.lgmrszd.anshar.util.WeakRef;
 import dev.onyxstudios.cca.api.v3.component.ComponentKey;
 import dev.onyxstudios.cca.api.v3.component.ComponentRegistry;
 import dev.onyxstudios.cca.api.v3.component.sync.AutoSyncedComponent;
-
+import dev.onyxstudios.cca.api.v3.component.tick.ServerTickingComponent;
+import net.fabricmc.fabric.api.event.lifecycle.v1.ServerEntityEvents;
+import net.fabricmc.fabric.api.event.lifecycle.v1.ServerLifecycleEvents;
+import net.minecraft.entity.Entity;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.nbt.NbtCompound;
 import net.minecraft.server.network.ServerPlayerEntity;
+import net.minecraft.server.world.ServerWorld;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.math.BlockPos;
 
@@ -33,7 +37,7 @@ import net.minecraft.util.math.BlockPos;
  * 
  */
 
-public class PlayerTransportComponent implements AutoSyncedComponent {
+public class PlayerTransportComponent implements ServerTickingComponent {
 
     public static final ComponentKey<PlayerTransportComponent> KEY = ComponentRegistry.getOrCreate(
         new Identifier(MOD_ID, "player_transport"), PlayerTransportComponent.class
@@ -67,10 +71,13 @@ public class PlayerTransportComponent implements AutoSyncedComponent {
     public void enterNetwork(FrequencyNetwork network, BlockPos through) {
         // network enter animation
         // transition to embed state
-        this.network = new WeakRef<FrequencyNetwork>(network);
-        this.target = through;
         if (!isClient) {
-            getJumpNodes().ifPresent(nodes -> PlayerTransportNetworking.sendNodeListS2C((ServerPlayerEntity)player, nodes));
+            // call on next server tick to make sure things are loaded
+            enterNetworkCallback = () -> {
+                this.network = new WeakRef<FrequencyNetwork>(network);
+                this.target = through;
+                getJumpNodes().ifPresent(nodes -> PlayerTransportNetworking.sendNodeListS2C((ServerPlayerEntity)player, nodes));
+            };
         }
     }
 
@@ -108,11 +115,25 @@ public class PlayerTransportComponent implements AutoSyncedComponent {
         this.player.teleport(target.getX(), 1000, target.getZ());
     }
 
-    public void tick() {
+    private static final double MIN_NODE_SEPARATION_RADS = 0.1;
+    private Optional<Set<BeaconNode>> getJumpNodes() {
+        // get nearest nodes in each direction, pruning those too close together
+        // TODO: do the above, right now I just get all lol
+        return Optional.of(this.network.map(net -> net.getAllNodes()));
+    }
+
+    private Runnable enterNetworkCallback;
+    @Override
+    public void serverTick() {
+        if (enterNetworkCallback != null) {
+            enterNetworkCallback.run();
+            enterNetworkCallback = null;
+        }
+
         if (isInNetwork()) { // maintain embed state
             // disable appearance and gravity
             if (this.player instanceof ServerPlayerEntity servPlayer) {
-                // prevent flying kick (not the bruce lee kind)
+                // prevent flying kick
                 ((ServerPlayNetworkHandlerAccessor)(Object)servPlayer.networkHandler).anshar$setFloatingTicks(0);
             }
 
@@ -123,13 +144,4 @@ public class PlayerTransportComponent implements AutoSyncedComponent {
             }
         }
     }
-
-    private static final double MIN_NODE_SEPARATION_RADS = 0.1;
-    private Optional<Set<BeaconNode>> getJumpNodes() {
-        // get nearest nodes in each direction, pruning those too close together
-        // TODO: do the above, right now I just get all lol
-        return Optional.of(this.network.map(net -> net.getAllNodes()));
-    }
-
-    
 }

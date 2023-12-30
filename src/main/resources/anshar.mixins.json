@@ -7,7 +7,6 @@
     "EndCrystalItemMixin",
     "EnderChestBEVCMMixin",
     "EnderChestBlockMixin",
-    "PlayerEntityMixin",
     "accessor.BeaconBlockEntityAccessor",
     "accessor.ServerPlayNetworkHandlerAccessor"
   ],
