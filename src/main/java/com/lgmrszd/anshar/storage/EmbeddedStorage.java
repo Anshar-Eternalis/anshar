@@ -1,7 +1,9 @@
 package com.lgmrszd.anshar.storage;
 
+import com.lgmrszd.anshar.beacon.BeaconComponent;
 import com.lgmrszd.anshar.beacon.EndCrystalComponent;
 import com.lgmrszd.anshar.beacon.IEndCrystalComponent;
+import com.lgmrszd.anshar.frequency.FrequencyNetwork;
 import com.lgmrszd.anshar.frequency.NetworkManagerComponent;
 import com.lgmrszd.anshar.mixin.accessor.BeaconBlockEntityAccessor;
 import net.minecraft.block.entity.BeaconBlockEntity;
@@ -60,5 +62,13 @@ public class EmbeddedStorage extends EnderChestInventory {
         }
         System.out.println("no valid beacons found");
         return Optional.empty();
+    }
+
+    public static Optional<EmbeddedStorage> getForEnderChestBlockEntity(EnderChestBlockEntity ECBE) {
+        if (ECBE.getWorld() == null) return Optional.empty();
+        return EmbeddedStorage.getConnectedBeacon(ECBE.getWorld(), ECBE.getPos(), ECBE)
+                .flatMap(beacon -> BeaconComponent.KEY.get(beacon)
+                .getFrequencyNetwork()
+                .map(FrequencyNetwork::getStorage));
     }
 }

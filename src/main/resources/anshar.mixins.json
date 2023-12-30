@@ -6,6 +6,7 @@
     "BeaconBlockMixin",
     "EndCrystalItemMixin",
     "EnderChestBEVCMMixin",
+    "EnderChestBlockEntityMixin",
     "EnderChestBlockMixin",
     "accessor.BeaconBlockEntityAccessor",
     "accessor.EnderChestBEVCMAccessor",
