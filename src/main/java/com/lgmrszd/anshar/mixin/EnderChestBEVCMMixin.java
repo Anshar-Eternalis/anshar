@@ -1,5 +1,8 @@
 package com.lgmrszd.anshar.mixin;
 
+import com.lgmrszd.anshar.storage.EmbeddedStorage;
+import com.lgmrszd.anshar.mixin.accessor.EnderChestBEVCMAccessor;
+import net.minecraft.block.entity.EnderChestBlockEntity;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.inventory.Inventory;
 import net.minecraft.screen.GenericContainerScreenHandler;
@@ -16,6 +19,11 @@ public class EnderChestBEVCMMixin {
     public void injected(PlayerEntity player, CallbackInfoReturnable<Boolean> cir) {
         if (player.currentScreenHandler instanceof GenericContainerScreenHandler gcsh) {
             Inventory inventory = gcsh.getInventory();
+            if (inventory instanceof EmbeddedStorage embeddedStorage) {
+                LOGGER.info("Has embedded inventory opened: {}", embeddedStorage);
+                EnderChestBlockEntity enderChestBlockEntity = ((EnderChestBEVCMAccessor) this).getEnderChestBlockEntity();
+                cir.setReturnValue(embeddedStorage.isActiveBlockEntity(enderChestBlockEntity));
+            }
         }
     }
 }
