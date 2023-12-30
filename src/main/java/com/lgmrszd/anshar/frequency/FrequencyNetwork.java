@@ -4,6 +4,7 @@ import java.util.*;
 
 import com.lgmrszd.anshar.beacon.BeaconComponent;
 import net.minecraft.nbt.NbtCompound;
+import net.minecraft.nbt.NbtList;
 import net.minecraft.util.math.BlockPos;
 
 import com.lgmrszd.anshar.beacon.BeaconNode;
@@ -77,6 +78,12 @@ public class FrequencyNetwork {
         }
         var network = new FrequencyNetwork(id, freqID);
         network.getStorage().readNbtList(tag.getList("storage", NbtCompound.COMPOUND_TYPE));
+        NbtList allBeaconsList = tag.getList("beaconNodes", NbtCompound.COMPOUND_TYPE);
+        for (int i = 0; i < allBeaconsList.size(); i++) {
+            NbtCompound nbtCompound = allBeaconsList.getCompound(i);
+            BeaconNode beaconNode = BeaconNode.fromNBT(nbtCompound);
+            network.beacons.put(beaconNode.getPos(), beaconNode);
+        }
         return network;
     }
 
@@ -89,6 +96,9 @@ public class FrequencyNetwork {
         } else
             tag.putInt("frequency", freqID.hashCode());
         tag.put("storage", this.getStorage().toNbtList());
+        NbtList allBeaconsList = new NbtList();
+        beacons.values().forEach(beaconNode -> allBeaconsList.add(beaconNode.toNBT()));
+        tag.put("beaconNodes", allBeaconsList);
     }
 
 }
