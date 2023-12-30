@@ -74,6 +74,13 @@ public class BeaconComponent implements IBeaconComponent {
     }
 
     @Override
+    public Text getName() {
+        return beaconBlockEntity.getName();
+    }
+
+
+
+    @Override
     public BlockPos getBeaconPos() {
         return beaconBlockEntity.getPos();
     }

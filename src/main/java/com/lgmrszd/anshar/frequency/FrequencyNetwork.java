@@ -1,15 +1,10 @@
 package com.lgmrszd.anshar.frequency;
 
-import java.util.Collections;
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.Optional;
-import java.util.Set;
+import java.util.*;
 
+import com.lgmrszd.anshar.beacon.BeaconComponent;
 import net.minecraft.nbt.NbtCompound;
 import net.minecraft.util.math.BlockPos;
-
-import java.util.UUID;
 
 import com.lgmrszd.anshar.beacon.BeaconNode;
 import com.lgmrszd.anshar.storage.EmbeddedStorage;
@@ -17,10 +12,11 @@ import com.lgmrszd.anshar.storage.EmbeddedStorage;
 import static com.lgmrszd.anshar.Anshar.LOGGER;
 
 public class FrequencyNetwork {
-    private UUID id;
-    private IFrequencyIdentifier freqID;
+    private final UUID id;
+    private final IFrequencyIdentifier freqID;
     private EmbeddedStorage storage;
-    private HashMap<BlockPos, BeaconNode> beacons = new HashMap<>();
+    private final Map<BlockPos, BeaconNode> beacons = new HashMap<>();
+//    private final Map<BlockPos, BeaconNode> beacons = new Object2ReferenceOpenHashMap<>();
 
     public FrequencyNetwork(UUID id, IFrequencyIdentifier FreqID) {
         this.id = id;
@@ -44,12 +40,21 @@ public class FrequencyNetwork {
         return beacons.remove(beaconPos) != null;
     }
 
+    public boolean removeBeacon (BeaconComponent beaconComponent) {
+        return beacons.remove(beaconComponent.getBeaconPos()) != null;
+    }
+
     protected boolean addBeacon (BlockPos beaconPos) {
         return beacons.put(beaconPos, new BeaconNode(beaconPos)) == null;
     }
 
+    protected boolean addBeacon (BeaconComponent beaconComponent) {
+        BeaconNode node = new BeaconNode(beaconComponent);
+        return beacons.put(node.getPos(), node) == null;
+    }
+
     public Optional<BeaconNode> getNode(BlockPos pos) {
-        return Optional.of(beacons.get(pos));
+        return Optional.ofNullable(beacons.get(pos));
     }
     public Set<BeaconNode> getAllNodes() {
         return new HashSet<>(beacons.values());

@@ -32,7 +32,7 @@ public class NetworkManagerComponent implements Component {
         return networksByUUID.values();
     }
 
-    public FrequencyNetwork getOrCreateNetwork(IFrequencyIdentifier query){
+    private FrequencyNetwork getOrCreateNetwork(IFrequencyIdentifier query){
         List<FrequencyNetwork> matchedNetworks = networksByUUID.values().stream()
                 .filter(frequencyNetwork -> frequencyNetwork.getFreqID().equals(query))
                 .toList();
@@ -115,7 +115,7 @@ public class NetworkManagerComponent implements Component {
         // Add beacon to the new network
         if (frequencyIdentifier.isValid()) {
             FrequencyNetwork network = getOrCreateNetwork(frequencyIdentifier);
-            if (!network.addBeacon(beaconPos)) {
+            if (!network.addBeacon(beaconComponent)) {
                 LOGGER.warn(String.format(
                         "ANSHAR WARNING: Tried to add beacon %s to network %s but it's already there!",
                         beaconPos,
