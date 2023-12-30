@@ -5,15 +5,11 @@ import com.lgmrszd.anshar.mixin.accessor.BeaconBlockEntityAccessor;
 
 import net.minecraft.block.entity.BeaconBlockEntity;
 import net.minecraft.nbt.NbtCompound;
-import net.minecraft.registry.Registries;
 import net.minecraft.text.Text;
-import net.minecraft.util.Identifier;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.World;
 
 import java.util.*;
-
-import static com.lgmrszd.anshar.Anshar.LOGGER;
 
 public class BeaconComponent implements IBeaconComponent {
     private final BeaconBlockEntity beaconBlockEntity;

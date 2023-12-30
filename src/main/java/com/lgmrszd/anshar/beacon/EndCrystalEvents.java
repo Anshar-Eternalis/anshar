@@ -8,8 +8,6 @@ import net.minecraft.item.Items;
 import net.minecraft.util.ActionResult;
 import net.minecraft.util.Hand;
 
-import static com.lgmrszd.anshar.Anshar.LOGGER;
-
 public class EndCrystalEvents {
     public static void register() {
         UseBlockCallback.EVENT.register((player, world, hand, hitResult) -> {
