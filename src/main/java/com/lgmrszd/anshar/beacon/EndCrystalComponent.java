@@ -3,6 +3,7 @@ package com.lgmrszd.anshar.beacon;
 import com.lgmrszd.anshar.frequency.NetworkManagerComponent;
 import net.minecraft.entity.decoration.EndCrystalEntity;
 import net.minecraft.nbt.NbtCompound;
+import net.minecraft.nbt.NbtHelper;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Direction;
 import net.minecraft.world.World;
@@ -49,12 +50,12 @@ public class EndCrystalComponent implements IEndCrystalComponent {
 
     @Override
     public void readFromNbt(NbtCompound tag) {
-
+        beaconPos = NbtHelper.toBlockPos(tag.getCompound("beaconPos"));
     }
 
     @Override
     public void writeToNbt(NbtCompound tag) {
-
+        tag.put("beaconPos", NbtHelper.fromBlockPos(beaconPos));
     }
 
     @Override
