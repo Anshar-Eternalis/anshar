@@ -123,7 +123,7 @@ public class NetworkManagerComponent implements Component {
                 ));
             }
             consumer.accept(network);
-        }
+        } else consumer.accept(null);
     }
 
     @Override
