@@ -1,7 +1,9 @@
 package com.lgmrszd.anshar.frequency;
 
 import java.util.Collections;
+import java.util.HashMap;
 import java.util.HashSet;
+import java.util.Optional;
 import java.util.Set;
 
 import net.minecraft.block.Block;
@@ -19,12 +21,11 @@ public class FrequencyNetwork {
     private UUID id;
     private IFrequencyIdentifier freqID;
     private EmbeddedStorage storage;
-    private Set<BlockPos> beacons;
+    private HashMap<BlockPos, BeaconNode> beacons = new HashMap<>();
 
     public FrequencyNetwork(UUID id, IFrequencyIdentifier FreqID) {
         this.id = id;
         this.freqID = FreqID;
-        beacons = new HashSet<>();
     }
 
     public UUID getId() {
@@ -36,20 +37,24 @@ public class FrequencyNetwork {
     }
 
     public Set<BlockPos> getBeacons() {
-        return Collections.unmodifiableSet(this.beacons);
+        return Collections.unmodifiableSet(this.beacons.keySet());
     }
 
     // TODO: find a way to make it protected?
     public boolean removeBeacon (BlockPos beaconPos) {
-        return beacons.remove(beaconPos);
+        return beacons.remove(beaconPos) != null;
     }
 
     protected boolean addBeacon (BlockPos beaconPos) {
-        return beacons.add(beaconPos);
+        return beacons.put(beaconPos, new BeaconNode(beaconPos)) == null;
     }
 
-    public BeaconNode getNode(BlockPos pos) { return null; }
-    public Set<BeaconNode> getAllNodes(BlockPos pos) { return null; }
+    public Optional<BeaconNode> getNode(BlockPos pos) {
+        return Optional.of(beacons.get(pos));
+    }
+    public Set<BeaconNode> getAllNodes() {
+        return new HashSet<>(beacons.values());
+    }
 
     public EmbeddedStorage getStorage(){
         if (this.storage == null){

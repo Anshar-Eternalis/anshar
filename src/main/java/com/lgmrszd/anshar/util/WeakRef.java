@@ -2,6 +2,7 @@ package com.lgmrszd.anshar.util;
 
 import java.lang.ref.WeakReference;
 import java.util.function.Consumer;
+import java.util.function.Function;
 
 public class WeakRef<T> extends WeakReference<T> {
 
@@ -16,6 +17,8 @@ public class WeakRef<T> extends WeakReference<T> {
         else els.run();
     }
 
-    
+    public <R> R map(Function<T, R> mapper){
+        return refersTo(null) ? null : mapper.apply(get());
+    }
 
 }

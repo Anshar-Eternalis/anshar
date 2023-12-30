@@ -3,25 +3,23 @@ package com.lgmrszd.anshar.beacon;
 import static com.lgmrszd.anshar.Anshar.LOGGER;
 import static com.lgmrszd.anshar.Anshar.MOD_ID;
 
-import java.lang.ref.WeakReference;
+import java.util.Optional;
+import java.util.Set;
 
 import com.lgmrszd.anshar.frequency.FrequencyNetwork;
 import com.lgmrszd.anshar.frequency.NetworkManagerComponent;
 import com.lgmrszd.anshar.mixin.accessor.ServerPlayNetworkHandlerAccessor;
 import com.lgmrszd.anshar.util.WeakRef;
 
-import dev.onyxstudios.cca.api.v3.component.Component;
 import dev.onyxstudios.cca.api.v3.component.ComponentKey;
 import dev.onyxstudios.cca.api.v3.component.ComponentRegistry;
-import net.fabricmc.fabric.mixin.event.interaction.ServerPlayNetworkHandlerMixin;
-import net.minecraft.block.entity.BeaconBlockEntity;
+import dev.onyxstudios.cca.api.v3.component.sync.AutoSyncedComponent;
+
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.nbt.NbtCompound;
-import net.minecraft.server.network.ServerPlayNetworkHandler;
 import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.math.BlockPos;
-import net.minecraft.util.math.Vec3i;
 
 /*
  * Manages player transport between beacons via Star Gates.
@@ -35,7 +33,7 @@ import net.minecraft.util.math.Vec3i;
  * 
  */
 
-public class PlayerTransportComponent implements Component {
+public class PlayerTransportComponent implements AutoSyncedComponent {
 
     public static final ComponentKey<PlayerTransportComponent> KEY = ComponentRegistry.getOrCreate(
         new Identifier(MOD_ID, "player_transport"), PlayerTransportComponent.class
@@ -71,6 +69,9 @@ public class PlayerTransportComponent implements Component {
         // transition to embed state
         this.network = new WeakRef<FrequencyNetwork>(network);
         this.target = through;
+        if (!isClient) {
+            getJumpNodes().ifPresent(nodes -> PlayerTransportNetworking.sendNodeListS2C((ServerPlayerEntity)player, nodes));
+        }
     }
 
     private void exitNetwork() {
@@ -111,7 +112,7 @@ public class PlayerTransportComponent implements Component {
         if (isInNetwork()) { // maintain embed state
             // disable appearance and gravity
             if (this.player instanceof ServerPlayerEntity servPlayer) {
-                // prevent flying kick
+                // prevent flying kick (not the bruce lee kind)
                 ((ServerPlayNetworkHandlerAccessor)(Object)servPlayer.networkHandler).anshar$setFloatingTicks(0);
             }
 
@@ -122,4 +123,13 @@ public class PlayerTransportComponent implements Component {
             }
         }
     }
+
+    private static final double MIN_NODE_SEPARATION_RADS = 0.1;
+    private Optional<Set<BeaconNode>> getJumpNodes() {
+        // get nearest nodes in each direction, pruning those too close together
+        // TODO: do the above, right now I just get all lol
+        return Optional.of(this.network.map(net -> net.getAllNodes()));
+    }
+
+    
 }
