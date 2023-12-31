@@ -8,8 +8,6 @@ import dev.onyxstudios.cca.api.v3.level.LevelComponentFactoryRegistry;
 import dev.onyxstudios.cca.api.v3.level.LevelComponentInitializer;
 import net.minecraft.block.entity.BeaconBlockEntity;
 
-import com.lgmrszd.anshar.frequency.FrequencyIdentifierComponent;
-import com.lgmrszd.anshar.frequency.IFrequencyIdentifierComponent;
 import com.lgmrszd.anshar.frequency.NetworkManagerComponent;
 import com.lgmrszd.anshar.beacon.BeaconComponent;
 import com.lgmrszd.anshar.beacon.EndCrystalComponent;
@@ -24,7 +22,6 @@ public final class ModComponents implements BlockComponentInitializer, LevelComp
 
     @Override
     public void registerBlockComponentFactories(BlockComponentFactoryRegistry registry) {
-//        registry.registerFor(BeaconBlockEntity.class, IFrequencyIdentifierComponent.KEY, b -> new FrequencyIdentifierComponent());
         registry.registerFor(BeaconBlockEntity.class, IBeaconComponent.KEY, BeaconComponent::new);
     }
 
