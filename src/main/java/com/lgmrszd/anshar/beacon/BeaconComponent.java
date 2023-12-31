@@ -11,6 +11,8 @@ import net.minecraft.world.World;
 
 import java.util.*;
 
+import static com.lgmrszd.anshar.Anshar.LOGGER;
+
 public class BeaconComponent implements IBeaconComponent {
     private final BeaconBlockEntity beaconBlockEntity;
 
@@ -83,6 +85,11 @@ public class BeaconComponent implements IBeaconComponent {
     @Override
     public BlockPos getBeaconPos() {
         return beaconBlockEntity.getPos();
+    }
+
+    @Override
+    public void activate() {
+        LOGGER.info("Attempted to activate!");
     }
 
     @Override

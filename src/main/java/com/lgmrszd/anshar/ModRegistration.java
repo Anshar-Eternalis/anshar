@@ -4,6 +4,7 @@ import com.lgmrszd.anshar.beacon.DebugEvents;
 import com.lgmrszd.anshar.beacon.BeaconEvents;
 import com.lgmrszd.anshar.beacon.PlayerTransportComponent;
 
+import com.lgmrszd.anshar.dispenser.ModDispenserBehaviors;
 import net.fabricmc.fabric.api.networking.v1.ServerPlayNetworking;
 import net.minecraft.registry.Registries;
 import net.minecraft.registry.Registry;
@@ -13,6 +14,8 @@ public class ModRegistration {
         registerEvents();
         registerCommands();
         ModApi.register();
+
+        ModDispenserBehaviors.register();
 
         ServerPlayNetworking.registerGlobalReceiver(PlayerTransportComponent.JUMP_PACKET_ID, (a, player, b, c, d) -> PlayerTransportComponent.KEY.get(player).tryJump());
 

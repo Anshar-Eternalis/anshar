@@ -15,11 +15,13 @@ import net.minecraft.util.math.BlockPos;
 import java.util.Optional;
 
 public interface IBeaconComponent extends ServerTickingComponent {
-    public static final ComponentKey<IBeaconComponent> KEY = ComponentRegistry.getOrCreate(
+    ComponentKey<IBeaconComponent> KEY = ComponentRegistry.getOrCreate(
         new Identifier(MOD_ID, "beacon"), IBeaconComponent.class
     );
 
-    void rescanPyramid();
+//    void rescanPyramid();
+
+    void activate();
     IFrequencyIdentifier getFrequencyID();
 
     Optional<FrequencyNetwork> getFrequencyNetwork();
