@@ -142,7 +142,7 @@ public class PlayerTransportComponent implements ServerTickingComponent, AutoSyn
     }
 
     private void moveToCurrentTarget() {
-        this.player.teleport(target.getX(), 200, target.getZ());
+        this.player.teleport(target.getX(), 10000, target.getZ());
     }
 
     private static final double MIN_NODE_SEPARATION_RADS = Math.PI * 0.25;

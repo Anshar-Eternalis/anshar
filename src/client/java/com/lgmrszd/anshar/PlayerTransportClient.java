@@ -4,6 +4,7 @@ import com.lgmrszd.anshar.beacon.PlayerTransportComponent;
 import com.lgmrszd.anshar.beacon.TransportEffects;
 
 import net.fabricmc.fabric.api.client.networking.v1.ClientPlayNetworking;
+import net.fabricmc.fabric.api.client.rendering.v1.HudRenderCallback;
 import net.fabricmc.fabric.api.networking.v1.PacketByteBufs;
 import net.fabricmc.fabric.api.networking.v1.PacketSender;
 import net.minecraft.client.MinecraftClient;
@@ -11,7 +12,6 @@ import net.minecraft.client.network.ClientPlayNetworkHandler;
 import net.minecraft.client.network.ClientPlayerEntity;
 import net.minecraft.client.world.ClientWorld;
 import net.minecraft.network.PacketByteBuf;
-import net.minecraft.server.network.ServerPlayerEntity;
 
 public class PlayerTransportClient {
     private static final int TICKS_TO_JUMP = 20 * 3;
