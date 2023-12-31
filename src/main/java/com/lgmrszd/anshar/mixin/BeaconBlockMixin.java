@@ -25,14 +25,9 @@ import com.lgmrszd.anshar.beacon.PlayerTransportComponent;
 import static com.lgmrszd.anshar.Anshar.LOGGER;
 
 @Mixin(BeaconBlock.class)
-public abstract class BeaconBlockMixin extends BlockWithEntity {
-    private BeaconBlockMixin(AbstractBlock.Settings settings) {super(settings);}
+public abstract class BeaconBlockMixin extends BlockMixin {
     
-    // insert wrapper override (if not present) to allow for injection
-    @Intrinsic @Override public void onSteppedOn(World world, BlockPos pos, BlockState state, Entity entity) { super.onSteppedOn(world, pos, state, entity); }
-    @Intrinsic @Override public void onStateReplaced(BlockState state, World world, BlockPos pos, BlockState newState, boolean moved) { super.onStateReplaced(state, world, pos, newState, moved); }
-
-    @Inject(method = "onSteppedOn", at = @At("HEAD"))
+    @Override
     public void anshar$onSteppedOn(World world, BlockPos pos, BlockState state, Entity entity, CallbackInfo ci) {
         if (world.getTime() % 5L == 0L && !world.isClient && entity instanceof PlayerEntity player) {
             world.getBlockEntity(pos, BlockEntityType.BEACON).ifPresent(
@@ -43,7 +38,7 @@ public abstract class BeaconBlockMixin extends BlockWithEntity {
         }
     }
 
-    @Inject(at = @At("HEAD"), method = "onStateReplaced")
+    @Override
     public void anshar$onStateReplaced(BlockState state, World world, BlockPos pos, BlockState newState, boolean moved, CallbackInfo ci) {
         if (state.getBlock().equals(Blocks.BEACON) && !newState.getBlock().equals(Blocks.BEACON)) {
             LOGGER.debug("Detected Beacon Block removed...");

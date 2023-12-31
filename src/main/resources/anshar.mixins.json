@@ -3,7 +3,10 @@
   "package": "com.lgmrszd.anshar.mixin",
   "compatibilityLevel": "JAVA_17",
   "mixins": [
+    "AbstractBlockMixin",
+    "BlockMixin",
     "BeaconBlockMixin",
+    "ItemMixin",
     "EndCrystalEntityMixin",
     "EndCrystalItemMixin",
     "EnderChestBEVCMMixin",

@@ -31,11 +31,7 @@ import net.minecraft.world.World;
 import net.minecraft.world.event.GameEvent;
 
 @Mixin(EndCrystalItem.class)
-public abstract class EndCrystalItemMixin extends Item {
-
-    public EndCrystalItemMixin(Settings settings) {
-        super(settings);
-    }
+public abstract class EndCrystalItemMixin extends ItemMixin {
 
     @Inject(method = "useOnBlock", at = @At("HEAD"), cancellable = true)
     public void anshar$useOnBlock(ItemUsageContext context, CallbackInfoReturnable<ActionResult> ci){
@@ -70,13 +66,7 @@ public abstract class EndCrystalItemMixin extends Item {
         }
     }
 
-    @Intrinsic
     @Override
-    public void appendTooltip(ItemStack stack, @Nullable World world, List<Text> tooltip, TooltipContext context) {
-        super.appendTooltip(stack, world, tooltip, context);
-    }
-
-    @Inject(method = "appendTooltip", at = @At("HEAD"))
     public void anshar$addToTooltip(ItemStack stack, @Nullable World world, List<Text> tooltip, TooltipContext context, CallbackInfo ci) {
         EndCrystalItemContainer container = ModApi.END_CRYSTAL_ITEM.find(stack, null);
         // TODO make prettier
