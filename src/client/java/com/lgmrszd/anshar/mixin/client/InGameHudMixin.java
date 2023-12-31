@@ -42,9 +42,9 @@ public class InGameHudMixin {
                 context.getMatrices().translate(scaledWidth / 2, scaledHeight - 20, 0.0f);
                 
                 var nameWidth = textRenderer.getWidth((StringVisitable)node.getName());
-                int rgb = (int)node.getColor()[0];
-                rgb = (rgb<<8) + (int)node.getColor()[1];
-                rgb = (rgb<<8) + (int)node.getColor()[2];
+                int rgb = (int)(node.getColor()[0] * 255);
+                rgb = (rgb<<8) + (int)(node.getColor()[1] * 255);
+                rgb = (rgb<<8) + (int)(node.getColor()[2] * 255);
                 context.drawText(textRenderer, node.getName(), -nameWidth/2, 0, rgb, false);
 
                 var coords = Text.literal(node.getPos().toShortString());
