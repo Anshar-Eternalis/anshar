@@ -24,6 +24,6 @@ public abstract class EndCrystalEntityMixin extends Entity {
     public void anshar$onDamage(DamageSource source, float amount, CallbackInfoReturnable<Boolean> cir) {
         if (this.getWorld().isClient()) return;
         IEndCrystalComponent endCrystalComponent = EndCrystalComponent.KEY.get(this);
-        if (!endCrystalComponent.onCrystalDamage()) cir.setReturnValue(false);
+        if (!endCrystalComponent.onCrystalDamage(source)) cir.setReturnValue(false);
     }
 }

@@ -2,9 +2,17 @@ package com.lgmrszd.anshar.beacon;
 
 import com.lgmrszd.anshar.frequency.NetworkManagerComponent;
 import net.minecraft.block.entity.BeaconBlockEntity;
+import net.minecraft.entity.Entity;
+import net.minecraft.entity.damage.DamageSource;
 import net.minecraft.entity.decoration.EndCrystalEntity;
+import net.minecraft.item.ItemStack;
+import net.minecraft.item.Items;
 import net.minecraft.nbt.NbtCompound;
 import net.minecraft.nbt.NbtHelper;
+import net.minecraft.particle.ParticleEffect;
+import net.minecraft.particle.ParticleTypes;
+import net.minecraft.server.network.ServerPlayerEntity;
+import net.minecraft.server.world.ServerWorld;
 import net.minecraft.sound.SoundEvents;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Direction;
@@ -46,13 +54,21 @@ public class EndCrystalComponent implements IEndCrystalComponent {
     }
 
     @Override
-    public boolean onCrystalDamage() {
+    public boolean onCrystalDamage(DamageSource source) {
         return getConnectedBeacon().map(pos -> {
             World world = endCrystal.getWorld();
+            if (!(world instanceof ServerWorld serverWorld)) return true;
             // TODO actually check if the beacon is active as well
             boolean connected = world.getBlockEntity(pos) instanceof BeaconBlockEntity;
             if (connected) {
-                world.playSound(
+                if (source.getAttacker() instanceof ServerPlayerEntity serverPlayer && serverPlayer.isSneaking()) {
+                    if (!endCrystal.isRemoved()) {
+                        endCrystal.dropStack(new ItemStack(Items.END_CRYSTAL));
+                        endCrystal.remove(Entity.RemovalReason.KILLED);
+                        return true;
+                    }
+                }
+                serverWorld.playSound(
                         null,
                         endCrystal.getX(),
                         endCrystal.getY(),
@@ -62,6 +78,11 @@ public class EndCrystalComponent implements IEndCrystalComponent {
                         1f,
                         1f
                 );
+                double x = endCrystal.getX();
+                double y = endCrystal.getY();
+                double z = endCrystal.getZ();
+                ParticleEffect particleEffect = ParticleTypes.GLOW;
+                serverWorld.spawnParticles(particleEffect, x, y+1, z, 8, 0.5, 0.5, 0.5, 4);
             }
             return !connected;
         }).orElse(true);
@@ -70,6 +91,14 @@ public class EndCrystalComponent implements IEndCrystalComponent {
     @Override
     public void serverTick() {
         tryUpdateBeacon();
+        if (!(endCrystal.getWorld() instanceof ServerWorld serverWorld)) return;
+        if (serverWorld.getTime() % 10 == 0) {
+            double x = endCrystal.getX();
+            double y = endCrystal.getY();
+            double z = endCrystal.getZ();
+            ParticleEffect particleEffect = ParticleTypes.GLOW;
+            serverWorld.spawnParticles(particleEffect, x, y+1, z, 1, 0, 1, 0, 5);
+        }
     }
 
     @Override

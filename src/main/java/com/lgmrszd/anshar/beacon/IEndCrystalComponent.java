@@ -3,6 +3,7 @@ package com.lgmrszd.anshar.beacon;
 import dev.onyxstudios.cca.api.v3.component.ComponentKey;
 import dev.onyxstudios.cca.api.v3.component.ComponentRegistry;
 import dev.onyxstudios.cca.api.v3.component.tick.ServerTickingComponent;
+import net.minecraft.entity.damage.DamageSource;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.math.BlockPos;
 
@@ -15,7 +16,7 @@ public interface IEndCrystalComponent extends ServerTickingComponent {
             new Identifier(MOD_ID, "end_crystal"), IEndCrystalComponent.class
     );
 
-    boolean onCrystalDamage();
+    boolean onCrystalDamage(DamageSource source);
 
     void setBeacon(BlockPos pos);
 
