@@ -1,9 +1,11 @@
 package com.lgmrszd.anshar.beacon;
 
 import com.lgmrszd.anshar.frequency.NetworkManagerComponent;
+import net.minecraft.block.entity.BeaconBlockEntity;
 import net.minecraft.entity.decoration.EndCrystalEntity;
 import net.minecraft.nbt.NbtCompound;
 import net.minecraft.nbt.NbtHelper;
+import net.minecraft.sound.SoundEvents;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Direction;
 import net.minecraft.world.World;
@@ -41,6 +43,28 @@ public class EndCrystalComponent implements IEndCrystalComponent {
         shouldUpdateBeacon = false;
         beaconPos = pos;
         endCrystal.setBeamTarget(pos.offset(Direction.DOWN, 2));
+    }
+
+    @Override
+    public boolean onCrystalDamage() {
+        return getConnectedBeacon().map(pos -> {
+            World world = endCrystal.getWorld();
+            // TODO actually check if the beacon is active as well
+            boolean connected = world.getBlockEntity(pos) instanceof BeaconBlockEntity;
+            if (connected) {
+                world.playSound(
+                        null,
+                        endCrystal.getX(),
+                        endCrystal.getY(),
+                        endCrystal.getZ(),
+                        SoundEvents.ITEM_TRIDENT_HIT,
+                        endCrystal.getSoundCategory(),
+                        1f,
+                        1f
+                );
+            }
+            return !connected;
+        }).orElse(true);
     }
 
     @Override
