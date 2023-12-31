@@ -26,6 +26,7 @@ public class BeaconComponent implements IBeaconComponent {
     private boolean shouldRestoreNetwork;
     private boolean isValid;
     private int level;
+    private int checkBeamTicks;
     private Vec3d vec = new Vec3d(1, 0, 0);
 
     public BeaconComponent(BeaconBlockEntity beaconBlockEntity) {
@@ -34,6 +35,7 @@ public class BeaconComponent implements IBeaconComponent {
         pyramidFrequency = NullFrequencyIdentifier.get();
         isValid = false;
         shouldRestoreNetwork = false;
+        checkBeamTicks = 0;
     }
 
     public void rescanPyramid() {
@@ -58,6 +60,11 @@ public class BeaconComponent implements IBeaconComponent {
             });
             beaconBlockEntity.markDirty();
         }
+    }
+
+    private void checkBeam() {
+        // TODO this
+//        LOGGER.info("Checking the beam...");
     }
 
     @Override
@@ -100,8 +107,6 @@ public class BeaconComponent implements IBeaconComponent {
         return beaconBlockEntity.getName();
     }
 
-
-
     @Override
     public BlockPos getBeaconPos() {
         return beaconBlockEntity.getPos();
@@ -125,6 +130,7 @@ public class BeaconComponent implements IBeaconComponent {
             NbtCompound pfIDTag = tag.getCompound("frequency");
             pyramidFrequency = PyramidFrequencyIdentifier.fromNbt(pfIDTag);
             shouldRestoreNetwork = true;
+            checkBeamTicks = 82; // Give Beacon some time to catch up
         } else pyramidFrequency = NullFrequencyIdentifier.get();
     }
 
@@ -143,6 +149,10 @@ public class BeaconComponent implements IBeaconComponent {
     public void serverTick() {
         World world = beaconBlockEntity.getWorld();
         if (!(world instanceof ServerWorld serverWorld)) return;
+        if (isValid && --checkBeamTicks <= 0) {
+            checkBeamTicks = 5;
+            checkBeam();
+        }
         if (isValid && world.getTime() % 5L == 0L) {
             Vec3i pos = getBeaconPos();
             Vec3d particlePos = new Vec3d(pos.getX() + 0.5, pos.getY() + 0.5, pos.getZ() + 0.5).add(vec);
