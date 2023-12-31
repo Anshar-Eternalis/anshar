@@ -16,16 +16,13 @@ import dev.onyxstudios.cca.api.v3.component.ComponentKey;
 import dev.onyxstudios.cca.api.v3.component.ComponentRegistry;
 import dev.onyxstudios.cca.api.v3.component.sync.AutoSyncedComponent;
 import dev.onyxstudios.cca.api.v3.component.tick.ServerTickingComponent;
-import net.fabricmc.fabric.api.networking.v1.PacketSender;
-import net.fabricmc.fabric.api.networking.v1.ServerPlayNetworking;
+
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.nbt.NbtCompound;
 import net.minecraft.nbt.NbtElement;
 import net.minecraft.nbt.NbtList;
 import net.minecraft.network.PacketByteBuf;
 import net.minecraft.particle.ParticleTypes;
-import net.minecraft.server.MinecraftServer;
-import net.minecraft.server.network.ServerPlayNetworkHandler;
 import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.math.BlockPos;
@@ -84,15 +81,7 @@ public class PlayerTransportComponent implements ServerTickingComponent, AutoSyn
         // called on server when player steps on beacon
         this.networkUUID = network.getId();
         this.target = through;
-
-        // call on next server tick to make sure things are loaded
-        // enterNetworkCallback = () -> {
-        //     this.target = through;
-        //     getJumpNodes().ifPresent(nodes -> PlayerTransportNetworking.sendNodeListS2C((ServerPlayerEntity)player, nodes));
-        // };
-        
         KEY.sync(player);
-        System.out.println((isClient ? "(client)" : "(server)") + "entered network " + networkUUID);
     }
 
     private void exitNetwork() {
@@ -140,23 +129,8 @@ public class PlayerTransportComponent implements ServerTickingComponent, AutoSyn
     @Override
     public void applySyncPacket(PacketByteBuf buf) {
         NbtCompound tag = buf.readNbt();
-        var oldtgt = target;
         if (tag != null) {
             this.readFromNbt(tag);
-        }
-
-        if (isClient) {
-            // System.out.println("(client) participating in network " + networkUUID + " with target " + target);
-            // if (jumpCandidates.size() > 0) {
-            //     System.out.println("(client) jump targets: ");
-            //     for (var node : jumpCandidates) {
-            //         System.out.println("Name: [" + node.getName().getString() + "], Pos: [" + node.getPos() + "]");
-            //     }
-            // }
-        } else {
-            System.out.println("(server) got sync packet from client");
-            System.out.println("(server) old target: " + oldtgt);
-            System.out.println("(server) new target: " + target);
         }
     }
 
@@ -183,9 +157,7 @@ public class PlayerTransportComponent implements ServerTickingComponent, AutoSyn
                 node -> distanceTo(node) > MIN_NODE_SEPARATION_DIST
             );
             // starting from nearest, add to output set as long as not too close to any others in the set
-            System.out.println("player pos " + player.getPos());
             for (BeaconNode node : candidates.collect(Collectors.toList())) {
-                System.out.println("Checking candidacy of node " + node + " with pos " + node.getPos() + ", distance " + distanceTo(node));
                 boolean valid = true;
                 for (BeaconNode prev : out) {
                     var sep = Math.acos(normedVecToNode(prev).dotProduct(normedVecToNode(node)));
@@ -254,7 +226,6 @@ public class PlayerTransportComponent implements ServerTickingComponent, AutoSyn
     public final boolean tryJump() {
         // find nearest node looked at
         Vec3d lookVec = player.getRotationVector();
-        System.out.println("attempting jump");
         double distance = 0;
         BeaconNode nearest = null;
         for (BeaconNode node : jumpCandidates) {
@@ -265,15 +236,12 @@ public class PlayerTransportComponent implements ServerTickingComponent, AutoSyn
                 nearest = node;
             }
         }
-
         
         if (nearest != null) {
-            System.out.println("nearest beacon is at " + nearest.getPos());
             target = nearest.getPos();
             KEY.sync(player);
             return true;
         }
-        System.out.println("failed to find a nearest beacon");
         return false;
         
     }
