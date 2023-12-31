@@ -23,6 +23,7 @@ public interface IBeaconComponent extends ServerTickingComponent {
 //    void rescanPyramid();
 
     void activate();
+    boolean isActive();
     IFrequencyIdentifier getFrequencyID();
 
     Optional<FrequencyNetwork> getFrequencyNetwork();

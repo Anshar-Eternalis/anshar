@@ -24,7 +24,7 @@ public class ModRegistration {
     }
 
     private static void registerEvents() {
-        DebugEvents.register();
+//        DebugEvents.register();
         BeaconEvents.register();
     }
 

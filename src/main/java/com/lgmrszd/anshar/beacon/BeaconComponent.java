@@ -92,6 +92,11 @@ public class BeaconComponent implements IBeaconComponent {
         }
     }
 
+    @Override
+    public boolean isActive() {
+        return isValid;
+    }
+
     private void restoreNetwork() {
         World world = beaconBlockEntity.getWorld();
         if (!(world instanceof ServerWorld serverWorld)) return;

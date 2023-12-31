@@ -4,15 +4,16 @@
   "compatibilityLevel": "JAVA_17",
   "mixins": [
     "AbstractBlockMixin",
-    "BlockMixin",
     "BeaconBlockMixin",
-    "ItemMixin",
+    "BlockMixin",
     "EndCrystalEntityMixin",
     "EndCrystalItemMixin",
     "EnderChestBEVCMMixin",
     "EnderChestBlockEntityMixin",
     "EnderChestBlockMixin",
+    "ItemMixin",
     "accessor.BeaconBlockEntityAccessor",
+    "accessor.DispenserBlockAccessor",
     "accessor.EnderChestBEVCMAccessor",
     "accessor.ServerPlayNetworkHandlerAccessor"
   ],
