@@ -23,6 +23,7 @@ public class BeaconComponent implements IBeaconComponent {
     private IFrequencyIdentifier pyramidFrequency;
 
     private FrequencyNetwork frequencyNetwork;
+    private boolean shouldRestoreNetwork;
     private boolean isValid;
     private int level;
     private Vec3d vec = new Vec3d(1, 0, 0);
@@ -32,6 +33,7 @@ public class BeaconComponent implements IBeaconComponent {
         level = 0;
         pyramidFrequency = NullFrequencyIdentifier.get();
         isValid = false;
+        shouldRestoreNetwork = false;
     }
 
     public void rescanPyramid() {
@@ -83,6 +85,16 @@ public class BeaconComponent implements IBeaconComponent {
         }
     }
 
+    private void restoreNetwork() {
+        World world = beaconBlockEntity.getWorld();
+        if (!(world instanceof ServerWorld serverWorld)) return;
+        NetworkManagerComponent networkManagerComponent = NetworkManagerComponent.KEY.get(world.getLevelProperties());
+        networkManagerComponent.updateBeaconNetwork(this, pyramidFrequency, frequencyNetwork1 -> {
+            frequencyNetwork = frequencyNetwork1;
+        });
+        shouldRestoreNetwork = false;
+    }
+
     @Override
     public Text getName() {
         return beaconBlockEntity.getName();
@@ -112,6 +124,7 @@ public class BeaconComponent implements IBeaconComponent {
         if (tag.contains("frequency")) {
             NbtCompound pfIDTag = tag.getCompound("frequency");
             pyramidFrequency = PyramidFrequencyIdentifier.fromNbt(pfIDTag);
+            shouldRestoreNetwork = true;
         } else pyramidFrequency = NullFrequencyIdentifier.get();
     }
 
@@ -144,6 +157,9 @@ public class BeaconComponent implements IBeaconComponent {
         }
         if (isValid && world.getTime() % 80L == 0L) {
             rescanPyramid();
+        }
+        if (shouldRestoreNetwork) {
+            restoreNetwork();
         }
     }
 
