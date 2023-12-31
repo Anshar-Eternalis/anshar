@@ -1,5 +1,6 @@
 package com.lgmrszd.anshar.beacon;
 
+import java.util.Arrays;
 import java.util.Optional;
 import net.minecraft.block.entity.BeaconBlockEntity;
 import net.minecraft.nbt.NbtCompound;
@@ -12,32 +13,32 @@ import net.minecraft.util.math.BlockPos;
  */
 public class BeaconNode {
     private final Text name;
-    private final DyeColor color;
+    private final float[] color;
     private final BlockPos pos;
 
     public BeaconNode(IBeaconComponent beaconComponent) {
         this.pos = beaconComponent.getBeaconPos();
         this.name = beaconComponent.getName();
-        this.color = DyeColor.WHITE;
+        float[] color = beaconComponent.topColor();
+        if (color != null && color.length == 3){
+            this.color = Arrays.copyOf(color, 3);
+        } else {
+            this.color = new float[]{0, 0, 0};
+        }
+        
     }
 
-    private BeaconNode(BlockPos pos, Text name, DyeColor color) {
+    private BeaconNode(BlockPos pos, Text name, float[] color) {
         this.pos = pos;
         this.name = name;
         this.color = color;
     }
 
     public static BeaconNode fromNBT(NbtCompound tag) {
-        DyeColor tagColor;
-        try {
-            tagColor = DyeColor.byId(tag.getInt("color"));
-        } catch (IllegalArgumentException e) {
-            tagColor = DyeColor.WHITE;
-        }
         return new BeaconNode(
             BlockPos.fromLong(tag.getLong("pos")),
             Text.Serialization.fromJson(tag.getString("name")),
-            tagColor
+            new float[]{tag.getFloat("r"), tag.getFloat("g"), tag.getFloat("b")}
         );
     }
 
@@ -45,12 +46,14 @@ public class BeaconNode {
         var tag = new NbtCompound();
         tag.putLong("pos", pos.asLong());
         tag.putString("name", Text.Serialization.toJsonString(this.name));
-        tag.putInt("color", color.getId());
+        tag.putFloat("r", color[0]);
+        tag.putFloat("g", color[1]);
+        tag.putFloat("b", color[2]);
         return tag;
     }
 
     public Text getName() {return name;}
-    public DyeColor getColor() {return color;}
+    public float[] getColor() {return color;}
     public BlockPos getPos() {return pos;}
     public Optional<BeaconBlockEntity> getBeacon() {return Optional.empty();}
 }

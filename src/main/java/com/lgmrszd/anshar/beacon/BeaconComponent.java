@@ -146,4 +146,13 @@ public class BeaconComponent implements IBeaconComponent {
             rescanPyramid();
         }
     }
+
+    @Override
+    public float[] topColor() {
+        var segments = beaconBlockEntity.getBeamSegments();
+        if (segments.size() > 0) {
+            return segments.get(segments.size()-1).getColor();
+        }
+        return new float[]{0, 0, 0};
+    }
 }

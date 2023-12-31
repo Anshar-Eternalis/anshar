@@ -67,7 +67,7 @@ public class PlayerTransportClient {
                     var speed = ppos.subtract(spos).multiply(intensity);
                     particleManager.ifPresent(manager -> {
                         var particle = manager.addParticle(ParticleTypes.GLOW, ppos.getX(), ppos.getY(), ppos.getZ(), speed.x, speed.y, speed.z);
-                        float[] colors = node.getColor().getColorComponents();
+                        float[] colors = node.getColor();
                         particle.setColor(colors[0], colors[1], colors[2]);
                     });
                 }
