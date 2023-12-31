@@ -16,7 +16,7 @@ public class AmbientEmbedSound extends MovingSoundInstance {
         this.player = player;
         this.repeat = true;
         this.repeatDelay = 0;
-        this.volume = 0.5f;
+        this.volume = 0.2f;
         this.relative = true;
     }
 

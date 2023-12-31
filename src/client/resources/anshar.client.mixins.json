@@ -5,7 +5,8 @@
 	"client": [
 		"AbstractClientPlayerEntityMixin",
 		"BackgroundRendererMixin",
-		"WorldRendererMixin"
+		"WorldRendererMixin",
+		"InGameHudMixin"
 	],
 	"injectors": {
 		"defaultRequire": 1
