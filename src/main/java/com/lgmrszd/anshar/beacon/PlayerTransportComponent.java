@@ -89,6 +89,7 @@ public class PlayerTransportComponent implements ServerTickingComponent, AutoSyn
 
     private void exitNetwork() {
         moveToCurrentTarget();
+        sendExplosionPacketS2C();
         this.player.teleport(target.getX() + 1, target.getY(), target.getZ());
         this.networkUUID = null;
         this.target = null;
