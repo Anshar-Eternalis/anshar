@@ -168,30 +168,39 @@ public class PlayerTransportComponent implements ServerTickingComponent, AutoSyn
         this.player.teleport(target.getX(), 200, target.getZ());
     }
 
-    private static final double MIN_NODE_SEPARATION_RADS = 0.1;
+    private static final double MIN_NODE_SEPARATION_RADS = Math.PI * 0.25;
     private static final double MIN_NODE_SEPARATION_DIST = 5;
     private void updateJumpNodes() {
         // get nearest nodes in each direction, pruning those too close together or close to the player
         if (isClient) return;
-        jumpCandidates = getNetwork().map(network -> {
+
+        var networkOpt = getNetwork();
+        if (networkOpt.isPresent()) {
+            var network = networkOpt.get();
             var out = new HashSet<BeaconNode>();
             // get list of nodes outside minimum range, sorted by distance from player
-            var candidates = network.getAllNodes().stream().sorted((a, b) -> Integer.compare(distanceTo(a), distanceTo(b))).filter(
+            var candidates = network.getAllNodes().stream().sorted((a, b) -> Double.compare(distanceTo(a), distanceTo(b))).filter(
                 node -> distanceTo(node) > MIN_NODE_SEPARATION_DIST
             );
             // starting from nearest, add to output set as long as not too close to any others in the set
+            System.out.println("player pos " + player.getPos());
             for (BeaconNode node : candidates.collect(Collectors.toList())) {
+                System.out.println("Checking candidacy of node " + node + " with pos " + node.getPos() + ", distance " + distanceTo(node));
                 boolean valid = true;
                 for (BeaconNode prev : out) {
-                    if (Math.abs(normedVecToNode(prev).dotProduct(normedVecToNode(node))) < MIN_NODE_SEPARATION_RADS) {
+                    var sep = Math.acos(normedVecToNode(prev).dotProduct(normedVecToNode(node)));
+                    if (sep < MIN_NODE_SEPARATION_RADS) {
                         valid = false;
                         break;
                     }
                 }
                 if (valid) out.add(node);
             }
-            return out;
-        }).orElse(new HashSet<>());
+            jumpCandidates = out;
+        } else {
+            jumpCandidates = new HashSet<>();
+        }
+        
         KEY.sync(player);
     }
 
@@ -237,8 +246,9 @@ public class PlayerTransportComponent implements ServerTickingComponent, AutoSyn
         return vec.multiply(1/vec.length());
     }
 
-    private int distanceTo(BeaconNode node) {
-        return player.getBlockPos().getManhattanDistance(node.getPos());
+    private double distanceTo(BeaconNode node) {
+        var n = node.getPos().toCenterPos().subtract(player.getPos());
+        return Math.sqrt(Math.pow(n.getX(), 2) + Math.pow(n.getZ(), 2));
     }
 
     public final boolean tryJump() {
@@ -248,6 +258,7 @@ public class PlayerTransportComponent implements ServerTickingComponent, AutoSyn
         double distance = 0;
         BeaconNode nearest = null;
         for (BeaconNode node : jumpCandidates) {
+            
             var proj = normedVecToNode(node).dotProduct(lookVec);
             if (proj > distance) {
                 distance = proj;
