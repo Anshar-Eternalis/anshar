@@ -16,13 +16,14 @@ import static com.lgmrszd.anshar.Anshar.LOGGER;
 
 public final class PyramidFrequencyIdentifier implements IFrequencyIdentifier {
     private final int level;
-//    private final List<List<Identifier>> pyramidArrangements;
-//    private final Identifier[][] pyramidArrangements = new Identifier[4][];
     private final List<List<Identifier>> pyramidArrangements;
+    private final Identifier dimension;
+    private final static Identifier owIdentifier = Identifier.of("minecraft", "overworld");
 
-    private PyramidFrequencyIdentifier(List<List<Identifier>> pyramidArrangements, int level) {
+    private PyramidFrequencyIdentifier(List<List<Identifier>> pyramidArrangements, int level, Identifier dimension) {
         this.pyramidArrangements = pyramidArrangements;
         this.level = level;
+        this.dimension = dimension;
     }
 
     @Override
@@ -43,6 +44,7 @@ public final class PyramidFrequencyIdentifier implements IFrequencyIdentifier {
     public boolean equals(Object obj) {
         if (this == obj) return true;
         if (!(obj instanceof PyramidFrequencyIdentifier other)) return false;
+        if (!dimension.equals(other.dimension)) return false;
         List<Identifier> otherArrangement = other.pyramidArrangements.get(0);
         for (List<Identifier> pyramidArrangement: pyramidArrangements) {
             if (pyramidArrangement.equals(otherArrangement)) return true;
@@ -57,16 +59,20 @@ public final class PyramidFrequencyIdentifier implements IFrequencyIdentifier {
                 .collect(StringBuilder::new, (builder, str) -> builder.append(str).append(","), StringBuilder::append)
                 .toString();
         tag.putInt("level", level);
+        tag.putString("dim", dimension.toString());
         tag.putString("blocks", blockList);
     }
 
     public static PyramidFrequencyIdentifier fromNbt(NbtCompound tag) {
         int level = tag.getInt("level");
+        Identifier dimension = tag.contains("dim") ?
+                Identifier.tryParse(tag.getString("dim")) :
+                owIdentifier;
         String blockList = tag.getString("blocks");
         List<Identifier> flattened = Arrays.stream(blockList.split(","))
                 .map(Identifier::tryParse)
                 .toList();
-        return fromFlattened(flattened, level);
+        return fromFlattened(flattened, level, dimension);
     }
 
     private static List<Identifier> flatten(List<List<Identifier>> topBlocks, List<List<Identifier>> bottomBlocks) {
@@ -78,7 +84,7 @@ public final class PyramidFrequencyIdentifier implements IFrequencyIdentifier {
         return flattened;
     }
 
-    private static PyramidFrequencyIdentifier fromFlattened(List<Identifier> flattened, int level) {
+    private static PyramidFrequencyIdentifier fromFlattened(List<Identifier> flattened, int level, Identifier dimension) {
         int size = flattened.size();
         if (size < 9){
             LOGGER.error(String.format("Unflattening error: wrong size %d for level %d", size, level));
@@ -153,7 +159,7 @@ public final class PyramidFrequencyIdentifier implements IFrequencyIdentifier {
             pyramidArrangements.add(flatten(topBlocks.get(i), bottomBlocks.get(i)));
         }
 
-        return new PyramidFrequencyIdentifier(pyramidArrangements, level);
+        return new PyramidFrequencyIdentifier(pyramidArrangements, level, dimension);
     }
 
     public static PyramidFrequencyIdentifier scanForPyramid(World world, BlockPos pos, int level) {
@@ -250,6 +256,8 @@ public final class PyramidFrequencyIdentifier implements IFrequencyIdentifier {
             pyramidArrangements.add(flatten(topBlocks.get(i), bottomBlocks.get(i)));
         }
 
-        return new PyramidFrequencyIdentifier(pyramidArrangements, level);
+        Identifier dimension = world.getRegistryKey().getValue();
+
+        return new PyramidFrequencyIdentifier(pyramidArrangements, level, dimension);
     }
 }
