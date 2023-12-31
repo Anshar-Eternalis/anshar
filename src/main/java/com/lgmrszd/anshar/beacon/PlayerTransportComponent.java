@@ -173,10 +173,14 @@ public class PlayerTransportComponent implements ServerTickingComponent, AutoSyn
             }
             jumpCandidates = out;
         } else {
-            jumpCandidates = new HashSet<>();
+            jumpCandidates.clear();
         }
         
         KEY.sync(player);
+    }
+
+    public Set<BeaconNode> getJumpCandidates() {
+        return jumpCandidates;
     }
 
     @Override
@@ -197,30 +201,30 @@ public class PlayerTransportComponent implements ServerTickingComponent, AutoSyn
             
             // draw nearby nodes
             if (serverPlayer.getWorld().getTime() % 10 == 0) {
-                var ppos = player.getPos();
                 updateJumpNodes();
-                for (var node : jumpCandidates) {
-                    // get vector from player to node pos
-                    var spos = normedVecToNode(node).multiply(2).add(ppos);
-                    serverPlayer.getServerWorld().spawnParticles(serverPlayer, ParticleTypes.HEART, true, spos.getX(), serverPlayer.getEyeY(), spos.getZ(), 5, 0, 0, 0, 0);
-                }
+                // var ppos = player.getPos();
+                // for (var node : jumpCandidates) {
+                //     // get vector from player to node pos
+                //     var spos = normedVecToNode(node).multiply(2).add(ppos);
+                //     serverPlayer.getServerWorld().spawnParticles(serverPlayer, ParticleTypes.HEART, true, spos.getX(), serverPlayer.getEyeY(), spos.getZ(), 5, 0, 0, 0, 0);
+                // }
             }
         }
     }
 
-    private Vec3d normedVecToNode(BeaconNode node) {
+    public Vec3d normedVecToNode(BeaconNode node) {
         // produces a normal vector from the player to the node that is flattened on the xz-plane
         var nVec = node.getPos().toCenterPos();
         var vec = new Vec3d(nVec.getX(), player.getPos().getY(), nVec.getZ()).subtract(player.getPos());
         return vec.multiply(1/vec.length());
     }
 
-    private double distanceTo(BeaconNode node) {
+    public double distanceTo(BeaconNode node) {
         var n = node.getPos().toCenterPos().subtract(player.getPos());
         return Math.sqrt(Math.pow(n.getX(), 2) + Math.pow(n.getZ(), 2));
     }
 
-    public final boolean tryJump() {
+    public final BeaconNode getNearestLookedAt() {
         // find nearest node looked at
         Vec3d lookVec = player.getRotationVector();
         double distance = 0;
@@ -233,9 +237,14 @@ public class PlayerTransportComponent implements ServerTickingComponent, AutoSyn
                 nearest = node;
             }
         }
-        
+        return nearest;
+    };
+
+    public final boolean tryJump() {
+        var nearest = getNearestLookedAt();
         if (nearest != null) {
             target = nearest.getPos();
+            jumpCandidates.clear();
             KEY.sync(player);
             return true;
         }
