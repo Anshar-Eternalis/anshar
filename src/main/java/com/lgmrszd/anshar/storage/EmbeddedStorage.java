@@ -19,7 +19,6 @@ import net.minecraft.world.World;
 import java.util.List;
 import java.util.Optional;
 
-import static com.lgmrszd.anshar.Anshar.LOGGER;
 
 public class EmbeddedStorage extends EnderChestInventory {
     private static final int CONNECTION_RADIUS = 20;
@@ -44,8 +43,7 @@ public class EmbeddedStorage extends EnderChestInventory {
         double e = blockPos2.getY();
         double f = blockPos2.getZ();
         List<Entity> list = world.getOtherEntities(null, new Box(d, e, f, d + 1.0, e + 2.0, f + 1.0));
-        if (list.isEmpty()) LOGGER.info("No entities detected");
-        else {
+        if (!list.isEmpty()) {
             for (Entity entity: list) {
                 if (!(entity instanceof EndCrystalEntity ece)) continue;
                 IEndCrystalComponent ecc = EndCrystalComponent.KEY.get(ece);
@@ -60,7 +58,6 @@ public class EmbeddedStorage extends EnderChestInventory {
         for (BeaconBlockEntity beacon : NetworkManagerComponent.KEY.get(world.getLevelProperties()).getConnectedBeaconsInRadius(world, pos, CONNECTION_RADIUS * 1.0)) {
             if (isBeaconValidStorageTarget(pos, world, beacon)) return Optional.of(beacon);
         }
-        System.out.println("no valid beacons found");
         return Optional.empty();
     }
 
