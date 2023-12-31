@@ -1,16 +1,17 @@
 package com.lgmrszd.anshar;
 
 import com.lgmrszd.anshar.beacon.PlayerTransportComponent;
+import com.lgmrszd.anshar.beacon.TransportEffects;
 
 import net.fabricmc.fabric.api.client.networking.v1.ClientPlayNetworking;
 import net.fabricmc.fabric.api.networking.v1.PacketByteBufs;
+import net.fabricmc.fabric.api.networking.v1.PacketSender;
 import net.minecraft.client.MinecraftClient;
+import net.minecraft.client.network.ClientPlayNetworkHandler;
 import net.minecraft.client.network.ClientPlayerEntity;
 import net.minecraft.client.world.ClientWorld;
-import net.minecraft.item.BowItem;
-
-
-
+import net.minecraft.network.PacketByteBuf;
+import net.minecraft.server.network.ServerPlayerEntity;
 
 public class PlayerTransportClient {
     private static final int TICKS_TO_JUMP = 20 * 3;
@@ -38,4 +39,9 @@ public class PlayerTransportClient {
     }
 
     public static float getJumpPercentage() { return (float)gateTicks / (float)TICKS_TO_JUMP; }
+
+    public static void acceptExplosionPacketS2C(MinecraftClient client, ClientPlayNetworkHandler handler, PacketByteBuf buf, PacketSender responseSender) {
+        var pos = buf.readBlockPos().toCenterPos();
+        client.execute(() -> handler.getWorld().addFireworkParticle(pos.getX(), pos.getY(), pos.getZ(), 0, 0, 0, TransportEffects.TRANSPORT_EXPLOSION_FIREWORK));
+    }
 }

@@ -16,7 +16,8 @@ import dev.onyxstudios.cca.api.v3.component.ComponentKey;
 import dev.onyxstudios.cca.api.v3.component.ComponentRegistry;
 import dev.onyxstudios.cca.api.v3.component.sync.AutoSyncedComponent;
 import dev.onyxstudios.cca.api.v3.component.tick.ServerTickingComponent;
-
+import net.fabricmc.fabric.api.networking.v1.PacketByteBufs;
+import net.fabricmc.fabric.api.networking.v1.ServerPlayNetworking;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.nbt.NbtCompound;
 import net.minecraft.nbt.NbtElement;
@@ -24,6 +25,7 @@ import net.minecraft.nbt.NbtList;
 import net.minecraft.network.PacketByteBuf;
 import net.minecraft.particle.ParticleTypes;
 import net.minecraft.server.network.ServerPlayerEntity;
+import net.minecraft.server.world.ServerWorld;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Vec3d;
@@ -82,6 +84,7 @@ public class PlayerTransportComponent implements ServerTickingComponent, AutoSyn
         this.networkUUID = network.getId();
         this.target = through;
         KEY.sync(player);
+        sendExplosionPacketS2C();
     }
 
     private void exitNetwork() {
@@ -176,14 +179,8 @@ public class PlayerTransportComponent implements ServerTickingComponent, AutoSyn
         KEY.sync(player);
     }
 
-    private Runnable enterNetworkCallback;
     @Override
-    public void serverTick() {
-        if (enterNetworkCallback != null) {
-            enterNetworkCallback.run();
-            enterNetworkCallback = null;
-        }
-        
+    public void serverTick() {        
         if (isInNetwork()) { // maintain embed state
             // disable appearance and gravity
             var serverPlayer = (ServerPlayerEntity)player;
@@ -247,6 +244,13 @@ public class PlayerTransportComponent implements ServerTickingComponent, AutoSyn
     }
 
     public static final Identifier JUMP_PACKET_ID = new Identifier(MOD_ID, "player_transport_jump");
+    public static final Identifier EXPLOSION_PACKET_ID = new Identifier(MOD_ID, "player_transport_explosion");
 
-    
+    public void sendExplosionPacketS2C(){
+        var buf = PacketByteBufs.create();
+        buf.writeBlockPos(target);
+        for (var player : player.getWorld().getPlayers()) {
+            ServerPlayNetworking.send((ServerPlayerEntity)player, EXPLOSION_PACKET_ID, buf);
+        }
+    }
 }

@@ -1,15 +1,10 @@
 package com.lgmrszd.anshar.mixin;
 
-import org.spongepowered.asm.mixin.Intrinsic;
 import org.spongepowered.asm.mixin.Mixin;
-import org.spongepowered.asm.mixin.injection.At;
-import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 
-import net.minecraft.block.AbstractBlock;
 import net.minecraft.block.BeaconBlock;
 import net.minecraft.block.BlockState;
-import net.minecraft.block.BlockWithEntity;
 import net.minecraft.block.Blocks;
 import net.minecraft.block.entity.BeaconBlockEntity;
 import net.minecraft.block.entity.BlockEntityType;
@@ -25,14 +20,15 @@ import com.lgmrszd.anshar.beacon.PlayerTransportComponent;
 import static com.lgmrszd.anshar.Anshar.LOGGER;
 
 @Mixin(BeaconBlock.class)
-public abstract class BeaconBlockMixin extends BlockMixin {
-    
+public abstract class BeaconBlockMixin extends BlockMixin {    
     @Override
     public void anshar$onSteppedOn(World world, BlockPos pos, BlockState state, Entity entity, CallbackInfo ci) {
         if (world.getTime() % 5L == 0L && !world.isClient && entity instanceof PlayerEntity player) {
             world.getBlockEntity(pos, BlockEntityType.BEACON).ifPresent(
                 beacon -> IBeaconComponent.KEY.get(beacon).getFrequencyNetwork().ifPresent(
-                    network -> PlayerTransportComponent.KEY.get(player).enterNetwork(network, beacon.getPos())
+                    network -> {
+                        PlayerTransportComponent.KEY.get(player).enterNetwork(network, beacon.getPos());
+                    }
                 )
             );
         }
