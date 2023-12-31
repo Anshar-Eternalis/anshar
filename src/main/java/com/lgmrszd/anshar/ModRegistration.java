@@ -1,7 +1,7 @@
 package com.lgmrszd.anshar;
 
+import com.lgmrszd.anshar.beacon.DebugEvents;
 import com.lgmrszd.anshar.beacon.BeaconEvents;
-import com.lgmrszd.anshar.beacon.EndCrystalEvents;
 import com.lgmrszd.anshar.beacon.PlayerTransportComponent;
 
 import net.fabricmc.fabric.api.networking.v1.ServerPlayNetworking;
@@ -21,8 +21,8 @@ public class ModRegistration {
     }
 
     private static void registerEvents() {
+        DebugEvents.register();
         BeaconEvents.register();
-        EndCrystalEvents.register();
     }
 
     private static void registerCommands() {
