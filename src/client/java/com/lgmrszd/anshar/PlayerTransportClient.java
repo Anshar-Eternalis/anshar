@@ -1,22 +1,17 @@
 package com.lgmrszd.anshar;
 
-import org.joml.Matrix3d;
 import org.joml.Vector3d;
 
 import com.lgmrszd.anshar.beacon.PlayerTransportComponent;
 import com.lgmrszd.anshar.beacon.TransportEffects;
 
 import net.fabricmc.fabric.api.client.networking.v1.ClientPlayNetworking;
-import net.fabricmc.fabric.api.client.rendering.v1.HudRenderCallback;
 import net.fabricmc.fabric.api.networking.v1.PacketByteBufs;
 import net.fabricmc.fabric.api.networking.v1.PacketSender;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.network.ClientPlayNetworkHandler;
 import net.minecraft.client.network.ClientPlayerEntity;
-import net.minecraft.client.sound.AmbientSoundLoops;
-import net.minecraft.client.sound.AmbientSoundPlayer;
 import net.minecraft.client.sound.SoundInstance;
-import net.minecraft.client.sound.AmbientSoundLoops.MusicLoop;
 import net.minecraft.client.world.ClientWorld;
 import net.minecraft.network.PacketByteBuf;
 import net.minecraft.particle.ParticleTypes;
@@ -28,6 +23,7 @@ public class PlayerTransportClient {
     private static int gateTicks = 0;
     private static Random random = Random.create();
     private static boolean firstTick = true;
+    private static SoundInstance jumpSound = new TransportJumpSoundInstance(random);
 
     public static void tick(ClientWorld world) {
         ClientPlayerEntity player = MinecraftClient.getInstance().player;
@@ -36,10 +32,13 @@ public class PlayerTransportClient {
         var transport = PlayerTransportComponent.KEY.get(player);
         if (transport.isInNetwork()) {
             // audio
-            
             if (firstTick) {
                 firstTick = false;
-                playSound(new AmbientEmbedSound(player, ModResources.EMBED_SPACE_AMBIENT_SOUND_EVENT));
+                playSound(new AmbientEmbedSoundInstance(player, ModResources.EMBED_SPACE_AMBIENT_SOUND_EVENT));
+            }
+
+            if (gateTicks == 1) {
+                playSound(jumpSound);
             }
             
             // update particles
@@ -74,9 +73,15 @@ public class PlayerTransportClient {
                     ClientPlayNetworking.send(PlayerTransportComponent.JUMP_PACKET_ID, PacketByteBufs.empty());
                 }
             } else {
+                if (gateTicks > 0) {
+                    stopSound(jumpSound);
+                }
                 gateTicks = 0;
             }
         } else {
+            if (gateTicks > 0) {
+                stopSound(jumpSound);
+            }
             gateTicks = 0;
             firstTick = true;
         }
@@ -97,5 +102,9 @@ public class PlayerTransportClient {
 
     private static void playSound(SoundInstance sound) {
         MinecraftClient.getInstance().getSoundManager().play(sound);
+    }
+
+    private static void stopSound(SoundInstance sound) {
+        MinecraftClient.getInstance().getSoundManager().stop(sound);
     }
 }

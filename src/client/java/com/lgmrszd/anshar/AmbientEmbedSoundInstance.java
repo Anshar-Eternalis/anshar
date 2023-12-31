@@ -8,10 +8,10 @@ import net.minecraft.client.sound.SoundInstance;
 import net.minecraft.sound.SoundCategory;
 import net.minecraft.sound.SoundEvent;
 
-public class AmbientEmbedSound extends MovingSoundInstance {
+public class AmbientEmbedSoundInstance extends MovingSoundInstance {
     private final ClientPlayerEntity player;
     
-    protected AmbientEmbedSound(ClientPlayerEntity player, SoundEvent soundEvent) {
+    protected AmbientEmbedSoundInstance(ClientPlayerEntity player, SoundEvent soundEvent) {
         super(soundEvent, SoundCategory.AMBIENT, SoundInstance.createRandom());
         this.player = player;
         this.repeat = true;
