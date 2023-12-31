@@ -5,7 +5,6 @@ import java.util.Optional;
 import net.minecraft.block.entity.BeaconBlockEntity;
 import net.minecraft.nbt.NbtCompound;
 import net.minecraft.text.Text;
-import net.minecraft.util.DyeColor;
 import net.minecraft.util.math.BlockPos;
 
 /**

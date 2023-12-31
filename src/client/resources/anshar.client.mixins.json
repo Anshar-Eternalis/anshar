@@ -6,7 +6,8 @@
 		"AbstractClientPlayerEntityMixin",
 		"BackgroundRendererMixin",
 		"WorldRendererMixin",
-		"InGameHudMixin"
+		"InGameHudMixin",
+		"HeldItemRendererMixin"
 	],
 	"injectors": {
 		"defaultRequire": 1
