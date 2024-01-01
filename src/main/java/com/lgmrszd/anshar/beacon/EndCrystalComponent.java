@@ -2,9 +2,11 @@ package com.lgmrszd.anshar.beacon;
 
 import com.lgmrszd.anshar.frequency.NetworkManagerComponent;
 import net.minecraft.block.entity.BeaconBlockEntity;
+import net.minecraft.block.entity.EnderChestBlockEntity;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.damage.DamageSource;
 import net.minecraft.entity.decoration.EndCrystalEntity;
+import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.item.ItemStack;
 import net.minecraft.item.Items;
 import net.minecraft.nbt.NbtCompound;
@@ -14,11 +16,17 @@ import net.minecraft.particle.ParticleTypes;
 import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.server.world.ServerWorld;
 import net.minecraft.sound.SoundEvents;
+import net.minecraft.util.ActionResult;
+import net.minecraft.util.Hand;
+import net.minecraft.util.hit.BlockHitResult;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Direction;
+import net.minecraft.util.math.Vec3d;
 import net.minecraft.world.World;
 
 import java.util.Optional;
+
+import static com.lgmrszd.anshar.Anshar.LOGGER;
 
 public class EndCrystalComponent implements IEndCrystalComponent {
     private static final int MAX_DISTANCE = 16;
@@ -44,6 +52,35 @@ public class EndCrystalComponent implements IEndCrystalComponent {
             endCrystal.setBeamTarget(pos.offset(Direction.DOWN, 2));
         });
         shouldUpdateBeacon = false;
+    }
+
+    private EnderChestBlockEntity getChest() {
+        LOGGER.info("Interacted! Searching chest... {} {}", endCrystal.getPos(), endCrystal.getBlockPos());
+        if (!(endCrystal.getWorld().getBlockEntity(endCrystal.getBlockPos().down())
+                instanceof EnderChestBlockEntity enderChestBlockEntity))
+            return null;
+        return enderChestBlockEntity;
+    }
+
+    @Override
+    public ActionResult onUse(PlayerEntity player, Hand hand) {
+        EnderChestBlockEntity enderChestBlockEntity = getChest();
+        if (enderChestBlockEntity == null)
+            return ActionResult.PASS;
+        World world = endCrystal.getWorld();
+//        if (world instanceof ServerWorld serverWorld)) return ActionResult.SUCCESS;
+        BlockPos pos = enderChestBlockEntity.getPos();
+        return world.getBlockState(pos).onUse(
+                world,
+                player,
+                hand,
+                new BlockHitResult(
+                        new Vec3d(pos.getX() + 0.5, pos.getY() + 1, pos.getZ() + 0.5),
+                        Direction.UP,
+                        pos,
+                        false
+                )
+        );
     }
 
     @Override

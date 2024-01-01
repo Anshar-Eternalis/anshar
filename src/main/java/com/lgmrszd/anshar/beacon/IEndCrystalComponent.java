@@ -4,6 +4,9 @@ import dev.onyxstudios.cca.api.v3.component.ComponentKey;
 import dev.onyxstudios.cca.api.v3.component.ComponentRegistry;
 import dev.onyxstudios.cca.api.v3.component.tick.ServerTickingComponent;
 import net.minecraft.entity.damage.DamageSource;
+import net.minecraft.entity.player.PlayerEntity;
+import net.minecraft.util.ActionResult;
+import net.minecraft.util.Hand;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.math.BlockPos;
 
@@ -21,4 +24,6 @@ public interface IEndCrystalComponent extends ServerTickingComponent {
     void setBeacon(BlockPos pos);
 
     Optional<BlockPos> getConnectedBeacon();
+
+    ActionResult onUse(PlayerEntity player, Hand hand);
 }
