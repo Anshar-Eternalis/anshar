@@ -27,6 +27,7 @@ public class BeaconComponent implements IBeaconComponent {
     private boolean isValid;
     private int level;
     private int checkBeamTicks;
+    private int tryActivateTicks;
     private Vec3d vec = new Vec3d(1, 0, 0);
 
     public BeaconComponent(BeaconBlockEntity beaconBlockEntity) {
@@ -35,12 +36,13 @@ public class BeaconComponent implements IBeaconComponent {
         pyramidFrequency = NullFrequencyIdentifier.get();
         isValid = false;
         shouldRestoreNetwork = false;
-        checkBeamTicks = 0;
+        checkBeamTicks = 85;
+        tryActivateTicks = 85;
     }
 
     public void rescanPyramid() {
         World world = beaconBlockEntity.getWorld();
-        if (world == null) return;
+        if (!(world instanceof ServerWorld serverWorld)) return;
 
         BlockPos pos = beaconBlockEntity.getPos();
         int x = pos.getX();
@@ -51,7 +53,17 @@ public class BeaconComponent implements IBeaconComponent {
                 PyramidFrequencyIdentifier.scanForPyramid(world, getBeaconPos(), level);
 
         if (newFreqID == null || !newFreqID.isValid() || !pyramidFrequency.equals(newFreqID)) {
-            LOGGER.info("Invalidating Beacon!! At {}", getBeaconPos());
+            // Deadline be damned!!!
+//            serverWorld.playSound(
+//                    null,
+//                    x,
+//                    y,
+//                    z,
+//                    SoundEvents.BLOCK_GLASS_BREAK,
+//                    SoundCategory.BLOCKS,
+//                    1f,
+//                    1f
+//            );
             isValid = false;
             pyramidFrequency = NullFrequencyIdentifier.get();
             NetworkManagerComponent networkManagerComponent = NetworkManagerComponent.KEY.get(world.getLevelProperties());
@@ -81,7 +93,17 @@ public class BeaconComponent implements IBeaconComponent {
         IFrequencyIdentifier newFreqID = level == 0 ? NullFrequencyIdentifier.get() :
                 PyramidFrequencyIdentifier.scanForPyramid(world, getBeaconPos(), level);
         if (newFreqID != null && newFreqID.isValid()) {
-            LOGGER.info("Activating Beacon!! At {}", getBeaconPos());
+            // Deadline be damned!!!!111
+//            serverWorld.playSound(
+//                    null,
+//                    x,
+//                    y,
+//                    z,
+//                    SoundEvents.BLOCK_AMETHYST_BLOCK_CHIME,
+//                    SoundCategory.BLOCKS,
+//                    1f,
+//                    1f
+//            );
             isValid = true;
             pyramidFrequency = newFreqID;
             NetworkManagerComponent networkManagerComponent = NetworkManagerComponent.KEY.get(world.getLevelProperties());
@@ -130,19 +152,19 @@ public class BeaconComponent implements IBeaconComponent {
     @Override
     public void readFromNbt(NbtCompound tag) {
         level = tag.getInt("level");
-        isValid = !tag.contains("isValid") || tag.getBoolean("isValid");
+//        isValid = !tag.contains("isValid") || tag.getBoolean("isValid");
         if (tag.contains("frequency")) {
             NbtCompound pfIDTag = tag.getCompound("frequency");
             pyramidFrequency = PyramidFrequencyIdentifier.fromNbt(pfIDTag);
-            shouldRestoreNetwork = true;
-            checkBeamTicks = 82; // Give Beacon some time to catch up
+//            shouldRestoreNetwork = true;
+//            checkBeamTicks = 85; // Give Beacon some time to catch up
         } else pyramidFrequency = NullFrequencyIdentifier.get();
     }
 
     @Override
     public void writeToNbt(NbtCompound tag) {
         tag.putInt("level", level);
-        tag.putBoolean("isValid", isValid);
+//        tag.putBoolean("isValid", isValid);
         if (pyramidFrequency.isValid() && pyramidFrequency instanceof PyramidFrequencyIdentifier pfID) {
             NbtCompound pfIDTag = new NbtCompound();
             pfID.toNbt(pfIDTag);
@@ -154,9 +176,14 @@ public class BeaconComponent implements IBeaconComponent {
     public void serverTick() {
         World world = beaconBlockEntity.getWorld();
         if (!(world instanceof ServerWorld serverWorld)) return;
-        if (isValid && --checkBeamTicks <= 0) {
+        if (isValid && checkBeamTicks-- <= 0) {
             checkBeamTicks = 5;
             checkBeam();
+        }
+        tryActivateTicks--;
+        if (!isValid && tryActivateTicks <= 0) {
+            tryActivateTicks = 80;
+            activate();
         }
         if (isValid && world.getTime() % 5L == 0L) {
             Vec3i pos = getBeaconPos();
@@ -173,9 +200,9 @@ public class BeaconComponent implements IBeaconComponent {
         if (isValid && world.getTime() % 80L == 0L) {
             rescanPyramid();
         }
-        if (shouldRestoreNetwork) {
-            restoreNetwork();
-        }
+//        if (shouldRestoreNetwork) {
+//            restoreNetwork();
+//        }
     }
 
     @Override

@@ -5,13 +5,10 @@ import com.lgmrszd.anshar.beacon.IBeaconComponent;
 import com.lgmrszd.anshar.mixin.accessor.DispenserBlockAccessor;
 import net.minecraft.block.DispenserBlock;
 import net.minecraft.block.dispenser.DispenserBehavior;
-import net.minecraft.block.dispenser.ItemDispenserBehavior;
 import net.minecraft.block.entity.BeaconBlockEntity;
 import net.minecraft.entity.projectile.FireworkRocketEntity;
-import net.minecraft.item.ItemStack;
 import net.minecraft.item.Items;
 import net.minecraft.server.world.ServerWorld;
-import net.minecraft.util.math.BlockPointer;
 import net.minecraft.util.math.BlockPos;
 
 import static com.lgmrszd.anshar.Anshar.LOGGER;
@@ -39,15 +36,15 @@ public class ModDispenserBehaviors {
 //            LOGGER.info("Firework injected!!");
             return oldFireworkBehavior.dispense(pointer, stack);
         });
-        DispenserBlock.registerBehavior(Items.AMETHYST_SHARD, (pointer, stack) -> {
-            BlockPos facingPos = pointer.pos().offset(pointer.state().get(DispenserBlock.FACING));
-            // TODO IDEA gives me weird warning, what??
-            ServerWorld world = pointer.world();
-            if (world.getBlockEntity(facingPos) instanceof BeaconBlockEntity bbe) {
-                IBeaconComponent beaconComponent = BeaconComponent.KEY.get(bbe);
-                beaconComponent.activate();
-            }
-            return stack;
-        });
+//        DispenserBlock.registerBehavior(Items.AMETHYST_SHARD, (pointer, stack) -> {
+//            BlockPos facingPos = pointer.pos().offset(pointer.state().get(DispenserBlock.FACING));
+//            // TODO IDEA gives me weird warning, what??
+//            ServerWorld world = pointer.world();
+//            if (world.getBlockEntity(facingPos) instanceof BeaconBlockEntity bbe) {
+//                IBeaconComponent beaconComponent = BeaconComponent.KEY.get(bbe);
+//                beaconComponent.activate();
+//            }
+//            return stack;
+//        });
     }
 }

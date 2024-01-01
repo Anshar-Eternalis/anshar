@@ -24,11 +24,11 @@ public class BeaconEvents {
                 if (container == null) return ActionResult.FAIL;
                 return container.onUse(player, world, hand, hitResult);
             }
-            if (player.isHolding(Items.AMETHYST_SHARD)) {
-                if (world.isClient()) return ActionResult.SUCCESS;
-                if (!(world.getBlockEntity(hitResult.getBlockPos()) instanceof BeaconBlockEntity bbe)) return ActionResult.PASS;
-                BeaconComponent.KEY.get(bbe).activate();
-            }
+//            if (player.isHolding(Items.AMETHYST_SHARD)) {
+//                if (world.isClient()) return ActionResult.SUCCESS;
+//                if (!(world.getBlockEntity(hitResult.getBlockPos()) instanceof BeaconBlockEntity bbe)) return ActionResult.PASS;
+//                BeaconComponent.KEY.get(bbe).activate();
+//            }
             return ActionResult.PASS;
         });
     }
