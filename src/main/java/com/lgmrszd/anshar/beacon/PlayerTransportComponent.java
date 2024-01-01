@@ -23,12 +23,11 @@ import net.minecraft.nbt.NbtCompound;
 import net.minecraft.nbt.NbtElement;
 import net.minecraft.nbt.NbtList;
 import net.minecraft.network.PacketByteBuf;
-import net.minecraft.particle.ParticleTypes;
 import net.minecraft.server.network.ServerPlayerEntity;
-import net.minecraft.server.world.ServerWorld;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Vec3d;
+import net.minecraft.world.Heightmap;
 
 /*
  * Manages player transport between beacons via Star Gates.
@@ -90,7 +89,19 @@ public class PlayerTransportComponent implements ServerTickingComponent, AutoSyn
     private void exitNetwork() {
         moveToCurrentTarget();
         sendExplosionPacketS2C();
-        this.player.teleport(target.getX() + 1, target.getY(), target.getZ());
+
+        int x, z;
+        do {
+            x = player.getRandom().nextBetween(-1, 1);
+            z = player.getRandom().nextBetween(-1, 1);
+        } while (x==0&&z==0);
+
+        x = target.getX() + x;
+        z = target.getZ() + z;
+
+        double y = this.player.getWorld().getChunk(target).sampleHeightmap(Heightmap.Type.MOTION_BLOCKING, x, z);
+        this.player.teleport((double)x + 0.5, y+1.5, (double)z + 0.5);
+
         this.networkUUID = null;
         this.target = null;
         if (player.isInvisible()) player.setInvisible(false);
