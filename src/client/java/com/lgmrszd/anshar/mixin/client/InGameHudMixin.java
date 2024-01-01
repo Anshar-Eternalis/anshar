@@ -13,27 +13,31 @@ import com.mojang.blaze3d.systems.RenderSystem;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.font.TextRenderer;
 import net.minecraft.client.gui.DrawContext;
+import net.minecraft.client.gui.hud.ChatHud;
 import net.minecraft.client.gui.hud.InGameHud;
 import net.minecraft.client.util.Window;
 import net.minecraft.text.StringVisitable;
 import net.minecraft.text.Text;
+import net.minecraft.util.math.MathHelper;
 
 @Mixin(InGameHud.class)
 public class InGameHudMixin {
-    @Shadow
-    @Final
-    private MinecraftClient client;
+    @Shadow @Final private MinecraftClient client;
+
+    @Shadow @Final private ChatHud chatHud;
+
+    @Shadow private int ticks;
     
-    @Shadow
-    private TextRenderer getTextRenderer() { return null; }
+    @Shadow private TextRenderer getTextRenderer() { return null; }
     
     @Inject(method = "render", at = @At("HEAD"), cancellable = true)
     public void anshar$render(DrawContext context, float tickDelta, CallbackInfo ci) {
-        if (PlayerTransportComponent.KEY.get(client.player).isInNetwork()) {
+        if (PlayerTransportComponent.KEY.get(client.player).isInNetwork() && !client.options.hudHidden) {
             var node = PlayerTransportComponent.KEY.get(client.player).getNearestLookedAt();
-            if (node != null) {
 
-                RenderSystem.enableBlend();
+            RenderSystem.enableBlend();
+            if (node != null) {
+                
                 TextRenderer textRenderer = getTextRenderer();
                 int scaledWidth = context.getScaledWindowWidth();
                 int scaledHeight = context.getScaledWindowHeight();
@@ -51,10 +55,20 @@ public class InGameHudMixin {
                 context.drawText(textRenderer, coords, -textRenderer.getWidth((StringVisitable)coords)/2, -9, 0xFFFFFF, false);
 
                 context.getMatrices().pop();
-                RenderSystem.disableBlend();
+                
             }
+            
+            // allow chat rendering
+            Window window = this.client.getWindow();
+            int n = MathHelper.floor((double)(this.client.mouse.getX() * (double)window.getScaledWidth() / (double)window.getWidth()));
+            int p = MathHelper.floor((double)(this.client.mouse.getY() * (double)window.getScaledHeight() / (double)window.getHeight()));
+            this.client.getProfiler().push("chat");
+            this.chatHud.render(context, this.ticks, n, p);
+            this.client.getProfiler().pop();
+            RenderSystem.disableBlend();
+
             ci.cancel();
-        };
+        }
         
     }
 }
