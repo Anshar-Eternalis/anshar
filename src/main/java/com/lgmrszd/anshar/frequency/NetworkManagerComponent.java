@@ -103,14 +103,18 @@ public class NetworkManagerComponent implements Component {
         ) return;
         BlockPos beaconPos = beaconComponent.getBeaconPos();
         // Remove beacon from the old network if present
-        beaconComponent.getFrequencyNetwork().ifPresent(frequencyNetwork -> {
-            if (!frequencyNetwork.removeBeacon(beaconPos)) {
-                LOGGER.warn(String.format(
-                        "ANSHAR WARNING: Tried to remove beacon %s from network %s but it's already not there",
-                        beaconPos,
-                        frequencyNetwork
-                ));
-            }
+        // TODO: Just to make it safe for now
+//        beaconComponent.getFrequencyNetwork().ifPresent(frequencyNetwork -> {
+//            if (!frequencyNetwork.removeBeacon(beaconPos)) {
+//                LOGGER.warn(String.format(
+//                        "ANSHAR WARNING: Tried to remove beacon %s from network %s but it's already not there",
+//                        beaconPos,
+//                        frequencyNetwork
+//                ));
+//            }
+//        });
+        getNetworks().forEach(frequencyNetwork -> {
+            frequencyNetwork.removeBeacon(beaconPos);
         });
         // Add beacon to the new network
         if (frequencyIdentifier.isValid()) {
