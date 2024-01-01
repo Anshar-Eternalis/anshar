@@ -98,6 +98,7 @@ public class BeaconComponent implements IBeaconComponent {
 
     private void activate() {
         pyramidFrequency = rescanPyramid();
+        if (!pyramidFrequency.isValid()) return;
         updateNetwork();
         active = true;
     }
