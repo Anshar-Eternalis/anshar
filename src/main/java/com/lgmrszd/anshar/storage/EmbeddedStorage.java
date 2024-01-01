@@ -22,11 +22,7 @@ import java.util.Optional;
 
 public class EmbeddedStorage extends EnderChestInventory {
     private static final int CONNECTION_RADIUS = 20;
-    public static final Text EMBED_CONTAINER_NAME =
-            Text.literal("[")
-            .append(Text.translatable("block.minecraft.beacon"))
-            .append("] ")
-                   .append(Text.translatable("container.enderchest"));
+    
     private static boolean isBeaconValidStorageTarget(BlockPos pos, World world, BeaconBlockEntity beacon){
         var diff = beacon.getPos().subtract(pos);
         var tier = diff.getY() + 1;
@@ -67,5 +63,12 @@ public class EmbeddedStorage extends EnderChestInventory {
                 .flatMap(beacon -> BeaconComponent.KEY.get(beacon)
                 .getFrequencyNetwork()
                 .map(FrequencyNetwork::getStorage));
+    }
+
+    public Text getContainerLabelFor(BeaconBlockEntity beacon){
+        return Text.literal("[")
+            .append(beacon.getName())
+            .append("] ")
+            .append(Text.translatable("container.enderchest"));
     }
 }

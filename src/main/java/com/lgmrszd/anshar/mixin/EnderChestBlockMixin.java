@@ -50,7 +50,7 @@ public abstract class EnderChestBlockMixin {
                   player.openHandledScreen(new SimpleNamedScreenHandlerFactory(
                           (syncId, playerInv, playerx) ->
                                   GenericContainerScreenHandler.createGeneric9x3(syncId, playerInv, inventory),
-                          EmbeddedStorage.EMBED_CONTAINER_NAME));
+                          inventory.getContainerLabelFor(beacon)));
                   player.incrementStat(Stats.OPEN_ENDERCHEST);
                   return true;
                }
