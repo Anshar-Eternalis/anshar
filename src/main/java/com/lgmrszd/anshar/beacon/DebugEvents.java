@@ -30,12 +30,12 @@ public final class DebugEvents {
             BlockEntity be = world.getBlockEntity(pos);
             if (!(be instanceof BeaconBlockEntity bbe)) return ActionResult.PASS;
             IBeaconComponent beacComp = IBeaconComponent.KEY.get(bbe);
-            if (beacComp.getFrequencyID().isValid())
+            if (beacComp.getEffectiveFrequencyID().isValid())
                 player.sendMessage(Text.literal(
                         String.format(
                                 "Beacon pos: %s, frequency: %s, network: %s",
                                 pos,
-                                beacComp.getFrequencyID().hashCode(),
+                                beacComp.getEffectiveFrequencyID().hashCode(),
                                 beacComp.getFrequencyNetwork()
                                         .map(frequencyNetwork -> frequencyNetwork.getId().toString())
                                         .orElse("None")
@@ -71,9 +71,9 @@ public final class DebugEvents {
                             bbe -> {
                                 IBeaconComponent beacComp = IBeaconComponent.KEY.get(bbe);
                                 BlockPos pos = bbe.getPos();
-                                if (beacComp.getFrequencyID().isValid())
+                                if (beacComp.getEffectiveFrequencyID().isValid())
                                     player.sendMessage(Text.literal(
-                                            String.format("Nearest beacon pos: %s, frequency: %s", pos, beacComp.getFrequencyID().hashCode())
+                                            String.format("Nearest beacon pos: %s, frequency: %s", pos, beacComp.getEffectiveFrequencyID().hashCode())
                                     ));
                                 else {
                                     player.sendMessage(Text.literal(

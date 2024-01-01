@@ -9,7 +9,6 @@ import dev.onyxstudios.cca.api.v3.component.ComponentKey;
 import dev.onyxstudios.cca.api.v3.component.ComponentRegistry;
 import dev.onyxstudios.cca.api.v3.component.tick.ServerTickingComponent;
 import net.minecraft.text.Text;
-import net.minecraft.util.DyeColor;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.math.BlockPos;
 
@@ -22,9 +21,9 @@ public interface IBeaconComponent extends ServerTickingComponent {
 
 //    void rescanPyramid();
 
-    void activate();
+    boolean isValid();
     boolean isActive();
-    IFrequencyIdentifier getFrequencyID();
+    IFrequencyIdentifier getEffectiveFrequencyID();
 
     Optional<FrequencyNetwork> getFrequencyNetwork();
 
