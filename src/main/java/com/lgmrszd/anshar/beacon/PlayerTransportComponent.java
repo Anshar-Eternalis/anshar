@@ -215,12 +215,6 @@ public class PlayerTransportComponent implements ServerTickingComponent, AutoSyn
             // draw nearby nodes
             if (serverPlayer.getWorld().getTime() % 10 == 0) {
                 updateJumpNodes();
-                // var ppos = player.getPos();
-                // for (var node : jumpCandidates) {
-                //     // get vector from player to node pos
-                //     var spos = normedVecToNode(node).multiply(2).add(ppos);
-                //     serverPlayer.getServerWorld().spawnParticles(serverPlayer, ParticleTypes.HEART, true, spos.getX(), serverPlayer.getEyeY(), spos.getZ(), 5, 0, 0, 0, 0);
-                // }
             }
         }
     }

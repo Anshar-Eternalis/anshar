@@ -29,10 +29,6 @@ public class PlayerTransportClient {
     private static SoundInstance jumpSound = new TransportJumpSoundInstance(random);
     private static WeakRef<ParticleManager> particleManager = new WeakRef<ParticleManager>(null);
 
-    // helper text tracking
-    private static int timeAtNode = 0;
-    private static BeaconNode prevNode = null;
-
     public static void tick(ClientWorld world) {
         ClientPlayerEntity player = MinecraftClient.getInstance().player;
         if (player == null) return;
