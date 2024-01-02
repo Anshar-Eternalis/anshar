@@ -1,6 +1,6 @@
 package com.lgmrszd.anshar;
 
-import com.lgmrszd.anshar.beacon.PlayerTransportComponent;
+import com.lgmrszd.anshar.transport.PlayerTransportComponent;
 
 import net.minecraft.client.network.ClientPlayerEntity;
 import net.minecraft.client.sound.MovingSoundInstance;

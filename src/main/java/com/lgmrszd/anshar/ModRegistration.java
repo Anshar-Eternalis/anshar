@@ -1,9 +1,9 @@
 package com.lgmrszd.anshar;
 
 import com.lgmrszd.anshar.beacon.BeaconEvents;
-import com.lgmrszd.anshar.beacon.PlayerTransportComponent;
-
 import com.lgmrszd.anshar.dispenser.ModDispenserBehaviors;
+import com.lgmrszd.anshar.transport.PlayerTransportComponent;
+
 import net.fabricmc.fabric.api.networking.v1.ServerPlayNetworking;
 import net.minecraft.registry.Registries;
 import net.minecraft.registry.Registry;

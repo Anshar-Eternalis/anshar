@@ -1,4 +1,4 @@
-package com.lgmrszd.anshar.beacon;
+package com.lgmrszd.anshar.transport;
 
 import static com.lgmrszd.anshar.Anshar.LOGGER;
 

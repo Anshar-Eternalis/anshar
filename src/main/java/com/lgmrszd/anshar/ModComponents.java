@@ -9,11 +9,11 @@ import dev.onyxstudios.cca.api.v3.level.LevelComponentInitializer;
 import net.minecraft.block.entity.BeaconBlockEntity;
 
 import com.lgmrszd.anshar.frequency.NetworkManagerComponent;
+import com.lgmrszd.anshar.transport.PlayerTransportComponent;
 import com.lgmrszd.anshar.beacon.BeaconComponent;
 import com.lgmrszd.anshar.beacon.EndCrystalComponent;
 import com.lgmrszd.anshar.beacon.IBeaconComponent;
 import com.lgmrszd.anshar.beacon.IEndCrystalComponent;
-import com.lgmrszd.anshar.beacon.PlayerTransportComponent;
 
 import net.minecraft.entity.decoration.EndCrystalEntity;
 import net.minecraft.entity.player.PlayerEntity;

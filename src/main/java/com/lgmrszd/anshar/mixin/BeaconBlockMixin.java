@@ -15,7 +15,7 @@ import net.minecraft.world.World;
 
 import com.lgmrszd.anshar.beacon.BeaconComponent;
 import com.lgmrszd.anshar.beacon.IBeaconComponent;
-import com.lgmrszd.anshar.beacon.PlayerTransportComponent;
+import com.lgmrszd.anshar.transport.PlayerTransportComponent;
 
 import static com.lgmrszd.anshar.Anshar.LOGGER;
 
