@@ -20,13 +20,15 @@ public class EndCrystalItemContainer {
     }
 
     public ActionResult onUse(PlayerEntity player, World world, Hand hand, BlockHitResult hitResult) {
-        getBeaconPos().ifPresentOrElse(pos -> {
+        BlockPos targetPos = hitResult.getBlockPos();
+        boolean samePos = getBeaconPos().map(pos -> pos.equals(targetPos)).orElse(false);
+        if (samePos) {
             clearBeaconPos();
             player.sendMessage(Text.literal("Cleared Beacon position"));
-        }, () -> {
-            saveBeaconPos(hitResult.getBlockPos());
+        } else {
+            saveBeaconPos(targetPos);
             player.sendMessage(Text.literal("Saved Beacon position"));
-        });
+        }
         return ActionResult.SUCCESS;
     }
 
