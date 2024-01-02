@@ -1,4 +1,7 @@
 {
     "anshar.help.transport.gate": "Abeam to sail the Gate o' Stars",
-    "anshar.help.transport.exit": "Creep to hop off the Sea o' Void"
+    "anshar.help.transport.exit": "Creep to hop off the Sea o' Void",
+
+    "anshar.tooltip.end_crystal.linked": "Snoopin' ta Buoy o' light over landmark: %d %d %d",
+    "anshar.tooltip.end_crystal.linked.distance": "(Far much: %s)"
 }

@@ -12,7 +12,6 @@
     "EnderChestBlockEntityMixin",
     "EnderChestBlockMixin",
     "EntityMixin",
-    "ItemMixin",
     "accessor.BeaconBlockEntityAccessor",
     "accessor.DispenserBlockAccessor",
     "accessor.EnderChestBEVCMAccessor",

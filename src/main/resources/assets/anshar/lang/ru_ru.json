@@ -1,4 +1,7 @@
 {
     "anshar.help.transport.gate": "Удерживайте вперёд чтобы войти в Звёздные Врата",
-    "anshar.help.transport.exit": "Используйте приседание чтобы выйти"
+    "anshar.help.transport.exit": "Используйте приседание чтобы выйти",
+
+    "anshar.tooltip.end_crystal.linked": "Привязан к Маяку на: %d %d %d",
+    "anshar.tooltip.end_crystal.linked.distance": "(Расстояние: %s)"
 }

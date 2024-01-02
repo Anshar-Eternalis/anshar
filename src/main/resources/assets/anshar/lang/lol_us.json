@@ -1,4 +1,7 @@
 {
     "anshar.help.transport.gate": "Wulk to teh stargate to jump!!",
-    "anshar.help.transport.exit": "Sneak to escape from scari void...."
+    "anshar.help.transport.exit": "Sneak to escape from scari void....",
+
+    "anshar.tooltip.end_crystal.linked": "Lookin 2 teh Bacon at: %d %d %d",
+    "anshar.tooltip.end_crystal.linked.distance": "(How fur: %s)"
 }
