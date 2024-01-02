@@ -31,8 +31,8 @@ public class EndCrystalComponent implements IEndCrystalComponent {
     public static final int MAX_DISTANCE = 32;
     private BlockPos beaconPos;
     private final EndCrystalEntity endCrystal;
-
     private boolean linked;
+    private Vec3d vec = new Vec3d(1, 0, 0);
 
     public EndCrystalComponent(EndCrystalEntity endCrystal) {
         this.endCrystal = endCrystal;
@@ -126,14 +126,19 @@ public class EndCrystalComponent implements IEndCrystalComponent {
                 clearBeacon();
             }
         }
-        if (serverWorld.getTime() % 10 == 0) {
-//            NetworkManagerComponent.KEY.get(serverWorld.getLevelProperties())
+        if (serverWorld.getTime() % 5 == 0) {
 
-            double x = endCrystal.getX();
-            double y = endCrystal.getY();
-            double z = endCrystal.getZ();
+            Vec3d particlePos = endCrystal.getPos().add(vec).add(0, 0.7, 0);
+            vec = vec.rotateY(36f * (float) (Math.PI / 180));
+
             ParticleEffect particleEffect = ParticleTypes.GLOW;
-            serverWorld.spawnParticles(particleEffect, x, y+1, z, 1, 0, 1, 0, 5);
+            serverWorld.spawnParticles(
+                    particleEffect,
+                    particlePos.x,
+                    particlePos.y,
+                    particlePos.z,
+                    1, 0, 0, 0, 0
+            );
         }
     }
 
