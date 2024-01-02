@@ -1,4 +1,4 @@
-package com.lgmrszd.anshar.beacon;
+package com.lgmrszd.anshar.transport;
 
 import static com.lgmrszd.anshar.Anshar.MOD_ID;
 
@@ -8,6 +8,7 @@ import java.util.Set;
 import java.util.UUID;
 import java.util.stream.Collectors;
 
+import com.lgmrszd.anshar.beacon.BeaconNode;
 import com.lgmrszd.anshar.frequency.FrequencyNetwork;
 import com.lgmrszd.anshar.frequency.NetworkManagerComponent;
 import com.lgmrszd.anshar.mixin.accessor.ServerPlayNetworkHandlerAccessor;

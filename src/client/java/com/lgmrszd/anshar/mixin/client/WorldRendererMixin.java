@@ -6,7 +6,7 @@ import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 
-import com.lgmrszd.anshar.beacon.PlayerTransportComponent;
+import com.lgmrszd.anshar.transport.PlayerTransportComponent;
 
 import net.minecraft.client.network.ClientPlayerEntity;
 import net.minecraft.client.render.Camera;

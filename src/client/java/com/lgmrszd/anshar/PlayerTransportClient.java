@@ -2,8 +2,8 @@ package com.lgmrszd.anshar;
 
 import org.joml.Vector3d;
 
-import com.lgmrszd.anshar.beacon.PlayerTransportComponent;
-import com.lgmrszd.anshar.beacon.TransportEffects;
+import com.lgmrszd.anshar.transport.PlayerTransportComponent;
+import com.lgmrszd.anshar.transport.TransportEffects;
 import com.lgmrszd.anshar.util.WeakRef;
 
 import net.fabricmc.fabric.api.client.networking.v1.ClientPlayNetworking;
