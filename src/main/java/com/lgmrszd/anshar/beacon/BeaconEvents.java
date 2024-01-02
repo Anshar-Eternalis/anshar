@@ -3,7 +3,6 @@ package com.lgmrszd.anshar.beacon;
 import com.lgmrszd.anshar.ModApi;
 import net.fabricmc.fabric.api.event.player.UseBlockCallback;
 import net.minecraft.block.Blocks;
-import net.minecraft.block.entity.BeaconBlockEntity;
 import net.minecraft.item.ItemStack;
 import net.minecraft.item.Items;
 import net.minecraft.util.ActionResult;

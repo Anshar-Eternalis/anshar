@@ -11,8 +11,6 @@ import net.minecraft.item.Items;
 import net.minecraft.server.world.ServerWorld;
 import net.minecraft.util.math.BlockPos;
 
-import static com.lgmrszd.anshar.Anshar.LOGGER;
-
 public class ModDispenserBehaviors {
     public static void register() {
         DispenserBehavior oldFireworkBehavior = DispenserBlockAccessor.getBehaviors().get(Items.FIREWORK_ROCKET);

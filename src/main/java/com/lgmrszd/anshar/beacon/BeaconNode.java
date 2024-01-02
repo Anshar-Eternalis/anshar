@@ -1,6 +1,5 @@
 package com.lgmrszd.anshar.beacon;
 
-import java.util.Arrays;
 import java.util.Optional;
 import net.minecraft.block.entity.BeaconBlockEntity;
 import net.minecraft.nbt.NbtCompound;

@@ -1,6 +1,5 @@
 package com.lgmrszd.anshar;
 
-import com.lgmrszd.anshar.beacon.DebugEvents;
 import com.lgmrszd.anshar.beacon.BeaconEvents;
 import com.lgmrszd.anshar.beacon.PlayerTransportComponent;
 
