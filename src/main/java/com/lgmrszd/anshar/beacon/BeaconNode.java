@@ -20,7 +20,7 @@ public class BeaconNode {
         this.name = beaconComponent.getName();
         float[] color = beaconComponent.topColor();
         if (color != null && color.length == 3){
-            this.color = Arrays.copyOf(color, 3);
+            this.color = color;
         } else {
             this.color = new float[]{0, 0, 0};
         }

@@ -15,8 +15,6 @@ import net.minecraft.world.World;
 
 import java.util.*;
 
-import static com.lgmrszd.anshar.Anshar.LOGGER;
-
 public class BeaconComponent implements IBeaconComponent {
     private final BeaconBlockEntity beaconBlockEntity;
 
@@ -25,13 +23,15 @@ public class BeaconComponent implements IBeaconComponent {
     private FrequencyNetwork frequencyNetwork;
     private boolean active;
     private int level;
-    private Vec3d vec = new Vec3d(1, 0, 0);
+    private Vec3d particleVec;
 
     private float[] cachedColor;
 
     public BeaconComponent(BeaconBlockEntity beaconBlockEntity) {
         this.beaconBlockEntity = beaconBlockEntity;
         level = 0;
+        particleVec = new Vec3d(1, 0, 0);
+        cachedColor = new float[]{0, 0, 0};
         pyramidFrequency = NullFrequencyIdentifier.get();
         active = false;
     }
@@ -122,10 +122,15 @@ public class BeaconComponent implements IBeaconComponent {
             deactivate();
         }
         if (valid) {
+            float[] currentTopColor = getTopColor();
+            if (!Arrays.equals(cachedColor, currentTopColor)) {
+                cachedColor = currentTopColor;
+                if (frequencyNetwork != null) frequencyNetwork.updateBeacon(this);
+            }
             if (world.getTime() % 5L == 0L) {
                 Vec3i pos = getBeaconPos();
-                Vec3d particlePos = new Vec3d(pos.getX() + 0.5, pos.getY() + 0.5, pos.getZ() + 0.5).add(vec);
-                vec = vec.rotateY(36f * (float) (Math.PI / 180));
+                Vec3d particlePos = new Vec3d(pos.getX() + 0.5, pos.getY() + 0.5, pos.getZ() + 0.5).add(particleVec);
+                particleVec = particleVec.rotateY(36f * (float) (Math.PI / 180));
                 serverWorld.spawnParticles(
                         ParticleTypes.GLOW,
                         particlePos.x,
@@ -143,13 +148,16 @@ public class BeaconComponent implements IBeaconComponent {
             }
         }
     }
-
-    @Override
-    public float[] topColor() {
+    private float[] getTopColor() {
         var segments = beaconBlockEntity.getBeamSegments();
         if (!segments.isEmpty()) {
             return segments.get(segments.size()-1).getColor();
         }
         return new float[]{0, 0, 0};
+    }
+
+    @Override
+    public float[] topColor() {
+        return cachedColor.clone();
     }
 }
