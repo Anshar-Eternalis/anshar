@@ -2,6 +2,7 @@ package com.lgmrszd.anshar;
 
 import org.joml.Vector3d;
 
+import com.lgmrszd.anshar.beacon.BeaconNode;
 import com.lgmrszd.anshar.beacon.PlayerTransportComponent;
 import com.lgmrszd.anshar.beacon.TransportEffects;
 import com.lgmrszd.anshar.util.WeakRef;
@@ -28,6 +29,10 @@ public class PlayerTransportClient {
     private static SoundInstance jumpSound = new TransportJumpSoundInstance(random);
     private static WeakRef<ParticleManager> particleManager = new WeakRef<ParticleManager>(null);
 
+    // helper text tracking
+    private static int timeAtNode = 0;
+    private static BeaconNode prevNode = null;
+
     public static void tick(ClientWorld world) {
         ClientPlayerEntity player = MinecraftClient.getInstance().player;
         if (player == null) return;
@@ -38,7 +43,7 @@ public class PlayerTransportClient {
             if (firstTick) {
                 firstTick = false;
                 playSound(new AmbientEmbedSoundInstance(player, ModResources.EMBED_SPACE_AMBIENT_SOUND_EVENT));
-                particleManager = new WeakRef<ParticleManager>(MinecraftClient.getInstance().particleManager);
+                particleManager = new WeakRef<>(MinecraftClient.getInstance().particleManager);
             }
 
             if (gateTicks == 1) {

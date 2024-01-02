@@ -32,8 +32,9 @@ public class InGameHudMixin {
     
     @Inject(method = "render", at = @At("HEAD"), cancellable = true)
     public void anshar$render(DrawContext context, float tickDelta, CallbackInfo ci) {
-        if (PlayerTransportComponent.KEY.get(client.player).isInNetwork() && !client.options.hudHidden) {
-            var node = PlayerTransportComponent.KEY.get(client.player).getNearestLookedAt();
+        PlayerTransportComponent transportComponent = PlayerTransportComponent.KEY.get(client.player);
+        if (transportComponent.isInNetwork() && !client.options.hudHidden) {
+            var node = transportComponent.getNearestLookedAt();
 
             RenderSystem.enableBlend();
             if (node != null) {
@@ -43,16 +44,22 @@ public class InGameHudMixin {
                 int scaledHeight = context.getScaledWindowHeight();
 
                 context.getMatrices().push();
-                context.getMatrices().translate(scaledWidth / 2, scaledHeight - 20, 0.0f);
+                context.getMatrices().translate(scaledWidth / 2, 0, 0.0f);
                 
-                var nameWidth = textRenderer.getWidth((StringVisitable)node.getName());
                 int rgb = (int)(node.getColor()[0] * 255);
                 rgb = (rgb<<8) + (int)(node.getColor()[1] * 255);
                 rgb = (rgb<<8) + (int)(node.getColor()[2] * 255);
-                context.drawText(textRenderer, node.getName(), -nameWidth/2, 0, rgb, false);
+                anshar$drawText(context, textRenderer, node.getName(), scaledHeight-20, rgb);
 
                 var coords = Text.literal(node.getPos().toShortString());
-                context.drawText(textRenderer, coords, -textRenderer.getWidth((StringVisitable)coords)/2, -9, 0xFFFFFF, false);
+                anshar$drawText(context, textRenderer, coords, scaledHeight-32, 0xFFFFFF);
+
+                // panic instructions
+                if (transportComponent.shouldShowHelp()) {
+                    int helpColor = (int)(0xFF * ((Math.sin(client.player.getWorld().getTime() / 20.0) + 1.0)/2.0)) << 16;
+                    anshar$drawText(context, textRenderer, Text.translatable("anshar.help.transport.gate"), 10, helpColor);
+                    anshar$drawText(context, textRenderer, Text.translatable("anshar.help.transport.exit"), 22, helpColor);
+                }
 
                 context.getMatrices().pop();
                 
@@ -69,6 +76,9 @@ public class InGameHudMixin {
 
             ci.cancel();
         }
-        
+    }
+
+    private void anshar$drawText(DrawContext context, TextRenderer textRenderer, Text text, int verticalPos, int color) {
+        context.drawText(textRenderer, text, -getTextRenderer().getWidth((StringVisitable)text)/2, verticalPos, color, false);
     }
 }

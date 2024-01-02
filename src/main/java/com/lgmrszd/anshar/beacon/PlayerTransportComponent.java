@@ -15,6 +15,7 @@ import com.lgmrszd.anshar.mixin.accessor.ServerPlayNetworkHandlerAccessor;
 import dev.onyxstudios.cca.api.v3.component.ComponentKey;
 import dev.onyxstudios.cca.api.v3.component.ComponentRegistry;
 import dev.onyxstudios.cca.api.v3.component.sync.AutoSyncedComponent;
+import dev.onyxstudios.cca.api.v3.component.tick.ClientTickingComponent;
 import dev.onyxstudios.cca.api.v3.component.tick.ServerTickingComponent;
 import net.fabricmc.fabric.api.networking.v1.PacketByteBufs;
 import net.fabricmc.fabric.api.networking.v1.ServerPlayNetworking;
@@ -41,7 +42,7 @@ import net.minecraft.world.Heightmap;
  * 
  */
 
-public class PlayerTransportComponent implements ServerTickingComponent, AutoSyncedComponent {
+public class PlayerTransportComponent implements ServerTickingComponent, AutoSyncedComponent, ClientTickingComponent {
 
     public static final ComponentKey<PlayerTransportComponent> KEY = ComponentRegistry.getOrCreate(
         new Identifier(MOD_ID, "player_transport"), PlayerTransportComponent.class
@@ -99,8 +100,8 @@ public class PlayerTransportComponent implements ServerTickingComponent, AutoSyn
         x = target.getX() + x;
         z = target.getZ() + z;
 
-        double y = this.player.getWorld().getChunk(target).sampleHeightmap(Heightmap.Type.MOTION_BLOCKING, x, z);
-        this.player.teleport((double)x + 0.5, y+1.5, (double)z + 0.5);
+        double y = this.player.getWorld().getChunk(target).sampleHeightmap(Heightmap.Type.WORLD_SURFACE, x, z);
+        this.player.teleport((double)x + 0.5, y+2, (double)z + 0.5);
 
         this.networkUUID = null;
         this.target = null;
@@ -273,5 +274,29 @@ public class PlayerTransportComponent implements ServerTickingComponent, AutoSyn
         for (var player : player.getWorld().getPlayers()) {
             ServerPlayNetworking.send((ServerPlayerEntity)player, EXPLOSION_PACKET_ID, buf);
         }
+    }
+
+
+    private static final int TICKS_TO_SHOW_HELP = 20 * 20;
+    private int ticksAtNode = 0;
+    private BlockPos prevTarget = null;
+
+    @Override
+    public void clientTick() {
+        // track ticks in network, check if we need to display instructions
+        if (isInNetwork()) {
+            if (prevTarget == null || !prevTarget.equals(target)) {
+                prevTarget = target;
+                ticksAtNode = 0;
+            }
+            ticksAtNode++;
+        } else {
+            prevTarget = null;
+            ticksAtNode = 0;
+        }
+    }
+
+    public final boolean shouldShowHelp(){
+        return ticksAtNode > TICKS_TO_SHOW_HELP;
     }
 }
