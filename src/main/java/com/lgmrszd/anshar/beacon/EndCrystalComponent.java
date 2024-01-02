@@ -1,6 +1,5 @@
 package com.lgmrszd.anshar.beacon;
 
-import com.lgmrszd.anshar.frequency.NetworkManagerComponent;
 import net.minecraft.block.entity.BeaconBlockEntity;
 import net.minecraft.block.entity.EnderChestBlockEntity;
 import net.minecraft.entity.Entity;
@@ -29,30 +28,17 @@ import java.util.Optional;
 import static com.lgmrszd.anshar.Anshar.LOGGER;
 
 public class EndCrystalComponent implements IEndCrystalComponent {
-    private static final int MAX_DISTANCE = 16;
+    public static final int MAX_DISTANCE = 32;
     private BlockPos beaconPos;
     private final EndCrystalEntity endCrystal;
 
-    private boolean shouldUpdateBeacon;
+    private boolean linked;
 
     public EndCrystalComponent(EndCrystalEntity endCrystal) {
         this.endCrystal = endCrystal;
-        shouldUpdateBeacon = true;
+        linked = false;
     }
 
-    private void tryUpdateBeacon() {
-        if (!shouldUpdateBeacon) return;
-        World world = endCrystal.getWorld();
-        if (world == null) return;
-        BlockPos crystalPos = endCrystal.getBlockPos();
-        NetworkManagerComponent.KEY.get(world.getLevelProperties()).getNearestConnectedBeacon(world, crystalPos).ifPresent(beaconBlockEntity -> {
-            BlockPos pos = beaconBlockEntity.getPos();
-            if (!pos.isWithinDistance(crystalPos, MAX_DISTANCE)) return;
-            beaconPos = pos;
-            endCrystal.setBeamTarget(pos.offset(Direction.DOWN, 2));
-        });
-        shouldUpdateBeacon = false;
-    }
 
     private EnderChestBlockEntity getChest() {
         LOGGER.info("Interacted! Searching chest... {} {}", endCrystal.getPos(), endCrystal.getBlockPos());
@@ -85,9 +71,15 @@ public class EndCrystalComponent implements IEndCrystalComponent {
 
     @Override
     public void setBeacon(BlockPos pos) {
-        shouldUpdateBeacon = false;
         beaconPos = pos;
         endCrystal.setBeamTarget(pos.offset(Direction.DOWN, 2));
+        linked = true;
+    }
+
+    public void clearBeacon() {
+        beaconPos = null;
+        endCrystal.setBeamTarget(null);
+        linked = false;
     }
 
     @Override
@@ -127,9 +119,16 @@ public class EndCrystalComponent implements IEndCrystalComponent {
 
     @Override
     public void serverTick() {
-        tryUpdateBeacon();
+        if (!linked) return;
         if (!(endCrystal.getWorld() instanceof ServerWorld serverWorld)) return;
+        if (serverWorld.getTime() % 5 == 0) {
+            if (!(serverWorld.getBlockEntity(beaconPos) instanceof BeaconBlockEntity)) {
+                clearBeacon();
+            }
+        }
         if (serverWorld.getTime() % 10 == 0) {
+//            NetworkManagerComponent.KEY.get(serverWorld.getLevelProperties())
+
             double x = endCrystal.getX();
             double y = endCrystal.getY();
             double z = endCrystal.getZ();
@@ -140,12 +139,14 @@ public class EndCrystalComponent implements IEndCrystalComponent {
 
     @Override
     public void readFromNbt(NbtCompound tag) {
+        linked = tag.getBoolean("linked");
         if (tag.contains("beaconPos"))
             beaconPos = NbtHelper.toBlockPos(tag.getCompound("beaconPos"));
     }
 
     @Override
     public void writeToNbt(NbtCompound tag) {
+        tag.putBoolean("linked", linked);
         if (beaconPos != null)
             tag.put("beaconPos", NbtHelper.fromBlockPos(beaconPos));
     }

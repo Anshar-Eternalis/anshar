@@ -5,12 +5,12 @@ import java.util.List;
 import com.lgmrszd.anshar.ModApi;
 import com.lgmrszd.anshar.beacon.EndCrystalComponent;
 import com.lgmrszd.anshar.beacon.EndCrystalItemContainer;
+import com.lgmrszd.anshar.beacon.IEndCrystalComponent;
+import com.lgmrszd.anshar.frequency.NetworkManagerComponent;
 import net.minecraft.client.item.TooltipContext;
-import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 import net.minecraft.text.Text;
 import org.jetbrains.annotations.Nullable;
-import org.spongepowered.asm.mixin.Intrinsic;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
@@ -29,6 +29,8 @@ import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Box;
 import net.minecraft.world.World;
 import net.minecraft.world.event.GameEvent;
+
+import static com.lgmrszd.anshar.beacon.EndCrystalComponent.MAX_DISTANCE;
 
 @Mixin(EndCrystalItem.class)
 public abstract class EndCrystalItemMixin extends ItemMixin {
@@ -54,13 +56,26 @@ public abstract class EndCrystalItemMixin extends ItemMixin {
                 EndCrystalEntity endCrystalEntity = new EndCrystalEntity(world, d + 0.5, e, f + 0.5);
                 endCrystalEntity.setShowBottom(false);
                 world.spawnEntity(endCrystalEntity);
+                BlockPos crystalPos = endCrystalEntity.getBlockPos();
                 EndCrystalItemContainer container = ModApi.END_CRYSTAL_ITEM.find(context.getStack(), null);
-                if (container != null)
-                    container.getBeaconPos().ifPresent(pos -> EndCrystalComponent.KEY.get(endCrystalEntity).setBeacon(pos));
+                IEndCrystalComponent component = EndCrystalComponent.KEY.get(endCrystalEntity);
+                if (container != null && container.getBeaconPos().isPresent())
+                    container.getBeaconPos().ifPresent(pos -> {
+                        if (pos.isWithinDistance(crystalPos, MAX_DISTANCE)) component.setBeacon(pos);
+                    });
+                else {
+                    NetworkManagerComponent.KEY.get(world.getLevelProperties())
+                            .getNearestConnectedBeacon(world, crystalPos)
+                            .ifPresent(beaconBlockEntity -> {
+                                BlockPos pos = beaconBlockEntity.getPos();
+                                if (pos.isWithinDistance(crystalPos, MAX_DISTANCE))
+                                    component.setBeacon(pos);
+                            });
+                }
                 world.emitGameEvent(context.getPlayer(), GameEvent.ENTITY_PLACE, up);
             }
 
-            context.getStack().decrement(1); 
+            context.getStack().decrement(1);
             ci.setReturnValue(ActionResult.success(world.isClient));
             ci.cancel();
         }
