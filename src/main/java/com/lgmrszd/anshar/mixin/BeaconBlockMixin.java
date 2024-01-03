@@ -44,7 +44,7 @@ public abstract class BeaconBlockMixin extends BlockMixin {
                 world.getBlockEntity(pos, BlockEntityType.BEACON).ifPresent(beacon -> {
                     if (!IBeaconComponent.KEY.get(beacon).isActive()) return;
                     var owner = item.getOwner();
-                    if (owner != null && owner instanceof PlayerEntity player) {
+                    if (owner instanceof PlayerEntity player) {
                         GodsOlympusCompat.doFunny(player, item);
                     }
                 });
