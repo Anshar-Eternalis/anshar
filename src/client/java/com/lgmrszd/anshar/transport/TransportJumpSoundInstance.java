@@ -1,4 +1,6 @@
-package com.lgmrszd.anshar;
+package com.lgmrszd.anshar.transport;
+
+import com.lgmrszd.anshar.ModResources;
 
 import net.minecraft.client.sound.AbstractSoundInstance;
 import net.minecraft.sound.SoundCategory;

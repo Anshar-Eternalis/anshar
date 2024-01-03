@@ -1,5 +1,6 @@
 package com.lgmrszd.anshar;
 
+import com.lgmrszd.anshar.transport.PlayerTransportClient;
 import com.lgmrszd.anshar.transport.PlayerTransportComponent;
 
 import net.fabricmc.api.ClientModInitializer;

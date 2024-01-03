@@ -1,4 +1,4 @@
-package com.lgmrszd.anshar.mixin.client;
+package com.lgmrszd.anshar.mixin.client.render;
 
 import org.spongepowered.asm.mixin.Final;
 import org.spongepowered.asm.mixin.Mixin;

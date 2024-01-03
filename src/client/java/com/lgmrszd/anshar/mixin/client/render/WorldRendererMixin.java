@@ -1,4 +1,4 @@
-package com.lgmrszd.anshar.mixin.client;
+package com.lgmrszd.anshar.mixin.client.render;
 
 import org.joml.Matrix4f;
 import org.spongepowered.asm.mixin.Mixin;

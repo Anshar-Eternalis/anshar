@@ -5,7 +5,7 @@ import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
 
-import com.lgmrszd.anshar.PlayerTransportClient;
+import com.lgmrszd.anshar.transport.PlayerTransportClient;
 import com.lgmrszd.anshar.transport.PlayerTransportComponent;
 
 import net.minecraft.client.network.AbstractClientPlayerEntity;
