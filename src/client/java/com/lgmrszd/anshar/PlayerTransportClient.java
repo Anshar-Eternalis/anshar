@@ -15,6 +15,7 @@ import net.minecraft.client.network.ClientPlayerEntity;
 import net.minecraft.client.particle.ParticleManager;
 import net.minecraft.client.sound.SoundInstance;
 import net.minecraft.client.world.ClientWorld;
+import net.minecraft.command.argument.EntityAnchorArgumentType.EntityAnchor;
 import net.minecraft.network.PacketByteBuf;
 import net.minecraft.particle.ParticleTypes;
 import net.minecraft.util.math.Vec3d;
@@ -34,11 +35,16 @@ public class PlayerTransportClient {
 
         var transport = PlayerTransportComponent.KEY.get(player);
         if (transport.isInNetwork()) {
+            var nearest = transport.getNearestLookedAt();
+
             // audio
             if (firstTick) {
                 firstTick = false;
                 playSound(new AmbientEmbedSoundInstance(player, ModResources.EMBED_SPACE_AMBIENT_SOUND_EVENT));
                 particleManager = new WeakRef<>(MinecraftClient.getInstance().particleManager);
+                if (nearest != null) {
+                    player.lookAt(EntityAnchor.EYES, nearest.getPos().toCenterPos());
+                }
             }
 
             if (gateTicks == 1) {
@@ -46,7 +52,7 @@ public class PlayerTransportClient {
             }
             
             // update particles
-            var nearest = transport.getNearestLookedAt();
+            
 
             for (var node : transport.getJumpCandidates()) {
                 // get vector from player to node pos
