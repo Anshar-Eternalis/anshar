@@ -4,10 +4,10 @@
   "compatibilityLevel": "JAVA_17",
   "client": [
     "AbstractClientPlayerEntityMixin",
-    "BackgroundRendererMixin",
-    "WorldRendererMixin",
-    "InGameHudMixin",
-    "HeldItemRendererMixin",
+    "render.BackgroundRendererMixin",
+    "render.WorldRendererMixin",
+    "render.InGameHudMixin",
+    "render.HeldItemRendererMixin",
     "ItemMixin",
     "EndCrystalItemMixin"
   ],
