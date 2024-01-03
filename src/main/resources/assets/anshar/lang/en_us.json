@@ -2,6 +2,6 @@
     "anshar.help.transport.gate": "Hold forward to enter Star Gate",
     "anshar.help.transport.exit": "Crouch to exit",
 
-    "anshar.tooltip.end_crystal.linked": "Linked to the Beacon at: %d %d %d",
+    "anshar.tooltip.end_crystal.linked": "Linked to beacon at: %d %d %d",
     "anshar.tooltip.end_crystal.linked.distance": "(Distance: %s)"
 }
