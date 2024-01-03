@@ -101,6 +101,7 @@ public class PlayerTransportComponent implements ServerTickingComponent, AutoSyn
         x = target.getX() + x;
         z = target.getZ() + z;
 
+        // WorldChunk.class ((Heightmap)this.heightmaps.get(Heightmap.Type.WORLD_SURFACE)).trackUpdate(j, i, l, state);
         double y = this.player.getWorld().getChunk(target).sampleHeightmap(Heightmap.Type.WORLD_SURFACE, x, z);
         this.player.teleport((double)x + 0.5, y+2, (double)z + 0.5);
 
