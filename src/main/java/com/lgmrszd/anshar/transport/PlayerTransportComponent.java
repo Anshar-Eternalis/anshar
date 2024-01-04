@@ -8,6 +8,7 @@ import java.util.Set;
 import java.util.UUID;
 import java.util.stream.Collectors;
 
+import com.lgmrszd.anshar.Anshar;
 import com.lgmrszd.anshar.beacon.BeaconNode;
 import com.lgmrszd.anshar.frequency.FrequencyNetwork;
 import com.lgmrszd.anshar.frequency.NetworkManagerComponent;
@@ -84,6 +85,7 @@ public class PlayerTransportComponent implements ServerTickingComponent, AutoSyn
         // called on server when player steps on beacon
         this.networkUUID = network.getId();
         this.target = through;
+        if (player instanceof ServerPlayerEntity serverPlayer) Anshar.ENTERED_NETWORK.trigger(serverPlayer);
         KEY.sync(player);
         sendExplosionPacketS2C();
     }
@@ -247,13 +249,14 @@ public class PlayerTransportComponent implements ServerTickingComponent, AutoSyn
             }
         }
         return nearest;
-    };
+    }
 
     public final boolean tryJump() {
         var nearest = getNearestLookedAt();
         if (nearest != null) {
             target = nearest.getPos();
             jumpCandidates.clear();
+            if (player instanceof ServerPlayerEntity serverPlayer) Anshar.NETWORK_JUMP.trigger(serverPlayer);
             KEY.sync(player);
             return true;
         }

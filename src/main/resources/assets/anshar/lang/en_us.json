@@ -1,4 +1,11 @@
 {
+    "advancements.anshar.root.title": "Anshar",
+    "advancements.anshar.root.description": "There's something about these beacons...",
+    "advancements.anshar.network_enter.title": "It's eternity in there!",
+    "advancements.anshar.network_enter.description": "Get sent into the sky",
+    "advancements.anshar.network_jump.title": "Longer than you think",
+    "advancements.anshar.network_jump.description": "Perform a jump between two Star Gates",
+
     "anshar.help.transport.gate": "Hold forward to enter Star Gate",
     "anshar.help.transport.exit": "Crouch to exit",
 
