@@ -3,5 +3,7 @@
     "anshar.help.transport.exit": "Crouch to exit",
 
     "anshar.tooltip.end_crystal.linked": "Linked to beacon at: %d %d %d",
-    "anshar.tooltip.end_crystal.linked.distance": "(Distance: %s)"
+    "anshar.tooltip.end_crystal.linked.distance": "(Distance: %s)",
+
+    "itemGroup.anshar.anshar_group": "Anshar"
 }
