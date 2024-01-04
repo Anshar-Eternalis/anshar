@@ -1,12 +1,15 @@
 package com.lgmrszd.anshar;
 
 import com.lgmrszd.anshar.beacon.BeaconEvents;
+import com.lgmrszd.anshar.config.ServerConfig;
 import com.lgmrszd.anshar.dispenser.ModDispenserBehaviors;
 import com.lgmrszd.anshar.transport.PlayerTransportComponent;
 
 import net.fabricmc.fabric.api.networking.v1.ServerPlayNetworking;
 import net.minecraft.registry.Registries;
 import net.minecraft.registry.Registry;
+
+import static net.fabricmc.fabric.api.event.lifecycle.v1.ServerLifecycleEvents.SYNC_DATA_PACK_CONTENTS;
 
 public class ModRegistration {
     public static void registerAll() {
@@ -27,6 +30,13 @@ public class ModRegistration {
     private static void registerEvents() {
 //        DebugEvents.register();
         BeaconEvents.register();
+        SYNC_DATA_PACK_CONTENTS.register((player, joined) -> {
+            ServerConfig.sendNewValue(
+                    player,
+                    player.getWorld().getGameRules().getInt(Anshar.END_CRYSTAL_LINKING_DISTANCE)
+            );
+        });
+
     }
 
     private static void registerCommands() {

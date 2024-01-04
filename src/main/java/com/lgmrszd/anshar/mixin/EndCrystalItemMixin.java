@@ -2,6 +2,7 @@ package com.lgmrszd.anshar.mixin;
 
 import java.util.List;
 
+import com.lgmrszd.anshar.Anshar;
 import com.lgmrszd.anshar.ModApi;
 import com.lgmrszd.anshar.beacon.EndCrystalComponent;
 import com.lgmrszd.anshar.beacon.EndCrystalItemContainer;
@@ -26,7 +27,6 @@ import net.minecraft.util.math.Box;
 import net.minecraft.world.World;
 import net.minecraft.world.event.GameEvent;
 
-import static com.lgmrszd.anshar.beacon.EndCrystalComponent.MAX_DISTANCE;
 
 @Mixin(EndCrystalItem.class)
 public abstract class EndCrystalItemMixin extends Item {
@@ -53,6 +53,7 @@ public abstract class EndCrystalItemMixin extends Item {
             return;
         } else {
             if (world instanceof ServerWorld) {
+                int maxDistance = world.getGameRules().getInt(Anshar.END_CRYSTAL_LINKING_DISTANCE);
                 EndCrystalEntity endCrystalEntity = new EndCrystalEntity(world, d + 0.5, e, f + 0.5);
                 endCrystalEntity.setShowBottom(false);
                 world.spawnEntity(endCrystalEntity);
@@ -61,14 +62,14 @@ public abstract class EndCrystalItemMixin extends Item {
                 IEndCrystalComponent component = EndCrystalComponent.KEY.get(endCrystalEntity);
                 if (container != null && container.getBeaconPos().isPresent())
                     container.getBeaconPos().ifPresent(pos -> {
-                        if (pos.isWithinDistance(crystalPos, MAX_DISTANCE)) component.setBeacon(pos);
+                        if (pos.isWithinDistance(crystalPos, maxDistance)) component.setBeacon(pos);
                     });
                 else {
                     NetworkManagerComponent.KEY.get(world.getLevelProperties())
                             .getNearestConnectedBeacon(world, crystalPos)
                             .ifPresent(beaconBlockEntity -> {
                                 BlockPos pos = beaconBlockEntity.getPos();
-                                if (pos.isWithinDistance(crystalPos, MAX_DISTANCE))
+                                if (pos.isWithinDistance(crystalPos, maxDistance))
                                     component.setBeacon(pos);
                             });
                 }

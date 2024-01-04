@@ -28,7 +28,6 @@ import java.util.Optional;
 import static com.lgmrszd.anshar.Anshar.LOGGER;
 
 public class EndCrystalComponent implements IEndCrystalComponent {
-    public static final int MAX_DISTANCE = 32;
     private BlockPos beaconPos;
     private final EndCrystalEntity endCrystal;
     private boolean linked;
