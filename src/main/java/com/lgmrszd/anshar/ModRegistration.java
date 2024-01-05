@@ -15,10 +15,6 @@ import net.minecraft.util.Identifier;
 
 public class ModRegistration {
     public static void registerAll() {
-        BeaconEvents.register();
-
-        ModCommands.register();
-
         ModApi.register();
 
         ModDispenserBehaviors.register();
@@ -29,6 +25,7 @@ public class ModRegistration {
 
         Registry.register(Registries.SOUND_EVENT, ModResources.EMBED_SPACE_AMBIENT_SOUND, ModResources.EMBED_SPACE_AMBIENT_SOUND_EVENT);
         Registry.register(Registries.SOUND_EVENT, ModResources.TRANSPORT_JUMP_SOUND, ModResources.TRANSPORT_JUMP_SOUND_EVENT);
+        Registry.register(Registries.PARTICLE_TYPE, Identifier.of(Anshar.MOD_ID, "gate_star"), TransportEffects.GATE_STAR);
 
         registerCommands();
         registerEvents();
@@ -47,6 +44,5 @@ public class ModRegistration {
 
     private static void registerCommands() {
         ModCommands.register();
-        Registry.register(Registries.PARTICLE_TYPE, Identifier.of(Anshar.MOD_ID, "gate_star"), TransportEffects.GATE_STAR);
     }
 }
