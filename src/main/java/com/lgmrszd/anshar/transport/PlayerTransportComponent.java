@@ -14,6 +14,7 @@ import com.lgmrszd.anshar.frequency.FrequencyNetwork;
 import com.lgmrszd.anshar.frequency.NetworkManagerComponent;
 import com.lgmrszd.anshar.mixin.accessor.ServerPlayNetworkHandlerAccessor;
 
+import net.minecraft.advancement.AdvancementEntry;
 import org.joml.Vector3f;
 import dev.onyxstudios.cca.api.v3.component.ComponentKey;
 import dev.onyxstudios.cca.api.v3.component.ComponentRegistry;
@@ -56,6 +57,7 @@ public class PlayerTransportComponent implements ServerTickingComponent, AutoSyn
     private BlockPos target; // make optional? idk
     private final boolean isClient;
     private Set<BeaconNode> jumpCandidates = new HashSet<>();
+    private boolean neverJumped = true;
 
     public PlayerTransportComponent(PlayerEntity player) {
         this.player = player;
@@ -86,7 +88,18 @@ public class PlayerTransportComponent implements ServerTickingComponent, AutoSyn
         // called on server when player steps on beacon
         this.networkUUID = network.getId();
         this.target = through;
-        if (player instanceof ServerPlayerEntity serverPlayer) Anshar.ENTERED_NETWORK.trigger(serverPlayer);
+        if (player instanceof ServerPlayerEntity serverPlayer) {
+            Anshar.ENTERED_NETWORK.trigger(serverPlayer);
+            neverJumped = !serverPlayer
+                    .getAdvancementTracker()
+                    .getProgress(
+                            new AdvancementEntry(
+                                    new Identifier(MOD_ID + "/network_jump"),
+                                    null
+                            )
+                    )
+                    .isDone();
+        }
         KEY.sync(player);
         sendExplosionPacketS2C();
     }
@@ -124,6 +137,7 @@ public class PlayerTransportComponent implements ServerTickingComponent, AutoSyn
                     element -> jumpCandidates.add(BeaconNode.fromNBT((NbtCompound)element))
                 );
             }
+            neverJumped = !tag.contains("never_jumped") || tag.getBoolean("never_jumped");
         } else {
             networkUUID = null;
             target = null;
@@ -140,6 +154,7 @@ public class PlayerTransportComponent implements ServerTickingComponent, AutoSyn
             var nodeList = new NbtList();
             for (BeaconNode node : jumpCandidates) nodeList.add(node.toNBT());
             tag.put("jump_targets", nodeList);
+            tag.putBoolean("never_jumped", neverJumped);
         }
     }
 
@@ -293,6 +308,6 @@ public class PlayerTransportComponent implements ServerTickingComponent, AutoSyn
     }
 
     public final boolean shouldShowHelp(){
-        return ticksAtNode > TICKS_TO_SHOW_HELP;
+        return neverJumped || ticksAtNode > TICKS_TO_SHOW_HELP;
     }
 }
