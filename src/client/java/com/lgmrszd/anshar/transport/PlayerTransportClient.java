@@ -141,8 +141,17 @@ public class PlayerTransportClient {
     public static float getJumpPercentage() { return (float)gateTicks / (float)TICKS_TO_JUMP; }
 
     public static void acceptExplosionPacketS2C(MinecraftClient client, ClientPlayNetworkHandler handler, PacketByteBuf buf, PacketSender responseSender) {
+        if (client.player == null) return;
         var pos = buf.readBlockPos().toCenterPos();
-        client.execute(() -> handler.getWorld().addFireworkParticle(pos.getX(), pos.getY(), pos.getZ(), 0, 0, 0, TransportEffects.TRANSPORT_EXPLOSION_FIREWORK));
+        client.execute(() -> {
+            // TODO This has opposite effect of not showing effect when landing, so I commented it out :/
+            // we really should delay sending the packet by like two ticks
+            // Alternatively if the problem doesn't happen when exiting the network, we can just remove this
+            // (As I made it not create the effect when entering for the player who enters)
+//            var playerPos = MinecraftClient.getInstance().player.getPos();
+//            if (!playerPos.isInRange(pos, PlayerTransportComponent.EXPLOSION_MAX_DISTANCE)) return;
+            handler.getWorld().addFireworkParticle(pos.getX(), pos.getY(), pos.getZ(), 0, 0, 0, TransportEffects.TRANSPORT_EXPLOSION_FIREWORK);
+        });
     }
 
     private static void playSound(SoundInstance sound) {

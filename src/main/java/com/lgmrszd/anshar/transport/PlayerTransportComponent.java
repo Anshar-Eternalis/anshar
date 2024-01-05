@@ -101,12 +101,12 @@ public class PlayerTransportComponent implements ServerTickingComponent, AutoSyn
                     .isDone();
         }
         KEY.sync(player);
-        sendExplosionPacketS2C();
+        sendExplosionPacketS2C(true);
     }
 
     private void exitNetwork() {
         moveToCurrentTarget();
-        sendExplosionPacketS2C();
+        sendExplosionPacketS2C(false);
 
         int x, z;
         do {
@@ -278,11 +278,14 @@ public class PlayerTransportComponent implements ServerTickingComponent, AutoSyn
 
     public static final Identifier JUMP_PACKET_ID = new Identifier(MOD_ID, "player_transport_jump");
     public static final Identifier EXPLOSION_PACKET_ID = new Identifier(MOD_ID, "player_transport_explosion");
+    public static final int EXPLOSION_MAX_DISTANCE = 512;
 
-    public void sendExplosionPacketS2C(){
+    public void sendExplosionPacketS2C(boolean skipOurselves) {
         var buf = PacketByteBufs.create();
         buf.writeBlockPos(target);
         for (var player : player.getWorld().getPlayers()) {
+            if (skipOurselves && this.player.equals(player)) continue;
+            if (!this.player.getPos().isInRange(player.getPos(), EXPLOSION_MAX_DISTANCE)) continue;
             ServerPlayNetworking.send((ServerPlayerEntity)player, EXPLOSION_PACKET_ID, buf);
         }
     }
