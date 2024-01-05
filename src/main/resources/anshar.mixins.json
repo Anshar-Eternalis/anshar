@@ -14,7 +14,6 @@
     "EntityMixin",
     "accessor.BeaconBlockEntityAccessor",
     "accessor.DispenserBlockAccessor",
-    "accessor.EnderChestBEVCMAccessor",
     "accessor.ServerPlayNetworkHandlerAccessor"
   ],
   "injectors": {
