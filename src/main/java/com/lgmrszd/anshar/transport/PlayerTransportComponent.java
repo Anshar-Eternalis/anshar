@@ -14,6 +14,7 @@ import com.lgmrszd.anshar.frequency.FrequencyNetwork;
 import com.lgmrszd.anshar.frequency.NetworkManagerComponent;
 import com.lgmrszd.anshar.mixin.accessor.ServerPlayNetworkHandlerAccessor;
 
+import org.joml.Vector3f;
 import dev.onyxstudios.cca.api.v3.component.ComponentKey;
 import dev.onyxstudios.cca.api.v3.component.ComponentRegistry;
 import dev.onyxstudios.cca.api.v3.component.sync.AutoSyncedComponent;
@@ -102,10 +103,9 @@ public class PlayerTransportComponent implements ServerTickingComponent, AutoSyn
 
         x = target.getX() + x;
         z = target.getZ() + z;
-
-        // WorldChunk.class ((Heightmap)this.heightmaps.get(Heightmap.Type.WORLD_SURFACE)).trackUpdate(j, i, l, state);
+        
         double y = this.player.getWorld().getChunk(target).sampleHeightmap(Heightmap.Type.WORLD_SURFACE, x, z);
-        this.player.teleport((double)x + 0.5, y+2, (double)z + 0.5);
+        this.player.teleport((double)x + 0.5, y+1.5, (double)z + 0.5);
 
         this.networkUUID = null;
         this.target = null;
@@ -173,14 +173,14 @@ public class PlayerTransportComponent implements ServerTickingComponent, AutoSyn
             var network = networkOpt.get();
             var out = new HashSet<BeaconNode>();
             // get list of nodes outside minimum range, sorted by distance from player
-            var candidates = network.getAllNodes().stream().sorted((a, b) -> Double.compare(distanceTo(a), distanceTo(b))).filter(
-                node -> distanceTo(node) > MIN_NODE_SEPARATION_DIST
-            );
+            var candidates = network.getAllNodes().stream()
+                .filter(node -> distanceTo(node) > MIN_NODE_SEPARATION_DIST)
+                .sorted((a, b) -> Double.compare(distanceTo(a), distanceTo(b)));
             // starting from nearest, add to output set as long as not too close to any others in the set
             for (BeaconNode node : candidates.collect(Collectors.toList())) {
                 boolean valid = true;
                 for (BeaconNode prev : out) {
-                    var sep = Math.acos(normedVecToNode(prev).dotProduct(normedVecToNode(node)));
+                    var sep = Math.acos(compassNormToNode(prev).dot(compassNormToNode(node)));
                     if (sep < MIN_NODE_SEPARATION_RADS) {
                         valid = false;
                         break;
@@ -223,11 +223,9 @@ public class PlayerTransportComponent implements ServerTickingComponent, AutoSyn
         }
     }
 
-    public Vec3d normedVecToNode(BeaconNode node) {
+    public Vector3f compassNormToNode(BeaconNode node) {
         // produces a normal vector from the player to the node that is flattened on the xz-plane
-        var nVec = node.getPos().toCenterPos();
-        var vec = new Vec3d(nVec.getX(), player.getPos().getY(), nVec.getZ()).subtract(player.getPos());
-        return vec.multiply(1/vec.length());
+        return node.getPos().toCenterPos().toVector3f().sub(player.getPos().toVector3f()).mul(1, 0, 1).normalize();
     }
 
     public double distanceTo(BeaconNode node) {
@@ -241,8 +239,7 @@ public class PlayerTransportComponent implements ServerTickingComponent, AutoSyn
         double distance = 0;
         BeaconNode nearest = null;
         for (BeaconNode node : jumpCandidates) {
-            
-            var proj = normedVecToNode(node).dotProduct(lookVec);
+            var proj = compassNormToNode(node).dot(lookVec.toVector3f());
             if (proj > distance) {
                 distance = proj;
                 nearest = node;
@@ -276,7 +273,7 @@ public class PlayerTransportComponent implements ServerTickingComponent, AutoSyn
     }
 
 
-    private static final int TICKS_TO_SHOW_HELP = 20 * 20;
+    private static final int TICKS_TO_SHOW_HELP = 20 * 40;
     private int ticksAtNode = 0;
     private BlockPos prevTarget = null;
 

@@ -15,7 +15,7 @@ public class AbstractClientPlayerEntityMixin {
     @Inject(method = "getFovMultiplier", at = @At("HEAD"), cancellable = true)
     public void getFovMultiplier(CallbackInfoReturnable<Float> ci) {
         var transport = PlayerTransportComponent.KEY.get(this);
-        if (transport != null && transport.isInNetwork()) {
+        if (false && transport != null && transport.isInNetwork()) {
             ci.setReturnValue(1.0f + PlayerTransportClient.getJumpPercentage() * 0.5f);
             ci.cancel();
         }

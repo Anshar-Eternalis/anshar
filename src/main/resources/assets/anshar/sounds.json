@@ -8,7 +8,7 @@
     "transport_jump": {
         "subtitle": "subtitles.anshar.transport_jump",
         "sounds": [
-          "anshar:transport_jump"
+            "anshar:transport_arrive_11_5"
         ]
-      }
+    }
   }

@@ -1,7 +1,6 @@
 package com.lgmrszd.anshar.compat;
 
 import java.util.function.BiConsumer;
-import java.util.function.Consumer;
 
 import net.fabricmc.loader.impl.FabricLoaderImpl;
 import net.minecraft.entity.ItemEntity;

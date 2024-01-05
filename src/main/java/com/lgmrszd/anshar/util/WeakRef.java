@@ -5,6 +5,7 @@ import java.util.function.Consumer;
 import java.util.function.Function;
 
 public class WeakRef<T> extends WeakReference<T> {
+    // WeakReference but if it was awesome
 
     public WeakRef(T referent) { super(referent); }
     
