@@ -291,20 +291,43 @@ public class PlayerTransportComponent implements ServerTickingComponent, AutoSyn
     }
 
 
+    // TODO move node tick tracking to client
     private static final int TICKS_TO_SHOW_HELP = 20 * 40;
     private int ticksAtNode = 0;
     private BlockPos prevTarget = null;
+    private boolean clientInNetwork = false;
 
+    // TODO convert these to custom events
+    private Runnable clientEnterCB = null;
+    private Runnable clientTickCB = null;
+    private Runnable clientExitCB = null;
+
+    public void setClientEnterCallback(Runnable cb) { clientEnterCB = cb; }
+    public void setClientTickCallback(Runnable cb) { clientTickCB = cb; }
+    public void setClientExitCallback(Runnable cb) { clientExitCB = cb; }
+    
     @Override
     public void clientTick() {
         // track ticks in network, check if we need to display instructions
+
         if (isInNetwork()) {
+            if (!clientInNetwork) {
+                clientInNetwork = true;
+                if (clientEnterCB != null) clientEnterCB.run();
+            }
+
+            if (clientTickCB != null) clientTickCB.run();
+
             if (prevTarget == null || !prevTarget.equals(target)) {
                 prevTarget = target;
                 ticksAtNode = 0;
             }
             ticksAtNode++;
         } else {
+            if (clientInNetwork) {
+                clientInNetwork = false;
+                if (clientExitCB != null) clientExitCB.run();
+            }
             prevTarget = null;
             ticksAtNode = 0;
         }

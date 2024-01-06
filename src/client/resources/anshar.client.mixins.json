@@ -3,7 +3,6 @@
   "package": "com.lgmrszd.anshar.mixin.client",
   "compatibilityLevel": "JAVA_17",
   "client": [
-    "AbstractClientPlayerEntityMixin",
     "render.BackgroundRendererMixin",
     "render.WorldRendererMixin",
     "render.InGameHudMixin",
