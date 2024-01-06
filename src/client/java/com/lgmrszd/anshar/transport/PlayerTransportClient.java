@@ -88,7 +88,9 @@ public class PlayerTransportClient {
 
         // jump if we ball
         if (gateTicks >= TICKS_TO_JUMP) {
-            ClientPlayNetworking.send(PlayerTransportComponent.JUMP_PACKET_ID, PacketByteBufs.empty());
+            var jumpPacket = PacketByteBufs.create();
+            jumpPacket.writeNbt(nearest.toNBT());
+            ClientPlayNetworking.send(PlayerTransportComponent.JUMP_PACKET_ID, jumpPacket);
             stopSound(jumpSound);
             gateTicks = 0;
             nearest = null;

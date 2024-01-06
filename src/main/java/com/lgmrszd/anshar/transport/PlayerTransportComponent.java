@@ -263,11 +263,9 @@ public class PlayerTransportComponent implements ServerTickingComponent, AutoSyn
         return nearest;
     }
 
-    public final boolean tryJump() {
-        var nearest = getNearestLookedAt();
-        if (nearest != null) {
-            target = nearest.getPos();
-            jumpCandidates.clear();
+    public final boolean tryJump(BeaconNode node) {
+        if (node != null) {
+            target = node.getPos();
             if (player instanceof ServerPlayerEntity serverPlayer) Anshar.NETWORK_JUMP.trigger(serverPlayer);
             KEY.sync(player);
             return true;
