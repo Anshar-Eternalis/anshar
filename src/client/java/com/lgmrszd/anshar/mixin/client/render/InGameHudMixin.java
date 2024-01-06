@@ -7,6 +7,7 @@ import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 
+import com.lgmrszd.anshar.transport.PlayerTransportClient;
 import com.lgmrszd.anshar.transport.PlayerTransportComponent;
 import com.mojang.blaze3d.systems.RenderSystem;
 
@@ -52,13 +53,15 @@ public class InGameHudMixin {
                 anshar$drawText(context, textRenderer, node.getName(), scaledHeight-20, rgb);
 
                 var coords = Text.literal(node.getPos().toShortString());
-                anshar$drawText(context, textRenderer, coords, scaledHeight-32, 0xFFFFFF);
+                anshar$drawText(context, textRenderer, coords.append(" (" + (int)node.getPos().toCenterPos().distanceTo(client.player.getPos()) + ")"), scaledHeight-32, 0xFFFFFF);
 
                 // panic instructions
-                if (transportComponent.shouldShowHelp()) {
-                    int helpColor = (int)(0xFF * ((Math.sin(client.player.getWorld().getTime() / 20.0) + 1.0)/2.0)) << 16;
+                int nodeTicks = PlayerTransportClient.getTicksAtCurrentNode();
+                if (nodeTicks < 20 * 5 || nodeTicks > 20 * 40) {
+                    int helpColor = (int)(0xd3d3d3);
                     anshar$drawText(context, textRenderer, Text.translatable("anshar.help.transport.gate"), 10, helpColor);
                     anshar$drawText(context, textRenderer, Text.translatable("anshar.help.transport.exit"), 22, helpColor);
+                    anshar$drawText(context, textRenderer, Text.translatable("anshar.help.transport.location", node.getName()), 34, helpColor);
                 }
 
                 context.getMatrices().pop();

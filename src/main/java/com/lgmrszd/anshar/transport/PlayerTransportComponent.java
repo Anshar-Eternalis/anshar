@@ -290,11 +290,8 @@ public class PlayerTransportComponent implements ServerTickingComponent, AutoSyn
         }
     }
 
-
-    // TODO move node tick tracking to client
-    private static final int TICKS_TO_SHOW_HELP = 20 * 40;
-    private int ticksAtNode = 0;
-    private BlockPos prevTarget = null;
+    // client component logic
+    // if this gets too complicated split into server and client components under common interface
     private boolean clientInNetwork = false;
 
     // TODO convert these to custom events
@@ -317,23 +314,11 @@ public class PlayerTransportComponent implements ServerTickingComponent, AutoSyn
             }
 
             if (clientTickCB != null) clientTickCB.run();
-
-            if (prevTarget == null || !prevTarget.equals(target)) {
-                prevTarget = target;
-                ticksAtNode = 0;
-            }
-            ticksAtNode++;
         } else {
             if (clientInNetwork) {
                 clientInNetwork = false;
                 if (clientExitCB != null) clientExitCB.run();
             }
-            prevTarget = null;
-            ticksAtNode = 0;
         }
-    }
-
-    public final boolean shouldShowHelp(){
-        return neverJumped || ticksAtNode > TICKS_TO_SHOW_HELP;
     }
 }

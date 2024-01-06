@@ -39,6 +39,7 @@ public class PlayerTransportClient {
     private BeaconNode nearest = null;
     private boolean done = false;
     private int jumpCooldown = 0;
+    private int ticksAtCurrentNode = 0;
 
     public PlayerTransportClient(){
         var client = MinecraftClient.getInstance();
@@ -58,6 +59,8 @@ public class PlayerTransportClient {
             jumpCooldown--;
             return;
         }
+
+        ticksAtCurrentNode++;
 
         // update gate status
         if (player.input.pressingForward) {
@@ -90,6 +93,7 @@ public class PlayerTransportClient {
             gateTicks = 0;
             nearest = null;
             jumpCooldown = 10;
+            ticksAtCurrentNode = 0;
         }
     }
 
@@ -167,5 +171,9 @@ public class PlayerTransportClient {
 
     private void stopSound(SoundInstance sound) {
         MinecraftClient.getInstance().getSoundManager().stop(sound);
+    }
+
+    public static int getTicksAtCurrentNode() {
+        return INSTANCE == null ? 0 : INSTANCE.ticksAtCurrentNode;
     }
 }
