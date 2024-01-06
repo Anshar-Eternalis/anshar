@@ -9,6 +9,8 @@ import net.minecraft.entity.decoration.EndCrystalEntity;
 import net.minecraft.nbt.NbtCompound;
 import net.minecraft.particle.ParticleTypes;
 import net.minecraft.server.world.ServerWorld;
+import net.minecraft.sound.SoundCategory;
+import net.minecraft.sound.SoundEvents;
 import net.minecraft.text.Text;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Box;
@@ -147,6 +149,23 @@ public class BeaconComponent implements IBeaconComponent {
                 if (newFreqID.isValid() && !newFreqID.equals(pyramidFrequency)) {
                     pyramidFrequency = newFreqID;
                     updateNetwork();
+                    serverWorld.spawnParticles(
+                            ParticleTypes.GLOW,
+                            getBeaconPos().toCenterPos().x,
+                            getBeaconPos().toCenterPos().y,
+                            getBeaconPos().toCenterPos().z,
+                            16, 1, 2, 1, 1
+                    );
+                    serverWorld.playSound(
+                            null,
+                            getBeaconPos().toCenterPos().x,
+                            getBeaconPos().toCenterPos().y,
+                            getBeaconPos().toCenterPos().z,
+                            SoundEvents.BLOCK_AMETHYST_BLOCK_RESONATE,
+                            SoundCategory.BLOCKS,
+                            1f,
+                            1f
+                    );
                 }
             }
         }
