@@ -38,6 +38,7 @@ public class PlayerTransportClient {
     private int gateTicks = 0;
     private BeaconNode nearest = null;
     private boolean done = false;
+    private int jumpCooldown = 0;
 
     public PlayerTransportClient(){
         var client = MinecraftClient.getInstance();
@@ -53,13 +54,17 @@ public class PlayerTransportClient {
     
     public void tick() {
         if (done) return;
+        if (jumpCooldown > 0) {
+            jumpCooldown--;
+            return;
+        }
 
         // update gate status
         if (player.input.pressingForward) {
             // wait for a nearest to be set
             if (nearest == null && gateTicks == 0 && player.getWorld().getTime() % 10 == 0) {
-                nearest = transport.getNearestLookedAt();
-                playSound(jumpSound);
+                nearest = transport.getNearestLookedAt(); // should rename to something like "jumpTarget"
+                if (nearest != null) playSound(jumpSound);
             }
         } else {
             gateTicks = 0;
@@ -84,6 +89,7 @@ public class PlayerTransportClient {
             stopSound(jumpSound);
             gateTicks = 0;
             nearest = null;
+            jumpCooldown = 10;
         }
     }
 
