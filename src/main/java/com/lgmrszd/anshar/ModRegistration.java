@@ -1,6 +1,5 @@
 package com.lgmrszd.anshar;
 
-import com.lgmrszd.anshar.beacon.BeaconEvents;
 import com.lgmrszd.anshar.config.ServerConfig;
 import com.lgmrszd.anshar.dispenser.ModDispenserBehaviors;
 import com.lgmrszd.anshar.transport.PlayerTransportComponent;
@@ -33,7 +32,6 @@ public class ModRegistration {
 
     private static void registerEvents() {
 //        DebugEvents.register();
-        BeaconEvents.register();
         SYNC_DATA_PACK_CONTENTS.register((player, joined) -> {
             ServerConfig.sendNewValue(
                     player,
