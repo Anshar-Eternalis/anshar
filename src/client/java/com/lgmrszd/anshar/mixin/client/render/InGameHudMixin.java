@@ -3,6 +3,7 @@ package com.lgmrszd.anshar.mixin.client.render;
 import org.spongepowered.asm.mixin.Final;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Shadow;
+import org.spongepowered.asm.mixin.Unique;
 import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
@@ -52,8 +53,8 @@ public class InGameHudMixin {
                 rgb = (rgb<<8) + (int)(node.getColor()[2] * 255);
                 anshar$drawText(context, textRenderer, node.getName(), scaledHeight-20, rgb);
 
-                var coords = Text.literal(node.getPos().toShortString());
-                anshar$drawText(context, textRenderer, coords.append(" (" + (int)node.getPos().toCenterPos().distanceTo(client.player.getPos()) + ")"), scaledHeight-32, 0xFFFFFF);
+                var coords = Text.literal(node.getPos().toShortString()).append(" (" + (int) transportComponent.distanceTo(node) + ")");
+                anshar$drawText(context, textRenderer, coords, scaledHeight-32, 0xFFFFFF);
 
                 // panic instructions
                 int nodeTicks = PlayerTransportClient.getTicksAtCurrentNode();
@@ -81,6 +82,7 @@ public class InGameHudMixin {
         }
     }
 
+    @Unique
     private void anshar$drawText(DrawContext context, TextRenderer textRenderer, Text text, int verticalPos, int color) {
         context.drawText(textRenderer, text, -getTextRenderer().getWidth((StringVisitable)text)/2, verticalPos, color, false);
     }
