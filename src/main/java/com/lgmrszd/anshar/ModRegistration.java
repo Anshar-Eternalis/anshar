@@ -9,7 +9,10 @@ import net.fabricmc.fabric.api.networking.v1.ServerPlayNetworking;
 import net.minecraft.registry.Registries;
 import net.minecraft.registry.Registry;
 
+import static net.fabricmc.fabric.api.entity.event.v1.ServerLivingEntityEvents.ALLOW_DEATH;
 import static net.fabricmc.fabric.api.event.lifecycle.v1.ServerLifecycleEvents.SYNC_DATA_PACK_CONTENTS;
+
+import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.util.Identifier;
 
 public class ModRegistration {
@@ -37,6 +40,14 @@ public class ModRegistration {
                     player,
                     player.getWorld().getGameRules().getInt(Anshar.END_CRYSTAL_LINKING_DISTANCE)
             );
+        });
+        ALLOW_DEATH.register((entity, damageSource, damageAmount) -> {
+            if (!(entity instanceof ServerPlayerEntity serverPlayer)) return true;
+            PlayerTransportComponent component = PlayerTransportComponent.KEY.get(serverPlayer);
+            if (component.isInNetwork()) {
+                component.exitNetwork();
+            }
+            return true;
         });
     }
 

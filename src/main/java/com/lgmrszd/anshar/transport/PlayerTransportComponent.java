@@ -104,7 +104,7 @@ public class PlayerTransportComponent implements ServerTickingComponent, AutoSyn
         sendExplosionPacketS2C(true);
     }
 
-    private void exitNetwork() {
+    public void exitNetwork() {
         moveToCurrentTarget();
         sendExplosionPacketS2C(false);
 
