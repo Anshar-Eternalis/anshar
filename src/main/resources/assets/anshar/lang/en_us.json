@@ -2,8 +2,8 @@
     "advancements.anshar.root.title": "Anshar",
     "advancements.anshar.root.description": "Where do the Beacons' beams go?",
     "advancements.anshar.network_enter.title": "My god, it's full of stars!",
-    "advancements.anshar.network_enter.description": "Use a Beacon to embed yourself into the cosmos",
-    "advancements.anshar.network_jump.title": "The farthest you've ever traveled without moving at all",
+    "advancements.anshar.network_enter.description": "Use a Beacon to embed yourself within the cosmos",
+    "advancements.anshar.network_jump.title": "Infinite Improbability",
     "advancements.anshar.network_jump.description": "Perform a jump between two Star Gates",
 
     "anshar.help.transport.gate": "Hold forward to enter Star Gate",
