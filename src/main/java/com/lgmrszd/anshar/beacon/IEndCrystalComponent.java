@@ -9,6 +9,7 @@ import net.minecraft.util.ActionResult;
 import net.minecraft.util.Hand;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.math.BlockPos;
+import net.minecraft.util.math.Vec3d;
 
 import java.util.Optional;
 
@@ -18,6 +19,8 @@ public interface IEndCrystalComponent extends ServerTickingComponent {
     ComponentKey<IEndCrystalComponent> KEY = ComponentRegistry.getOrCreate(
             new Identifier(MOD_ID, "end_crystal"), IEndCrystalComponent.class
     );
+
+    Vec3d getPos();
 
     boolean onCrystalDamage(DamageSource source);
 

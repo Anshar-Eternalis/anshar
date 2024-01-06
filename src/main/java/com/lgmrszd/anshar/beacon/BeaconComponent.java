@@ -1,14 +1,17 @@
 package com.lgmrszd.anshar.beacon;
 
+import com.lgmrszd.anshar.Anshar;
 import com.lgmrszd.anshar.frequency.*;
 import com.lgmrszd.anshar.mixin.accessor.BeaconBlockEntityAccessor;
 
 import net.minecraft.block.entity.BeaconBlockEntity;
+import net.minecraft.entity.decoration.EndCrystalEntity;
 import net.minecraft.nbt.NbtCompound;
 import net.minecraft.particle.ParticleTypes;
 import net.minecraft.server.world.ServerWorld;
 import net.minecraft.text.Text;
 import net.minecraft.util.math.BlockPos;
+import net.minecraft.util.math.Box;
 import net.minecraft.util.math.Vec3d;
 import net.minecraft.util.math.Vec3i;
 import net.minecraft.world.World;
@@ -159,5 +162,24 @@ public class BeaconComponent implements IBeaconComponent {
     @Override
     public float[] topColor() {
         return cachedColor.clone();
+    }
+
+    @Override
+    public List<IEndCrystalComponent> getConnectedEndCrystals() {
+        World world = beaconBlockEntity.getWorld();
+        if (world == null) return Collections.emptyList();
+        BlockPos beaconPos = getBeaconPos();
+        int maxDistance = world.getGameRules().getInt(Anshar.END_CRYSTAL_LINKING_DISTANCE);
+        return world
+                .getEntitiesByClass(
+                        EndCrystalEntity.class,
+                        new Box(beaconPos).expand(maxDistance + 1),
+                        entity -> true
+                ).stream().map(EndCrystalComponent.KEY::get)
+                .filter(iEndCrystalComponent ->
+                        iEndCrystalComponent.getConnectedBeacon().map(
+                                pos -> pos.equals(beaconPos)).orElse(false
+                        )
+                ).toList();
     }
 }

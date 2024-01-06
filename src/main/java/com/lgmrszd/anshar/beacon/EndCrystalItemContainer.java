@@ -3,6 +3,7 @@ package com.lgmrszd.anshar.beacon;
 import com.lgmrszd.anshar.Anshar;
 import com.lgmrszd.anshar.frequency.NetworkManagerComponent;
 import net.minecraft.block.Blocks;
+import net.minecraft.block.entity.BeaconBlockEntity;
 import net.minecraft.block.entity.BlockEntity;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.decoration.EndCrystalEntity;
@@ -11,6 +12,7 @@ import net.minecraft.item.ItemStack;
 import net.minecraft.item.ItemUsageContext;
 import net.minecraft.nbt.NbtCompound;
 import net.minecraft.nbt.NbtHelper;
+import net.minecraft.particle.ParticleTypes;
 import net.minecraft.server.world.ServerWorld;
 import net.minecraft.sound.SoundCategory;
 import net.minecraft.sound.SoundEvents;
@@ -25,6 +27,8 @@ import java.util.List;
 import java.util.Optional;
 
 public class EndCrystalItemContainer {
+    // TODO: make a config value
+    private static final int crystalsPerBeacon = 4;
     private final ItemStack stack;
     public EndCrystalItemContainer(ItemStack itemStack) {
         stack = itemStack;
@@ -72,6 +76,22 @@ public class EndCrystalItemContainer {
 
 
             return beaconPos.map(pos -> {
+                if (world.getBlockEntity(pos) instanceof BeaconBlockEntity bbe) {
+                    List<IEndCrystalComponent> crystals = IBeaconComponent.KEY.get(bbe).getConnectedEndCrystals();
+                    if (crystals.size() >= crystalsPerBeacon) {
+                        // Highlight current End Crystals
+                        // TODO make a more visible effect
+                        crystals.forEach(iEndCrystalComponent -> serverWorld.spawnParticles(
+                                ParticleTypes.POOF,
+                                iEndCrystalComponent.getPos().x+0.5,
+                                iEndCrystalComponent.getPos().y+1,
+                                iEndCrystalComponent.getPos().z+0.5,
+                                5, 0, 0.5, 0, 0.5
+                        ));
+                        playDenySound(serverWorld, x, y, z);
+                        return ActionResult.FAIL;
+                    }
+                }
                 EndCrystalEntity endCrystalEntity = new EndCrystalEntity(world, x + 0.5, y, z + 0.5);
                 endCrystalEntity.setShowBottom(false);
                 world.spawnEntity(endCrystalEntity);
@@ -81,19 +101,22 @@ public class EndCrystalItemContainer {
                 context.getStack().decrement(1);
                 return ActionResult.SUCCESS;
             }).orElseGet(() -> {
-                serverWorld.playSound(
-                        null,
-                        x, y, z,
-                        SoundEvents.BLOCK_NOTE_BLOCK_BASS.value(),
-                        SoundCategory.BLOCKS,
-                        1f,
-                        0.5f
-                );
+                playDenySound(serverWorld, x, y, z);
                 return ActionResult.FAIL;
             });
         }
-
         return ActionResult.PASS;
+    }
+
+    private static void playDenySound(ServerWorld serverWorld, Double x, Double y, Double z) {
+        serverWorld.playSound(
+                null,
+                x, y, z,
+                SoundEvents.BLOCK_NOTE_BLOCK_BASS.value(),
+                SoundCategory.BLOCKS,
+                1f,
+                0.5f
+        );
     }
 
     private void saveBeaconPos(BlockPos pos) {

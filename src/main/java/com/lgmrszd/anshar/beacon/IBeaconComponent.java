@@ -12,6 +12,7 @@ import net.minecraft.text.Text;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.math.BlockPos;
 
+import java.util.List;
 import java.util.Optional;
 
 public interface IBeaconComponent extends ServerTickingComponent {
@@ -32,4 +33,6 @@ public interface IBeaconComponent extends ServerTickingComponent {
     Text getName();
 
     float[] topColor();
+
+    List<IEndCrystalComponent> getConnectedEndCrystals();
 }

@@ -82,6 +82,11 @@ public class EndCrystalComponent implements IEndCrystalComponent {
     }
 
     @Override
+    public Vec3d getPos() {
+        return endCrystal.getPos();
+    }
+
+    @Override
     public boolean onCrystalDamage(DamageSource source) {
         return getConnectedBeacon().map(pos -> {
             World world = endCrystal.getWorld();
