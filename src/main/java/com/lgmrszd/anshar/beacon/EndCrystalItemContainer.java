@@ -39,8 +39,9 @@ public class EndCrystalItemContainer {
         if (player == null) return ActionResult.PASS;
         World world = context.getWorld();
         BlockPos targetPos = context.getBlockPos();
+        if (!player.isSneaking()) return ActionResult.PASS;
         // Case 1: Binding End Crystal to a beacon / clearing
-        if (player.isSneaking() && world.getBlockState(targetPos).isOf(Blocks.BEACON)) {
+        if (world.getBlockState(targetPos).isOf(Blocks.BEACON)) {
             if (world.isClient()) return ActionResult.SUCCESS;
             boolean samePos = getBeaconPos().map(pos -> pos.equals(targetPos)).orElse(false);
             if (samePos) {
@@ -54,7 +55,7 @@ public class EndCrystalItemContainer {
         }
         // Case 1.5: clear if pos is present and cancel further stuff
         boolean isChest = world.getBlockState(targetPos).isOf(Blocks.ENDER_CHEST);
-        if (player.isSneaking() && getBeaconPos().isPresent() && !isChest) {
+        if (getBeaconPos().isPresent() && !isChest) {
             if (world.isClient()) return ActionResult.SUCCESS;
             clearBeaconPos();
             player.sendMessage(Text.translatable("anshar.tooltip.end_crystal.use.unlinked"));
@@ -62,7 +63,7 @@ public class EndCrystalItemContainer {
         }
         // Case 2: placing on top of an Ender Chest
         // VanillaCopy: EndCrystalItem
-        if (player.isSneaking() && isChest) {
+        if (isChest) {
             BlockPos up = targetPos.up();
             if (!world.isAir(up)) return ActionResult.PASS;
 
@@ -127,14 +128,14 @@ public class EndCrystalItemContainer {
         );
     }
 
-    private void saveBeaconPos(BlockPos pos) {
+    public void saveBeaconPos(BlockPos pos) {
         NbtCompound tag = stack.getOrCreateNbt();
         NbtCompound posTag = NbtHelper.fromBlockPos(pos);
         tag.put("BeaconPos", posTag);
         stack.setNbt(tag);
     }
 
-    private void clearBeaconPos() {
+    public void clearBeaconPos() {
         NbtCompound tag = stack.getNbt();
         if (tag == null) return;
         tag.remove("BeaconPos");
