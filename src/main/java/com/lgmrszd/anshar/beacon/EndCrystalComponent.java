@@ -25,7 +25,6 @@ import net.minecraft.world.World;
 
 import java.util.Optional;
 
-import static com.lgmrszd.anshar.Anshar.LOGGER;
 
 public class EndCrystalComponent implements IEndCrystalComponent {
     private BlockPos beaconPos;
@@ -40,7 +39,6 @@ public class EndCrystalComponent implements IEndCrystalComponent {
 
 
     private EnderChestBlockEntity getChest() {
-        LOGGER.info("Interacted! Searching chest... {} {}", endCrystal.getPos(), endCrystal.getBlockPos());
         if (!(endCrystal.getWorld().getBlockEntity(endCrystal.getBlockPos().down())
                 instanceof EnderChestBlockEntity enderChestBlockEntity))
             return null;
@@ -53,7 +51,7 @@ public class EndCrystalComponent implements IEndCrystalComponent {
         if (enderChestBlockEntity == null)
             return ActionResult.PASS;
         World world = endCrystal.getWorld();
-//        if (world instanceof ServerWorld serverWorld)) return ActionResult.SUCCESS;
+//        if (world instanceof ServerWorld serverWorld) return ActionResult.SUCCESS;
         BlockPos pos = enderChestBlockEntity.getPos();
         return world.getBlockState(pos).onUse(
                 world,
@@ -79,6 +77,14 @@ public class EndCrystalComponent implements IEndCrystalComponent {
         beaconPos = null;
         endCrystal.setBeamTarget(null);
         linked = false;
+    }
+
+    private void clearBeam() {
+        endCrystal.setBeamTarget(null);
+    }
+
+    private void reactivateBeam() {
+        endCrystal.setBeamTarget(beaconPos.offset(Direction.DOWN, 2));
     }
 
     @Override
@@ -123,11 +129,15 @@ public class EndCrystalComponent implements IEndCrystalComponent {
 
     @Override
     public void serverTick() {
-        if (!linked) return;
         if (!(endCrystal.getWorld() instanceof ServerWorld serverWorld)) return;
         if (serverWorld.getTime() % 5 == 0) {
-            if (!(serverWorld.getBlockEntity(beaconPos) instanceof BeaconBlockEntity)) {
-                clearBeacon();
+            if (linked && !(serverWorld.getBlockEntity(beaconPos) instanceof BeaconBlockEntity)) {
+                clearBeam();
+                linked = false;
+            }
+            else if (!linked && (serverWorld.getBlockEntity(beaconPos) instanceof BeaconBlockEntity)) {
+                reactivateBeam();
+                linked = true;
             }
         }
         if (serverWorld.getTime() % 5 == 0) {
