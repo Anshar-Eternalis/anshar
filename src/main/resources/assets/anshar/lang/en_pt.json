@@ -10,6 +10,8 @@
     "anshar.help.transport.exit": "Stab [%s] to hop off th' Sea o' Void",
     "anshar.help.transport.location": "Resonatin' with: %s",
 
+    "anshar.tooltip.end_crystal.use.linked": "Buoy o' light mark written",
+    "anshar.tooltip.end_crystal.use.unlinked": "Buoy o' light mark cleared",
     "anshar.tooltip.end_crystal.linked": "Snoopin' ta Buoy o' light over landmark: %d %d %d",
     "anshar.tooltip.end_crystal.linked.distance": "(Far much: %s)",
 

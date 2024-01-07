@@ -10,6 +10,8 @@
     "anshar.help.transport.exit": "Tap [%s] to escape from scari void....",
     "anshar.help.transport.location": "Vibin wizz: %s",
 
+    "anshar.tooltip.end_crystal.use.linked": "Bacon place saved",
+    "anshar.tooltip.end_crystal.use.unlinked": "Bacon place forgotn",
     "anshar.tooltip.end_crystal.linked": "Lookin 2 teh Bacon at: %d %d %d",
     "anshar.tooltip.end_crystal.linked.distance": "(So far!!!: %s)",
 

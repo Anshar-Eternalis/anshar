@@ -10,6 +10,8 @@
     "anshar.help.transport.exit": "Нажмите [%s] чтобы вернуться",
     "anshar.help.transport.location": "Резонирует вместе с: %s",
 
+    "anshar.tooltip.end_crystal.use.linked": "Позиция маяка сохранена",
+    "anshar.tooltip.end_crystal.use.unlinked": "Позиция маяка очищена",
     "anshar.tooltip.end_crystal.linked": "Привязан к Маяку на: %d %d %d",
     "anshar.tooltip.end_crystal.linked.distance": "(Расстояние: %s)",
 

@@ -45,10 +45,10 @@ public class EndCrystalItemContainer {
             boolean samePos = getBeaconPos().map(pos -> pos.equals(targetPos)).orElse(false);
             if (samePos) {
                 clearBeaconPos();
-                player.sendMessage(Text.literal("Cleared Beacon position"));
+                player.sendMessage(Text.translatable("anshar.tooltip.end_crystal.use.unlinked"));
             } else {
                 saveBeaconPos(targetPos);
-                player.sendMessage(Text.literal("Saved Beacon position"));
+                player.sendMessage(Text.translatable("anshar.tooltip.end_crystal.use.linked"));
             }
             return ActionResult.SUCCESS;
         }
