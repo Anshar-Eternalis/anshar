@@ -52,8 +52,8 @@ public class InGameHudMixin {
                 rgb = (rgb<<8) + (int)(node.getColor()[1] * 255);
                 rgb = (rgb<<8) + (int)(node.getColor()[2] * 255);
                 anshar$drawText(context, textRenderer, node.getName(), scaledHeight-20, rgb);
-
-                var coords = Text.literal(node.getPos().toShortString()).append(" (" + (int) transportComponent.distanceTo(node) + ")");
+                
+                var coords = Text.literal(node.getPos().toShortString()).copy().append(" (" + (int) transportComponent.distanceTo(node) + ")");
                 anshar$drawText(context, textRenderer, coords, scaledHeight-32, 0xFFFFFF);
 
                 // panic instructions

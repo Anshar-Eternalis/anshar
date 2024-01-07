@@ -15,6 +15,8 @@ import com.lgmrszd.anshar.frequency.NetworkManagerComponent;
 import com.lgmrszd.anshar.mixin.accessor.ServerPlayNetworkHandlerAccessor;
 
 import net.minecraft.advancement.AdvancementEntry;
+
+import org.jetbrains.annotations.Nullable;
 import org.joml.Vector3f;
 import dev.onyxstudios.cca.api.v3.component.ComponentKey;
 import dev.onyxstudios.cca.api.v3.component.ComponentRegistry;
@@ -54,15 +56,15 @@ public class PlayerTransportComponent implements ServerTickingComponent, AutoSyn
 
     private final PlayerEntity player;
     private UUID networkUUID;
-    private BlockPos target; // make optional? idk
+    @Nullable private BeaconNode target; // TODO: store BeaconNode (even if artificial)
     private final boolean isClient;
     private Set<BeaconNode> jumpCandidates = new HashSet<>();
     private boolean neverJumped = true;
 
     public PlayerTransportComponent(PlayerEntity player) {
         this.player = player;
-        this.target = player.getBlockPos();
         this.isClient = player.getServer() == null;
+        this.target = BeaconNode.makeFake(player.getBlockPos());
     }
 
     private NetworkManagerComponent getNetworkManager(){
@@ -87,7 +89,7 @@ public class PlayerTransportComponent implements ServerTickingComponent, AutoSyn
     public void enterNetwork(FrequencyNetwork network, BlockPos through) {
         // called on server when player steps on beacon
         this.networkUUID = network.getId();
-        this.target = through;
+        this.target = network.getNode(through).orElse(BeaconNode.makeFake(through));
         if (player instanceof ServerPlayerEntity serverPlayer) {
             Anshar.ENTERED_NETWORK.trigger(serverPlayer);
             neverJumped = !serverPlayer
@@ -114,10 +116,10 @@ public class PlayerTransportComponent implements ServerTickingComponent, AutoSyn
             z = player.getRandom().nextBetween(-1, 1);
         } while (x==0&&z==0);
 
-        x = target.getX() + x;
-        z = target.getZ() + z;
+        x = target.getPos().getX() + x;
+        z = target.getPos().getZ() + z;
         
-        double y = this.player.getWorld().getChunk(target).sampleHeightmap(Heightmap.Type.WORLD_SURFACE, x, z);
+        double y = this.player.getWorld().getChunk(target.getPos()).sampleHeightmap(Heightmap.Type.WORLD_SURFACE, x, z);
         this.player.teleport((double)x + 0.5, y+1.5, (double)z + 0.5);
 
         this.networkUUID = null;
@@ -130,7 +132,7 @@ public class PlayerTransportComponent implements ServerTickingComponent, AutoSyn
     public void readFromNbt(NbtCompound tag) {
         if (tag.containsUuid("network")) {
             networkUUID = tag.getUuid("network");
-            if (tag.contains("target")) this.target = BlockPos.fromLong(tag.getLong("target"));
+            if (tag.contains("target")) this.target = BeaconNode.fromNBT(tag.getCompound("target"));
             if (tag.contains("jump_targets")) {
                 this.jumpCandidates = new HashSet<>();
                 tag.getList("jump_targets", NbtElement.COMPOUND_TYPE).forEach(
@@ -149,7 +151,7 @@ public class PlayerTransportComponent implements ServerTickingComponent, AutoSyn
     public void writeToNbt(NbtCompound tag) {
         if (networkUUID != null) {
             tag.putUuid("network", networkUUID);
-            if (target != null) tag.putLong("target", target.asLong());
+            if (target != null) tag.put("target", target.toNBT());
             
             var nodeList = new NbtList();
             for (BeaconNode node : jumpCandidates) nodeList.add(node.toNBT());
@@ -174,7 +176,7 @@ public class PlayerTransportComponent implements ServerTickingComponent, AutoSyn
     }
 
     private void moveToCurrentTarget() {
-        this.player.teleport(target.getX(), 10000, target.getZ());
+        this.player.teleport(target.getPos().getX(), 10000, target.getPos().getZ());
     }
 
     private static final double MIN_NODE_SEPARATION_RADS = Math.PI * 0.25;
@@ -265,7 +267,7 @@ public class PlayerTransportComponent implements ServerTickingComponent, AutoSyn
 
     public final boolean tryJump(BeaconNode node) {
         if (node != null) {
-            target = node.getPos();
+            target = node;
             if (player instanceof ServerPlayerEntity serverPlayer) Anshar.NETWORK_JUMP.trigger(serverPlayer);
             KEY.sync(player);
             return true;
@@ -280,7 +282,7 @@ public class PlayerTransportComponent implements ServerTickingComponent, AutoSyn
 
     public void sendExplosionPacketS2C(boolean skipOurselves) {
         var buf = PacketByteBufs.create();
-        buf.writeBlockPos(target);
+        buf.writeBlockPos(target.getPos());
         for (var player : player.getWorld().getPlayers()) {
             if (skipOurselves && this.player.equals(player)) continue;
             if (!this.player.getPos().isInRange(player.getPos(), EXPLOSION_MAX_DISTANCE)) continue;

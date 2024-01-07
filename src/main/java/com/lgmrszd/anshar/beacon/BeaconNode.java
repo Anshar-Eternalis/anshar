@@ -50,6 +50,10 @@ public class BeaconNode {
         return tag;
     }
 
+    public static BeaconNode makeFake(BlockPos pos) {
+        return new BeaconNode(pos, Text.literal("?????"), new float[]{0, 0, 0});
+    }
+
     public Text getName() {return name;}
     public float[] getColor() {return color;}
     public BlockPos getPos() {return pos;}
