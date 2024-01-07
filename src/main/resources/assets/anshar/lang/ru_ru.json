@@ -1,7 +1,17 @@
 {
-    "anshar.help.transport.gate": "Удерживайте вперёд чтобы войти в Звёздные Врата",
-    "anshar.help.transport.exit": "Используйте приседание чтобы выйти",
+    "advancements.anshar.root.title": "Anshar",
+    "advancements.anshar.root.description": "Куда ведёт луч Маяка?",
+    "advancements.anshar.network_enter.title": "Здесь всё в звёздах!",
+    "advancements.anshar.network_enter.description": "Используйте Маяк, чтобы стать частью космоса",
+    "advancements.anshar.network_jump.title": "Бесконечная невероятность",
+    "advancements.anshar.network_jump.description": "Выполните прыжок между двумя звёздными вратами",
+
+    "anshar.help.transport.gate": "Удерживайте [%s] чтобы переместиться в Звёздные Врата",
+    "anshar.help.transport.exit": "Нажмите [%s] чтобы вернуться",
+    "anshar.help.transport.location": "Резонирует вместе с: %s",
 
     "anshar.tooltip.end_crystal.linked": "Привязан к Маяку на: %d %d %d",
-    "anshar.tooltip.end_crystal.linked.distance": "(Расстояние: %s)"
+    "anshar.tooltip.end_crystal.linked.distance": "(Расстояние: %s)",
+
+    "itemGroup.anshar.anshar_group": "Anshar"
 }
