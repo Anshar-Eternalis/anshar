@@ -276,6 +276,8 @@ public class PlayerTransportComponent implements ServerTickingComponent, AutoSyn
         
     }
 
+    @Nullable public BeaconNode getTarget(){ return target; }
+
     public static final Identifier JUMP_PACKET_ID = new Identifier(MOD_ID, "player_transport_jump");
     public static final Identifier EXPLOSION_PACKET_ID = new Identifier(MOD_ID, "player_transport_explosion");
     public static final int EXPLOSION_MAX_DISTANCE = 512;

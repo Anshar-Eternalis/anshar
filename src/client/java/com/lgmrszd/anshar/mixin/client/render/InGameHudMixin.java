@@ -8,6 +8,7 @@ import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 
+import com.lgmrszd.anshar.beacon.BeaconNode;
 import com.lgmrszd.anshar.transport.PlayerTransportClient;
 import com.lgmrszd.anshar.transport.PlayerTransportComponent;
 import com.mojang.blaze3d.systems.RenderSystem;
@@ -62,7 +63,8 @@ public class InGameHudMixin {
                     int helpColor = (int)(0xd3d3d3);
                     anshar$drawText(context, textRenderer, Text.translatable("anshar.help.transport.gate"), 10, helpColor);
                     anshar$drawText(context, textRenderer, Text.translatable("anshar.help.transport.exit"), 22, helpColor);
-                    anshar$drawText(context, textRenderer, Text.translatable("anshar.help.transport.location", node.getName()), 34, helpColor);
+                    BeaconNode target = transportComponent.getTarget();
+                    if (target != null) anshar$drawText(context, textRenderer, Text.translatable("anshar.help.transport.location", target.getName()), 34, helpColor);
                 }
 
                 context.getMatrices().pop();
