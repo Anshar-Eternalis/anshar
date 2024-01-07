@@ -39,7 +39,7 @@ public class EndCrystalItemContainer {
         if (player == null) return ActionResult.PASS;
         World world = context.getWorld();
         BlockPos targetPos = context.getBlockPos();
-        // Case 1: Binding End Crystal to a beacon
+        // Case 1: Binding End Crystal to a beacon / clearing
         if (player.isSneaking() && world.getBlockState(targetPos).isOf(Blocks.BEACON)) {
             if (world.isClient()) return ActionResult.SUCCESS;
             boolean samePos = getBeaconPos().map(pos -> pos.equals(targetPos)).orElse(false);
@@ -52,9 +52,17 @@ public class EndCrystalItemContainer {
             }
             return ActionResult.SUCCESS;
         }
+        // Case 1.5: clear if pos is present and cancel further stuff
+        boolean isChest = world.getBlockState(targetPos).isOf(Blocks.ENDER_CHEST);
+        if (player.isSneaking() && getBeaconPos().isPresent() && !isChest) {
+            if (world.isClient()) return ActionResult.SUCCESS;
+            clearBeaconPos();
+            player.sendMessage(Text.translatable("anshar.tooltip.end_crystal.use.unlinked"));
+            return ActionResult.SUCCESS;
+        }
         // Case 2: placing on top of an Ender Chest
         // VanillaCopy: EndCrystalItem
-        if (player.isSneaking() && world.getBlockState(targetPos).isOf(Blocks.ENDER_CHEST)) {
+        if (player.isSneaking() && isChest) {
             BlockPos up = targetPos.up();
             if (!world.isAir(up)) return ActionResult.PASS;
 
