@@ -63,7 +63,8 @@ public class PlayerTransportClient {
         ticksAtCurrentNode++;
 
         // update gate status
-        if (player.input.pressingForward) {
+        // check sneak to ensure jump and exit don't happen at the same time
+        if (player.input.pressingForward && !player.input.sneaking) {
             // wait for a nearest to be set
             if (nearest == null && gateTicks == 0 && player.getWorld().getTime() % 10 == 0) {
                 nearest = transport.getNearestLookedAt(); // should rename to something like "jumpTarget"
