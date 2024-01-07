@@ -69,6 +69,7 @@ public class PlayerTransportClient {
                 nearest = transport.getNearestLookedAt(); // should rename to something like "jumpTarget"
                 if (nearest != null) playSound(jumpSound);
             }
+            if (nearest != null) gateTicks++;
         } else {
             gateTicks = 0;
             nearest = null;
@@ -80,9 +81,7 @@ public class PlayerTransportClient {
             for (var node : transport.getJumpCandidates()) {
                 drawGate(player, node, false, gateTicks);
             }
-            gateTicks = 0;
         } else {
-            gateTicks++;
             drawGate(player, nearest, true, gateTicks);
         }
 
@@ -109,8 +108,10 @@ public class PlayerTransportClient {
     private static final int BASE_PARTICLE_COUNT = 3;
     private static final float GATE_OPENING_COEF = 3f;
     private static final float PARTICLE_VEL_COEF = .1f;
+
     private void drawGate(ClientPlayerEntity player, BeaconNode node, boolean nearest, int ticks) {
         // TODO replace some of this with making gates particle emitters/shaders
+
         // get vector from player to node pos
         var transport = PlayerTransportComponent.KEY.get(player);
         Vector3f normalGirl = transport.compassNormToNode(node);
@@ -151,7 +152,7 @@ public class PlayerTransportClient {
         }
     }
 
-    // public static float getJumpPercentage() { return (float)gateTicks / (float)TICKS_TO_JUMP; }
+    public float getJumpPercentage() { return (float)gateTicks / (float)TICKS_TO_JUMP; }
 
     public static void acceptExplosionPacketS2C(MinecraftClient client, ClientPlayNetworkHandler handler, PacketByteBuf buf, PacketSender responseSender) {
         if (client.player == null) return;
@@ -175,7 +176,5 @@ public class PlayerTransportClient {
         MinecraftClient.getInstance().getSoundManager().stop(sound);
     }
 
-    public static int getTicksAtCurrentNode() {
-        return INSTANCE == null ? 0 : INSTANCE.ticksAtCurrentNode;
-    }
+    public static PlayerTransportClient getInstance() { return INSTANCE; }
 }

@@ -23,6 +23,7 @@ import net.minecraft.text.StringVisitable;
 import net.minecraft.text.Text;
 import net.minecraft.util.math.MathHelper;
 
+
 @Mixin(InGameHud.class)
 public class InGameHudMixin {
     @Shadow @Final private MinecraftClient client;
@@ -39,46 +40,48 @@ public class InGameHudMixin {
         if (transportComponent.isInNetwork() && !client.options.hudHidden) {
             var node = transportComponent.getNearestLookedAt();
 
-            RenderSystem.enableBlend();
-            if (node != null) {
-                
-                TextRenderer textRenderer = getTextRenderer();
-                int scaledWidth = context.getScaledWindowWidth();
-                int scaledHeight = context.getScaledWindowHeight();
+            // calculate text fade
+            var transportClient = PlayerTransportClient.getInstance();
+            int alpha = transportClient == null ? 255 : Math.max(0, 255 - (int)(2 * 255 * PlayerTransportClient.getInstance().getJumpPercentage()));
 
-                context.getMatrices().push();
-                context.getMatrices().translate(scaledWidth / 2, 0, 0.0f);
-                
-                int rgb = (int)(node.getColor()[0] * 255);
-                rgb = (rgb<<8) + (int)(node.getColor()[1] * 255);
-                rgb = (rgb<<8) + (int)(node.getColor()[2] * 255);
-                anshar$drawText(context, textRenderer, node.getName(), scaledHeight-20, rgb);
-                
-                var coords = Text.literal(node.getPos().toShortString()).copy().append(" (" + (int) transportComponent.distanceTo(node) + ")");
-                anshar$drawText(context, textRenderer, coords, scaledHeight-32, 0xFFFFFF);
+            if (alpha > 3) {
+                alpha <<= 24;
+                RenderSystem.enableBlend();
+                if (node != null) {
+                    TextRenderer textRenderer = getTextRenderer();
+                    int scaledWidth = context.getScaledWindowWidth();
+                    int scaledHeight = context.getScaledWindowHeight();
 
-                // panic instructions
-                int nodeTicks = PlayerTransportClient.getTicksAtCurrentNode();
-                if (nodeTicks < 20 * 5 || nodeTicks > 20 * 40) {
-                    int helpColor = (int)(0xd3d3d3);
-                    anshar$drawText(context, textRenderer, Text.translatable("anshar.help.transport.gate"), 10, helpColor);
-                    anshar$drawText(context, textRenderer, Text.translatable("anshar.help.transport.exit"), 22, helpColor);
+                    context.getMatrices().push();
+                    context.getMatrices().translate(scaledWidth / 2, 0, 0.0f);
+                    
+                    int rgb = (int)(node.getColor()[0] * 255);
+                    rgb = (rgb<<8) + (int)(node.getColor()[1] * 255);
+                    rgb = (rgb<<8) + (int)(node.getColor()[2] * 255);
+                    anshar$drawText(context, textRenderer, node.getName(), scaledHeight-20, rgb + alpha);
+                    
+                    var coords = Text.literal(node.getPos().toShortString()).copy().append(" (" + (int) transportComponent.distanceTo(node) + ")");
+                    anshar$drawText(context, textRenderer, coords, scaledHeight-32, 0xFFFFFF + alpha);
+
+                    // panic instructions
+                    int helpColor = 0x707070 + alpha;
+                    anshar$drawText(context, textRenderer, Text.translatable("anshar.help.transport.gate", Text.keybind("key.forward")), 10, helpColor);
+                    anshar$drawText(context, textRenderer, Text.translatable("anshar.help.transport.exit", Text.keybind("key.sneak")), 22, helpColor);
                     BeaconNode target = transportComponent.getTarget();
                     if (target != null) anshar$drawText(context, textRenderer, Text.translatable("anshar.help.transport.location", target.getName()), 34, helpColor);
+                    
+                    context.getMatrices().pop();
                 }
-
-                context.getMatrices().pop();
                 
+                // allow chat rendering
+                Window window = this.client.getWindow();
+                int n = MathHelper.floor((double)(this.client.mouse.getX() * (double)window.getScaledWidth() / (double)window.getWidth()));
+                int p = MathHelper.floor((double)(this.client.mouse.getY() * (double)window.getScaledHeight() / (double)window.getHeight()));
+                this.client.getProfiler().push("chat");
+                this.chatHud.render(context, this.ticks, n, p);
+                this.client.getProfiler().pop();
+                RenderSystem.disableBlend();
             }
-            
-            // allow chat rendering
-            Window window = this.client.getWindow();
-            int n = MathHelper.floor((double)(this.client.mouse.getX() * (double)window.getScaledWidth() / (double)window.getWidth()));
-            int p = MathHelper.floor((double)(this.client.mouse.getY() * (double)window.getScaledHeight() / (double)window.getHeight()));
-            this.client.getProfiler().push("chat");
-            this.chatHud.render(context, this.ticks, n, p);
-            this.client.getProfiler().pop();
-            RenderSystem.disableBlend();
 
             ci.cancel();
         }
