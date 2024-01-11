@@ -31,15 +31,16 @@ public class PlayerTransportClient {
     public static void exitNetworkCallback(){ INSTANCE.onExit(); INSTANCE = null; }
 
     private final ParticleManager particleManager;
+    private final PlayerTransportAudioClient audioManager = new PlayerTransportAudioClient();
     private final ClientPlayerEntity player;
     private final PlayerTransportComponent transport;
+    // private final TransportAudioManager audioManager = new TransportAudioManager();
 
-    private SoundInstance jumpSound = new TransportJumpSoundInstance(random);
+    
     private int gateTicks = 0;
     private BeaconNode nearest = null;
     private boolean done = false;
     private int jumpCooldown = 0;
-    private int ticksAtCurrentNode = 0;
 
     public PlayerTransportClient(){
         var client = MinecraftClient.getInstance();
@@ -49,7 +50,7 @@ public class PlayerTransportClient {
         this.nearest = transport.getNearestLookedAt();
 
         // first tick behavior
-        playSound(new AmbientEmbedSoundInstance(player, ModResources.EMBED_SPACE_AMBIENT_SOUND_EVENT));
+        audioManager.playAmbient();
         if (nearest != null) player.lookAt(EntityAnchor.EYES, nearest.getPos().toCenterPos());
     }
     
@@ -60,21 +61,19 @@ public class PlayerTransportClient {
             return;
         }
 
-        ticksAtCurrentNode++;
-
         // update gate status
         // check sneak to ensure jump and exit don't happen at the same time
         if (player.input.pressingForward && !player.input.sneaking) {
             // wait for a nearest to be set
             if (nearest == null && gateTicks == 0 && player.getWorld().getTime() % 10 == 0) {
                 nearest = transport.getNearestLookedAt(); // should rename to something like "jumpTarget"
-                if (nearest != null) playSound(jumpSound);
+                if (nearest != null) audioManager.playJump();
             }
             if (nearest != null) gateTicks++;
         } else {
             gateTicks = 0;
             nearest = null;
-            stopSound(jumpSound);
+            audioManager.stopJump();
         }
 
         // draw nearest gate only if jumping, otherwise draw all
@@ -91,16 +90,15 @@ public class PlayerTransportClient {
             var jumpPacket = PacketByteBufs.create();
             jumpPacket.writeNbt(nearest.toNBT());
             ClientPlayNetworking.send(PlayerTransportComponent.JUMP_PACKET_ID, jumpPacket);
-            stopSound(jumpSound);
+            audioManager.stopJump();
             gateTicks = 0;
             nearest = null;
             jumpCooldown = 10;
-            ticksAtCurrentNode = 0;
         }
     }
 
     private void onExit() {
-        stopSound(jumpSound);
+        audioManager.stopJump();
         done = true;
     }
     

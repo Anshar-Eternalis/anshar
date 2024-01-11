@@ -13,6 +13,7 @@ import net.fabricmc.fabric.api.client.particle.v1.ParticleFactoryRegistry;
 import net.minecraft.client.network.ClientPlayerEntity;
 
 public class AnsharClient implements ClientModInitializer {
+
 	@Override
 	public void onInitializeClient() {
 		ClientPlayNetworking.registerGlobalReceiver(
@@ -32,5 +33,4 @@ public class AnsharClient implements ClientModInitializer {
 			}
 		});
 	}
-
 }
