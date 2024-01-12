@@ -13,7 +13,6 @@ import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.network.ClientPlayNetworkHandler;
 import net.minecraft.client.network.ClientPlayerEntity;
 import net.minecraft.client.particle.ParticleManager;
-import net.minecraft.client.sound.SoundInstance;
 import net.minecraft.command.argument.EntityAnchorArgumentType.EntityAnchor;
 import net.minecraft.network.PacketByteBuf;
 import net.minecraft.util.math.random.Random;
@@ -31,7 +30,7 @@ public class PlayerTransportClient {
     public static void exitNetworkCallback(){ INSTANCE.onExit(); INSTANCE = null; }
 
     private final ParticleManager particleManager;
-    private final PlayerTransportAudioClient audioManager = new PlayerTransportAudioClient();
+    private final PlayerTransportAudioClient audioManager = new PlayerTransportAudioClient(this);
     private final ClientPlayerEntity player;
     private final PlayerTransportComponent transport;
     // private final TransportAudioManager audioManager = new TransportAudioManager();
@@ -50,7 +49,6 @@ public class PlayerTransportClient {
         this.nearest = transport.getNearestLookedAt();
 
         // first tick behavior
-        audioManager.playAmbient();
         if (nearest != null) player.lookAt(EntityAnchor.EYES, nearest.getPos().toCenterPos());
     }
     
@@ -94,11 +92,14 @@ public class PlayerTransportClient {
             gateTicks = 0;
             nearest = null;
             jumpCooldown = 10;
+            audioManager.reset();
+        } else {
+            audioManager.tick();
         }
     }
 
     private void onExit() {
-        audioManager.stopJump();
+        audioManager.stopAll();
         done = true;
     }
     
@@ -165,14 +166,6 @@ public class PlayerTransportClient {
 //            if (!playerPos.isInRange(pos, PlayerTransportComponent.EXPLOSION_MAX_DISTANCE)) return;
             handler.getWorld().addFireworkParticle(pos.getX(), pos.getY(), pos.getZ(), 0, 0, 0, TransportEffects.TRANSPORT_EXPLOSION_FIREWORK);
         });
-    }
-
-    private void playSound(SoundInstance sound) {
-        MinecraftClient.getInstance().getSoundManager().play(sound);
-    }
-
-    private void stopSound(SoundInstance sound) {
-        MinecraftClient.getInstance().getSoundManager().stop(sound);
     }
 
     public static PlayerTransportClient getInstance() { return INSTANCE; }

@@ -14,9 +14,9 @@
     "eternal_tunes": {
         "subtitle": "subtitles.anshar.eternal_tunes",
         "sounds": [
-            "anshar:tunes/beep_boop.ogg",
-            "anshar:tunes/lithium_drops.ogg",
-            "anshar:tunes/melancholy_mimir.ogg"
+            "anshar:tunes/lithium_drops",
+            "anshar:tunes/melancholy_mimir",
+            "anshar:tunes/beep_boop"
         ]
     }
   }

@@ -37,6 +37,8 @@ public class ModRegistration {
 
         Registry.register(Registries.SOUND_EVENT, ModResources.EMBED_SPACE_AMBIENT_SOUND, ModResources.EMBED_SPACE_AMBIENT_SOUND_EVENT);
         Registry.register(Registries.SOUND_EVENT, ModResources.TRANSPORT_JUMP_SOUND, ModResources.TRANSPORT_JUMP_SOUND_EVENT);
+        Registry.register(Registries.SOUND_EVENT, ModResources.EMBED_SPACE_MUSIC, ModResources.EMBED_SPACE_MUSIC_EVENT);
+
         Registry.register(Registries.PARTICLE_TYPE, Identifier.of(Anshar.MOD_ID, "gate_star"), TransportEffects.GATE_STAR);
 
         registerCommands();

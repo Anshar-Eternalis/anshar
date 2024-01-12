@@ -8,7 +8,8 @@
     "render.InGameHudMixin",
     "render.HeldItemRendererMixin",
     "ItemMixin",
-    "EndCrystalItemMixin"
+    "EndCrystalItemMixin",
+    "audio.SoundSystemMixin"
   ],
   "injectors": {
     "defaultRequire": 1
