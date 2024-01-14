@@ -1,5 +1,6 @@
 package com.lgmrszd.anshar;
 
+import com.lgmrszd.anshar.beacon.BeaconComponentClient;
 import com.lgmrszd.anshar.config.client.ServerConfigSync;
 import com.lgmrszd.anshar.transport.PlayerTransportClient;
 import com.lgmrszd.anshar.transport.PlayerTransportComponent;
@@ -8,6 +9,7 @@ import com.lgmrszd.anshar.transport.TransportGateParticle;
 
 import net.fabricmc.api.ClientModInitializer;
 import net.fabricmc.fabric.api.client.event.lifecycle.v1.ClientEntityEvents;
+import net.fabricmc.fabric.api.client.event.lifecycle.v1.ClientTickEvents;
 import net.fabricmc.fabric.api.client.networking.v1.ClientPlayNetworking;
 import net.fabricmc.fabric.api.client.particle.v1.ParticleFactoryRegistry;
 import net.minecraft.client.network.ClientPlayerEntity;
@@ -22,6 +24,11 @@ public class AnsharClient implements ClientModInitializer {
 		);
 
 		ServerConfigSync.registerReceivers();
+
+		BeaconComponentClient.init();
+		ClientTickEvents.END_CLIENT_TICK.register(client -> {
+			BeaconComponentClient.clientGlobalTick();
+		});
 
 		ParticleFactoryRegistry.getInstance().register(TransportEffects.GATE_STAR, TransportGateParticle.Factory::new);
 

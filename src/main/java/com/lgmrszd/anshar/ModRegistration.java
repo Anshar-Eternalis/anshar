@@ -1,5 +1,6 @@
 package com.lgmrszd.anshar;
 
+import com.lgmrszd.anshar.beacon.BeaconComponent;
 import com.lgmrszd.anshar.beacon.BeaconNode;
 import com.lgmrszd.anshar.beacon.EndCrystalItemContainer;
 import com.lgmrszd.anshar.config.ServerConfig;
@@ -9,6 +10,7 @@ import com.lgmrszd.anshar.transport.TransportEffects;
 
 import net.fabricmc.fabric.api.event.player.UseItemCallback;
 import net.fabricmc.fabric.api.networking.v1.ServerPlayNetworking;
+import net.minecraft.block.entity.BeaconBlockEntity;
 import net.minecraft.item.ItemStack;
 import net.minecraft.item.Items;
 import net.minecraft.registry.Registries;
@@ -22,6 +24,7 @@ import net.minecraft.text.Text;
 import net.minecraft.util.Hand;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.TypedActionResult;
+import net.minecraft.util.math.BlockPos;
 
 public class ModRegistration {
     public static void registerAll() {
@@ -33,6 +36,27 @@ public class ModRegistration {
 
         ServerPlayNetworking.registerGlobalReceiver(PlayerTransportComponent.JUMP_PACKET_ID, 
             (server, player, b, packet, d) -> server.execute(() -> PlayerTransportComponent.KEY.get(player).tryJump(BeaconNode.fromNBT(packet.readNbt())))
+        );
+
+        ServerPlayNetworking.registerGlobalReceiver(BeaconComponent.ENTER_PACKET_ID,
+                (server, player, b, packet, d) -> {
+//                    NbtCompound nbt = packet.readNbt();
+//                    if (nbt == null) return;
+//                    BeaconNode node = BeaconNode.fromNBT(nbt);
+                    BlockPos pos = packet.readBlockPos();
+                    server.execute(() -> {
+                        if (!(player.getWorld().getBlockEntity(pos) instanceof BeaconBlockEntity bbe)) return;
+                        BeaconComponent.KEY.get(bbe).getFrequencyNetwork().ifPresent(frequencyNetwork ->
+                                PlayerTransportComponent.KEY.get(player).enterNetwork(frequencyNetwork, pos)
+                        );
+                    });
+//                    UUID freqUUID = packet.readUuid();
+//                    server.execute(() -> {
+//                        NetworkManagerComponent.KEY.get(player.getWorld().getLevelProperties()).getNetwork(freqUUID).ifPresent(frequencyNetwork -> {
+//                            PlayerTransportComponent.KEY.get(player).enterNetwork(frequencyNetwork, pos);
+//                        });
+//                    });
+                }
         );
 
         Registry.register(Registries.SOUND_EVENT, ModResources.EMBED_SPACE_AMBIENT_SOUND, ModResources.EMBED_SPACE_AMBIENT_SOUND_EVENT);

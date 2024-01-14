@@ -12,6 +12,7 @@ import net.minecraft.server.world.ServerWorld;
 import net.minecraft.sound.SoundCategory;
 import net.minecraft.sound.SoundEvents;
 import net.minecraft.text.Text;
+import net.minecraft.util.Identifier;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Box;
 import net.minecraft.util.math.Vec3d;
@@ -19,8 +20,15 @@ import net.minecraft.util.math.Vec3i;
 import net.minecraft.world.World;
 
 import java.util.*;
+import java.util.function.Consumer;
+
+import static com.lgmrszd.anshar.Anshar.MOD_ID;
 
 public class BeaconComponent implements IBeaconComponent {
+    public static final Identifier ENTER_PACKET_ID = new Identifier(MOD_ID, "player_transport_enter");
+    protected static Consumer<BeaconComponent> clientTick = bc -> {};
+
+    private static final double beamWidth = 0.25;
     private final BeaconBlockEntity beaconBlockEntity;
 
     private IFrequencyIdentifier pyramidFrequency;
@@ -112,6 +120,21 @@ public class BeaconComponent implements IBeaconComponent {
         pyramidFrequency = NullFrequencyIdentifier.get();
         updateNetwork();
         active = false;
+    }
+
+    protected Box beamBoundingBox() {
+        double x = getBeaconPos().toCenterPos().x;
+        double y = getBeaconPos().toCenterPos().y;
+        double z = getBeaconPos().toCenterPos().z;
+        return new Box(
+                x - beamWidth, y, z - beamWidth,
+                x + beamWidth, 1000, z + beamWidth
+        );
+    }
+
+    @Override
+    public void clientTick() {
+        clientTick.accept(this);
     }
 
     @Override
