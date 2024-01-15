@@ -27,8 +27,6 @@ import java.util.List;
 import java.util.Optional;
 
 public class EndCrystalItemContainer {
-    // TODO: make a config value
-    private static final int crystalsPerBeacon = 4;
     private final ItemStack stack;
     public EndCrystalItemContainer(ItemStack itemStack) {
         stack = itemStack;
@@ -73,7 +71,7 @@ public class EndCrystalItemContainer {
             List<Entity> list = world.getOtherEntities(null, new Box(x, y, z, x + 1.0, y + 2.0, z + 1.0));
             if (!list.isEmpty()) return ActionResult.FAIL;
             if (!(world instanceof ServerWorld serverWorld)) return ActionResult.PASS;
-            int maxDistance = ServerConfig.EndCrystalMaxDistance.get();
+            int maxDistance = ServerConfig.endCrystalMaxDistance.get();
 
 
             Optional<BlockPos> beaconPos = getBeaconPos()
@@ -87,7 +85,7 @@ public class EndCrystalItemContainer {
             return beaconPos.map(pos -> {
                 if (world.getBlockEntity(pos) instanceof BeaconBlockEntity bbe) {
                     List<IEndCrystalComponent> crystals = IBeaconComponent.KEY.get(bbe).getConnectedEndCrystals();
-                    if (crystals.size() >= crystalsPerBeacon) {
+                    if (crystals.size() >= ServerConfig.endCrystalsPerBeacon.get()) {
                         // Highlight current End Crystals
                         // TODO make a more visible effect
                         crystals.forEach(iEndCrystalComponent -> serverWorld.spawnParticles(

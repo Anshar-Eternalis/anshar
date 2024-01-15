@@ -25,7 +25,7 @@ public abstract class EndCrystalItemMixin extends ItemMixin {
     public void anshar$addToTooltip(ItemStack stack, @Nullable World world, List<Text> tooltip, TooltipContext context, CallbackInfo ci) {
         EndCrystalItemContainer container = ModApi.END_CRYSTAL_ITEM.find(stack, null);
         if (container == null || MinecraftClient.getInstance().player == null) return;
-        int maxDistance = ServerConfig.EndCrystalMaxDistance.get();
+        int maxDistance = ServerConfig.endCrystalMaxDistance.get();
         container.getBeaconPos().ifPresent(pos -> {
             Vec3d playerPos = MinecraftClient.getInstance().player.getPos();
             double distance = playerPos.distanceTo(pos.toCenterPos());

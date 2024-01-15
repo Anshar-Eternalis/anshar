@@ -211,7 +211,7 @@ public class BeaconComponent implements IBeaconComponent {
         World world = beaconBlockEntity.getWorld();
         if (world == null) return Collections.emptyList();
         BlockPos beaconPos = getBeaconPos();
-        int maxDistance = ServerConfig.EndCrystalMaxDistance.get();
+        int maxDistance = ServerConfig.endCrystalMaxDistance.get();
         return world
                 .getEntitiesByClass(
                         EndCrystalEntity.class,
