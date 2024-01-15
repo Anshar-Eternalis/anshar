@@ -1,6 +1,6 @@
 package com.lgmrszd.anshar.beacon;
 
-import com.lgmrszd.anshar.Anshar;
+import com.lgmrszd.anshar.config.ServerConfig;
 import com.lgmrszd.anshar.frequency.*;
 import com.lgmrszd.anshar.mixin.accessor.BeaconBlockEntityAccessor;
 
@@ -211,7 +211,7 @@ public class BeaconComponent implements IBeaconComponent {
         World world = beaconBlockEntity.getWorld();
         if (world == null) return Collections.emptyList();
         BlockPos beaconPos = getBeaconPos();
-        int maxDistance = world.getGameRules().getInt(Anshar.END_CRYSTAL_LINKING_DISTANCE);
+        int maxDistance = ServerConfig.EndCrystalMaxDistance.get();
         return world
                 .getEntitiesByClass(
                         EndCrystalEntity.class,

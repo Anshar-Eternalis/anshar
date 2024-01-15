@@ -8,6 +8,7 @@ import com.lgmrszd.anshar.dispenser.ModDispenserBehaviors;
 import com.lgmrszd.anshar.transport.PlayerTransportComponent;
 import com.lgmrszd.anshar.transport.TransportEffects;
 
+import fuzs.forgeconfigapiport.fabric.api.neoforge.v4.NeoForgeConfigRegistry;
 import net.fabricmc.fabric.api.event.player.UseItemCallback;
 import net.fabricmc.fabric.api.networking.v1.ServerPlayNetworking;
 import net.minecraft.block.entity.BeaconBlockEntity;
@@ -17,7 +18,6 @@ import net.minecraft.registry.Registries;
 import net.minecraft.registry.Registry;
 
 import static net.fabricmc.fabric.api.entity.event.v1.ServerLivingEntityEvents.ALLOW_DEATH;
-import static net.fabricmc.fabric.api.event.lifecycle.v1.ServerLifecycleEvents.SYNC_DATA_PACK_CONTENTS;
 
 import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.text.Text;
@@ -25,6 +25,7 @@ import net.minecraft.util.Hand;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.TypedActionResult;
 import net.minecraft.util.math.BlockPos;
+import net.neoforged.fml.config.ModConfig;
 
 public class ModRegistration {
     public static void registerAll() {
@@ -33,6 +34,9 @@ public class ModRegistration {
         ModDispenserBehaviors.register();
 
         ModGroup.register();
+
+        NeoForgeConfigRegistry.INSTANCE.register(Anshar.MOD_ID, ModConfig.Type.SERVER, ServerConfig.CONFIG_SPEC);
+
 
         ServerPlayNetworking.registerGlobalReceiver(PlayerTransportComponent.JUMP_PACKET_ID, 
             (server, player, b, packet, d) -> server.execute(() -> PlayerTransportComponent.KEY.get(player).tryJump(BeaconNode.fromNBT(packet.readNbt())))
@@ -71,12 +75,6 @@ public class ModRegistration {
 
     private static void registerEvents() {
 //        DebugEvents.register();
-        SYNC_DATA_PACK_CONTENTS.register((player, joined) -> {
-            ServerConfig.sendNewValue(
-                    player,
-                    player.getWorld().getGameRules().getInt(Anshar.END_CRYSTAL_LINKING_DISTANCE)
-            );
-        });
         ALLOW_DEATH.register((entity, damageSource, damageAmount) -> {
             if (!(entity instanceof ServerPlayerEntity serverPlayer)) return true;
             PlayerTransportComponent component = PlayerTransportComponent.KEY.get(serverPlayer);

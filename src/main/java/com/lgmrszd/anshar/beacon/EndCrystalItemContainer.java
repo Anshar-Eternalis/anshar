@@ -1,6 +1,6 @@
 package com.lgmrszd.anshar.beacon;
 
-import com.lgmrszd.anshar.Anshar;
+import com.lgmrszd.anshar.config.ServerConfig;
 import com.lgmrszd.anshar.frequency.NetworkManagerComponent;
 import net.minecraft.block.Blocks;
 import net.minecraft.block.entity.BeaconBlockEntity;
@@ -73,7 +73,7 @@ public class EndCrystalItemContainer {
             List<Entity> list = world.getOtherEntities(null, new Box(x, y, z, x + 1.0, y + 2.0, z + 1.0));
             if (!list.isEmpty()) return ActionResult.FAIL;
             if (!(world instanceof ServerWorld serverWorld)) return ActionResult.PASS;
-            int maxDistance = world.getGameRules().getInt(Anshar.END_CRYSTAL_LINKING_DISTANCE);
+            int maxDistance = ServerConfig.EndCrystalMaxDistance.get();
 
 
             Optional<BlockPos> beaconPos = getBeaconPos()

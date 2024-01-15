@@ -1,7 +1,6 @@
 package com.lgmrszd.anshar;
 
 import com.lgmrszd.anshar.beacon.BeaconComponentClient;
-import com.lgmrszd.anshar.config.client.ServerConfigSync;
 import com.lgmrszd.anshar.transport.PlayerTransportClient;
 import com.lgmrszd.anshar.transport.PlayerTransportComponent;
 import com.lgmrszd.anshar.transport.TransportEffects;
@@ -22,8 +21,6 @@ public class AnsharClient implements ClientModInitializer {
 			PlayerTransportComponent.EXPLOSION_PACKET_ID, 
 			PlayerTransportClient::acceptExplosionPacketS2C
 		);
-
-		ServerConfigSync.registerReceivers();
 
 		BeaconComponentClient.init();
 		ClientTickEvents.END_CLIENT_TICK.register(client -> {
