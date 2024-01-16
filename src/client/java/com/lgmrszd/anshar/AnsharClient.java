@@ -34,6 +34,7 @@ public class AnsharClient implements ClientModInitializer {
 				var transport = PlayerTransportComponent.KEY.get(player);
 				transport.setClientEnterCallback(PlayerTransportClient::enterNetworkCallback);
 				transport.setClientTickCallback(PlayerTransportClient::tickCallback);
+				transport.setClientExitCallback(PlayerTransportClient::exitNetworkCallback);
 			}
 		});
 	}
