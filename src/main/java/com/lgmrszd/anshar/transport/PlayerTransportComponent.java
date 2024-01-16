@@ -120,7 +120,11 @@ public class PlayerTransportComponent implements ServerTickingComponent, AutoSyn
         z = target.getPos().getZ() + z;
         
         double y = this.player.getWorld().getChunk(target.getPos()).sampleHeightmap(Heightmap.Type.WORLD_SURFACE, x, z);
-        this.player.teleport((double)x + 0.5, y+1.5, (double)z + 0.5);
+        BlockPos exit = new BlockPos(x, (int)y, z);
+        while (! (this.player.getWorld().isAir(exit) || this.player.getWorld().isAir(exit.up()))) exit = exit.up();
+
+
+        this.player.teleport(0.5 + exit.getX(), 1.5 + exit.getY(), 0.5 + exit.getZ());
 
         this.networkUUID = null;
         this.target = null;
