@@ -56,7 +56,7 @@ public class PlayerTransportComponent implements ServerTickingComponent, AutoSyn
 
     private final PlayerEntity player;
     private UUID networkUUID;
-    @Nullable private BeaconNode target; // TODO: store BeaconNode (even if artificial)
+    @Nullable private BeaconNode target;
     private final boolean isClient;
     private Set<BeaconNode> jumpCandidates = new HashSet<>();
     private boolean neverJumped = true;
