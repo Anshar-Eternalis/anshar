@@ -9,6 +9,7 @@ import dev.onyxstudios.cca.api.v3.component.ComponentKey;
 import dev.onyxstudios.cca.api.v3.component.ComponentRegistry;
 import dev.onyxstudios.cca.api.v3.component.tick.ClientTickingComponent;
 import dev.onyxstudios.cca.api.v3.component.tick.ServerTickingComponent;
+import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.text.Text;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.math.BlockPos;
@@ -33,9 +34,9 @@ public interface IBeaconComponent extends ClientTickingComponent, ServerTickingC
 
     Text getName();
 
+    void tryPutPlayerIntoNetwork(ServerPlayerEntity player);
+
     float[] topColor();
 
     List<IEndCrystalComponent> getConnectedEndCrystals();
-
-//    Box beamBoundingBox();
 }

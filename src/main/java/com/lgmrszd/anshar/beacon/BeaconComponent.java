@@ -4,10 +4,16 @@ import com.lgmrszd.anshar.config.ServerConfig;
 import com.lgmrszd.anshar.frequency.*;
 import com.lgmrszd.anshar.mixin.accessor.BeaconBlockEntityAccessor;
 
+import com.lgmrszd.anshar.transport.PlayerTransportComponent;
+import net.fabricmc.fabric.api.networking.v1.PacketSender;
 import net.minecraft.block.entity.BeaconBlockEntity;
 import net.minecraft.entity.decoration.EndCrystalEntity;
 import net.minecraft.nbt.NbtCompound;
+import net.minecraft.network.PacketByteBuf;
 import net.minecraft.particle.ParticleTypes;
+import net.minecraft.server.MinecraftServer;
+import net.minecraft.server.network.ServerPlayNetworkHandler;
+import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.server.world.ServerWorld;
 import net.minecraft.sound.SoundCategory;
 import net.minecraft.sound.SoundEvents;
@@ -37,6 +43,7 @@ public class BeaconComponent implements IBeaconComponent {
     private boolean active;
     private int level;
     private Vec3d particleVec;
+    private int playerScanTicks;
 
     private float[] cachedColor;
 
@@ -137,6 +144,23 @@ public class BeaconComponent implements IBeaconComponent {
         clientTick.accept(this);
     }
 
+    public static void EnterBeamPacketC2S(MinecraftServer server, ServerPlayerEntity player, ServerPlayNetworkHandler b, PacketByteBuf packet, PacketSender d) {
+        if (!ServerConfig.beamClientCheck.get()) return;
+        BlockPos pos = packet.readBlockPos();
+        server.execute(() -> {
+            if (!(player.getWorld().getBlockEntity(pos) instanceof BeaconBlockEntity bbe)) return;
+            KEY.get(bbe).tryPutPlayerIntoNetwork(player);
+        });
+    }
+
+    @Override
+    public void tryPutPlayerIntoNetwork(ServerPlayerEntity player) {
+        if (!player.getBoundingBox().intersects(beamBoundingBox())) return;
+        if (frequencyNetwork != null) {
+            PlayerTransportComponent.KEY.get(player).enterNetwork(frequencyNetwork, getBeaconPos());
+        }
+    }
+
     @Override
     public void serverTick() {
         World world = beaconBlockEntity.getWorld();
@@ -150,6 +174,10 @@ public class BeaconComponent implements IBeaconComponent {
             deactivate();
         }
         if (valid) {
+            if (!ServerConfig.beamClientCheck.get() && playerScanTicks-- == 0) {
+                playerScanTicks = 5;
+                serverWorld.getPlayers().forEach(this::tryPutPlayerIntoNetwork);
+            }
             float[] currentTopColor = getTopColor();
             if (!Arrays.equals(cachedColor, currentTopColor)) {
                 cachedColor = currentTopColor;

@@ -11,7 +11,6 @@ import com.lgmrszd.anshar.transport.TransportEffects;
 import fuzs.forgeconfigapiport.fabric.api.neoforge.v4.NeoForgeConfigRegistry;
 import net.fabricmc.fabric.api.event.player.UseItemCallback;
 import net.fabricmc.fabric.api.networking.v1.ServerPlayNetworking;
-import net.minecraft.block.entity.BeaconBlockEntity;
 import net.minecraft.item.ItemStack;
 import net.minecraft.item.Items;
 import net.minecraft.registry.Registries;
@@ -24,7 +23,6 @@ import net.minecraft.text.Text;
 import net.minecraft.util.Hand;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.TypedActionResult;
-import net.minecraft.util.math.BlockPos;
 import net.neoforged.fml.config.ModConfig;
 
 public class ModRegistration {
@@ -43,24 +41,7 @@ public class ModRegistration {
         );
 
         ServerPlayNetworking.registerGlobalReceiver(BeaconComponent.ENTER_PACKET_ID,
-                (server, player, b, packet, d) -> {
-//                    NbtCompound nbt = packet.readNbt();
-//                    if (nbt == null) return;
-//                    BeaconNode node = BeaconNode.fromNBT(nbt);
-                    BlockPos pos = packet.readBlockPos();
-                    server.execute(() -> {
-                        if (!(player.getWorld().getBlockEntity(pos) instanceof BeaconBlockEntity bbe)) return;
-                        BeaconComponent.KEY.get(bbe).getFrequencyNetwork().ifPresent(frequencyNetwork ->
-                                PlayerTransportComponent.KEY.get(player).enterNetwork(frequencyNetwork, pos)
-                        );
-                    });
-//                    UUID freqUUID = packet.readUuid();
-//                    server.execute(() -> {
-//                        NetworkManagerComponent.KEY.get(player.getWorld().getLevelProperties()).getNetwork(freqUUID).ifPresent(frequencyNetwork -> {
-//                            PlayerTransportComponent.KEY.get(player).enterNetwork(frequencyNetwork, pos);
-//                        });
-//                    });
-                }
+                BeaconComponent::EnterBeamPacketC2S
         );
 
         Registry.register(Registries.SOUND_EVENT, ModResources.EMBED_SPACE_AMBIENT_SOUND, ModResources.EMBED_SPACE_AMBIENT_SOUND_EVENT);

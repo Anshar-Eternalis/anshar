@@ -1,5 +1,6 @@
 package com.lgmrszd.anshar.beacon;
 
+import com.lgmrszd.anshar.config.ServerConfig;
 import net.fabricmc.fabric.api.client.networking.v1.ClientPlayNetworking;
 import net.fabricmc.fabric.api.networking.v1.PacketByteBufs;
 import net.minecraft.client.MinecraftClient;
@@ -17,14 +18,11 @@ public class BeaconComponentClient {
     private static int cooldownTicks = 0;
 
     private static void clientTick (BeaconComponent beaconComponent) {
-        if (cooldownTicks > 0) return;
+        if (!ServerConfig.beamClientCheck.get() || cooldownTicks > 0) return;
         Box box = beaconComponent.beamBoundingBox();
         ClientPlayerEntity player = MinecraftClient.getInstance().player;
         if (player == null || !player.getBoundingBox().intersects(box)) return;
-//        beaconComponent.getFrequencyNetwork().ifPresent(frequencyNetwork -> {
-//            LOGGER.info("Intersecting with beacon beam at {}", beaconComponent.getBeaconPos());
-//            sendEnterNetworkPacketC2S(beaconComponent.getBeaconPos(), frequencyNetwork.getId());
-//        });
+        if (!beaconComponent.isValid()) return;
         LOGGER.debug("Intersecting with beacon beam at {}", beaconComponent.getBeaconPos());
         sendEnterNetworkPacketC2S(beaconComponent.getBeaconPos());
         cooldownTicks = 20;
