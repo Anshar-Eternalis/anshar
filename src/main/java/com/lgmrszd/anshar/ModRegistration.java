@@ -19,7 +19,6 @@ import net.minecraft.registry.Registry;
 import static net.fabricmc.fabric.api.entity.event.v1.ServerLivingEntityEvents.ALLOW_DEATH;
 
 import net.minecraft.server.network.ServerPlayerEntity;
-import net.minecraft.text.Text;
 import net.minecraft.util.Hand;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.TypedActionResult;
@@ -65,13 +64,12 @@ public class ModRegistration {
             return true;
         });
         UseItemCallback.EVENT.register((player, world, hand) -> {
-            if (!player.isSneaking() || world.isClient()) return TypedActionResult.pass(null);
+            if (!player.isSneaking() || !(player instanceof ServerPlayerEntity serverPlayer)) return TypedActionResult.pass(null);
             ItemStack stack = hand == Hand.MAIN_HAND ? player.getMainHandStack() : player.getOffHandStack();
             if (!stack.isOf(Items.END_CRYSTAL)) return TypedActionResult.pass(null);
             EndCrystalItemContainer container = ModApi.END_CRYSTAL_ITEM.find(stack, null);
             if (container == null || container.getBeaconPos().isEmpty()) return TypedActionResult.pass(null);
-            container.clearBeaconPos();
-            player.sendMessage(Text.translatable("anshar.tooltip.end_crystal.use.unlinked"));
+            container.clearBeaconPos(serverPlayer);
             return TypedActionResult.success(stack);
         });
     }
