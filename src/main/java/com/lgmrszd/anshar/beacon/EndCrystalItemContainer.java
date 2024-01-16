@@ -13,6 +13,7 @@ import net.minecraft.item.ItemUsageContext;
 import net.minecraft.nbt.NbtCompound;
 import net.minecraft.nbt.NbtHelper;
 import net.minecraft.particle.ParticleTypes;
+import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.server.world.ServerWorld;
 import net.minecraft.sound.SoundCategory;
 import net.minecraft.sound.SoundEvents;
@@ -40,23 +41,22 @@ public class EndCrystalItemContainer {
         if (!player.isSneaking()) return ActionResult.PASS;
         // Case 1: Binding End Crystal to a beacon / clearing
         if (world.getBlockState(targetPos).isOf(Blocks.BEACON)) {
-            if (world.isClient()) return ActionResult.SUCCESS;
+            if (!(player instanceof ServerPlayerEntity serverPlayer)) return ActionResult.SUCCESS;
             boolean samePos = getBeaconPos().map(pos -> pos.equals(targetPos)).orElse(false);
             if (samePos) {
-                clearBeaconPos();
-                player.sendMessage(Text.translatable("anshar.tooltip.end_crystal.use.unlinked"));
+                clearBeaconPos(serverPlayer);
             } else {
                 saveBeaconPos(targetPos);
                 player.sendMessage(Text.translatable("anshar.tooltip.end_crystal.use.linked"));
+                playLinkingSound(serverPlayer, false);
             }
             return ActionResult.SUCCESS;
         }
         // Case 1.5: clear if pos is present and cancel further stuff
         boolean isChest = world.getBlockState(targetPos).isOf(Blocks.ENDER_CHEST);
         if (getBeaconPos().isPresent() && !isChest) {
-            if (world.isClient()) return ActionResult.SUCCESS;
-            clearBeaconPos();
-            player.sendMessage(Text.translatable("anshar.tooltip.end_crystal.use.unlinked"));
+            if (!(player instanceof ServerPlayerEntity serverPlayer)) return ActionResult.SUCCESS;
+            clearBeaconPos(serverPlayer);
             return ActionResult.SUCCESS;
         }
         // Case 2: placing on top of an Ender Chest
@@ -126,6 +126,15 @@ public class EndCrystalItemContainer {
         );
     }
 
+    private static void playLinkingSound(ServerPlayerEntity player, boolean clear) {
+        player.playSound(
+                clear ? SoundEvents.ITEM_ARMOR_EQUIP_NETHERITE : SoundEvents.ITEM_LODESTONE_COMPASS_LOCK,
+                SoundCategory.BLOCKS,
+                1f,
+                clear ? 2.0f : 1.0f
+        );
+    }
+
     public void saveBeaconPos(BlockPos pos) {
         NbtCompound tag = stack.getOrCreateNbt();
         NbtCompound posTag = NbtHelper.fromBlockPos(pos);
@@ -133,7 +142,9 @@ public class EndCrystalItemContainer {
         stack.setNbt(tag);
     }
 
-    public void clearBeaconPos() {
+    public void clearBeaconPos(ServerPlayerEntity player) {
+        player.sendMessage(Text.translatable("anshar.tooltip.end_crystal.use.unlinked"));
+        playLinkingSound(player, true);
         NbtCompound tag = stack.getNbt();
         if (tag == null) return;
         tag.remove("BeaconPos");
