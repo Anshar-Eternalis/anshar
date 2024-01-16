@@ -90,6 +90,7 @@ public class PlayerTransportComponent implements ServerTickingComponent, AutoSyn
         // called on server when player steps on beacon
         this.networkUUID = network.getId();
         this.target = network.getNode(through).orElse(BeaconNode.makeFake(through));
+        BlockPos entrance = player.getBlockPos();
         if (player instanceof ServerPlayerEntity serverPlayer) {
             Anshar.ENTERED_NETWORK.trigger(serverPlayer);
             neverJumped = !serverPlayer
@@ -103,12 +104,11 @@ public class PlayerTransportComponent implements ServerTickingComponent, AutoSyn
                     .isDone();
         }
         KEY.sync(player);
-        sendExplosionPacketS2C(true);
+        sendExplosionPacketS2C(true, entrance);
     }
 
     public void exitNetwork() {
         moveToCurrentTarget();
-        sendExplosionPacketS2C(false);
 
         int x, z;
         do {
@@ -123,8 +123,8 @@ public class PlayerTransportComponent implements ServerTickingComponent, AutoSyn
         BlockPos exit = new BlockPos(x, (int)y, z);
         while (! (this.player.getWorld().isAir(exit) || this.player.getWorld().isAir(exit.up()))) exit = exit.up();
 
-
         this.player.teleport(0.5 + exit.getX(), 1.5 + exit.getY(), 0.5 + exit.getZ());
+        sendExplosionPacketS2C(false, exit);
 
         this.networkUUID = null;
         this.target = null;
@@ -286,9 +286,9 @@ public class PlayerTransportComponent implements ServerTickingComponent, AutoSyn
     public static final Identifier EXPLOSION_PACKET_ID = new Identifier(MOD_ID, "player_transport_explosion");
     public static final int EXPLOSION_MAX_DISTANCE = 512;
 
-    public void sendExplosionPacketS2C(boolean skipOurselves) {
+    public void sendExplosionPacketS2C(boolean skipOurselves, BlockPos pos) {
         var buf = PacketByteBufs.create();
-        buf.writeBlockPos(target.getPos());
+        buf.writeBlockPos(pos);
         for (var player : player.getWorld().getPlayers()) {
             if (skipOurselves && this.player.equals(player)) continue;
             if (!this.player.getPos().isInRange(player.getPos(), EXPLOSION_MAX_DISTANCE)) continue;
