@@ -104,7 +104,7 @@ public class PlayerTransportComponent implements ServerTickingComponent, AutoSyn
                     .isDone();
         }
         KEY.sync(player);
-        sendExplosionPacketS2C(true, entrance);
+        sendExplosionPacketS2C(true, entrance, target.getColorHex());
     }
 
     public void exitNetwork() {
@@ -124,7 +124,7 @@ public class PlayerTransportComponent implements ServerTickingComponent, AutoSyn
         while (! (this.player.getWorld().isAir(exit) || this.player.getWorld().isAir(exit.up()))) exit = exit.up();
 
         this.player.teleport(0.5 + exit.getX(), 1.5 + exit.getY(), 0.5 + exit.getZ());
-        sendExplosionPacketS2C(false, exit);
+        sendExplosionPacketS2C(false, exit, target.getColorHex());
 
         this.networkUUID = null;
         this.target = null;
@@ -286,9 +286,10 @@ public class PlayerTransportComponent implements ServerTickingComponent, AutoSyn
     public static final Identifier EXPLOSION_PACKET_ID = new Identifier(MOD_ID, "player_transport_explosion");
     public static final int EXPLOSION_MAX_DISTANCE = 512;
 
-    public void sendExplosionPacketS2C(boolean skipOurselves, BlockPos pos) {
+    public void sendExplosionPacketS2C(boolean skipOurselves, BlockPos pos, int color) {
         var buf = PacketByteBufs.create();
         buf.writeBlockPos(pos);
+        buf.writeInt(color);
         for (var player : player.getWorld().getPlayers()) {
             if (skipOurselves && this.player.equals(player)) continue;
             if (!this.player.getPos().isInRange(player.getPos(), EXPLOSION_MAX_DISTANCE)) continue;

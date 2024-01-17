@@ -51,11 +51,17 @@ public class BeaconNode {
     }
 
     public static BeaconNode makeFake(BlockPos pos) {
-        return new BeaconNode(pos, Text.literal("?????"), new float[]{0, 0, 0});
+        return new BeaconNode(pos, Text.literal("?????"), new float[]{1, 1, 1});
     }
 
     public Text getName() {return name;}
     public float[] getColor() {return color;}
     public BlockPos getPos() {return pos;}
     public Optional<BeaconBlockEntity> getBeacon() {return Optional.empty();}
+    public int getColorHex() {
+        int rgb = (int)(getColor()[0] * 255);
+        rgb = (rgb<<8) + (int)(getColor()[1] * 255);
+        rgb = (rgb<<8) + (int)(getColor()[2] * 255);
+        return rgb;
+    }
 }

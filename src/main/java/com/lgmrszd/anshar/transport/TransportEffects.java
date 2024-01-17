@@ -2,6 +2,8 @@ package com.lgmrszd.anshar.transport;
 
 import static com.lgmrszd.anshar.Anshar.LOGGER;
 
+import org.jetbrains.annotations.Nullable;
+
 import com.mojang.brigadier.exceptions.CommandSyntaxException;
 
 import net.fabricmc.fabric.api.particle.v1.FabricParticleTypes;
@@ -10,16 +12,15 @@ import net.minecraft.nbt.StringNbtReader;
 import net.minecraft.particle.DefaultParticleType;
 
 public class TransportEffects {
-    public static final NbtCompound TRANSPORT_EXPLOSION_FIREWORK;
-    static {
+    @Nullable
+    public static final NbtCompound makeTransportFirework(int color) {
         NbtCompound transportExplosion = null;
         try {
-            transportExplosion = StringNbtReader.parse("{Explosions:[{Type:1,Colors:[I;16777215]}]}");
+            transportExplosion = StringNbtReader.parse("{Explosions:[{Type:1,Colors:[I;" + color + "]}]}");
         } catch (CommandSyntaxException lol) {
-            LOGGER.error("Failed to create transport explosion effect!");
-        } finally {
-            TRANSPORT_EXPLOSION_FIREWORK = transportExplosion;
+            LOGGER.error("Failed to create transport explosion effect for hex " + color);
         }
+        return transportExplosion;
     }
 
     // TODO setup to cancel particles
