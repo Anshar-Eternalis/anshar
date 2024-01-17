@@ -174,8 +174,8 @@ public class BeaconComponent implements IBeaconComponent {
             deactivate();
         }
         if (valid) {
-            if (!ServerConfig.beamClientCheck.get() && playerScanTicks-- == 0) {
-                playerScanTicks = 5;
+            if (!ServerConfig.beamClientCheck.get() && --playerScanTicks <= 0) {
+                playerScanTicks = ServerConfig.beamCheckPeriod.get();
                 serverWorld.getPlayers().forEach(this::tryPutPlayerIntoNetwork);
             }
             float[] currentTopColor = getTopColor();
