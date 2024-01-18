@@ -42,7 +42,7 @@ public class BeaconComponent implements IBeaconComponent {
     private FrequencyNetwork frequencyNetwork;
     private boolean active;
     private int level;
-    private Vec3d particleVec;
+    protected Vec3d particleVec;
     private int playerScanTicks;
 
     private float[] cachedColor;
@@ -108,6 +108,18 @@ public class BeaconComponent implements IBeaconComponent {
         tag.putInt("level", level);
     }
 
+    @Override
+    public void writeSyncPacket(PacketByteBuf buf, ServerPlayerEntity recipient) {
+        buf.writeBoolean(active);
+//        IBeaconComponent.super.writeSyncPacket(buf, recipient);
+    }
+
+    @Override
+    public void applySyncPacket(PacketByteBuf buf) {
+        active = buf.readBoolean();
+//        IBeaconComponent.super.applySyncPacket(buf);
+    }
+
     private void updateNetwork() {
         World world = beaconBlockEntity.getWorld();
         NetworkManagerComponent networkManagerComponent = NetworkManagerComponent.KEY.get(world.getLevelProperties());
@@ -121,12 +133,14 @@ public class BeaconComponent implements IBeaconComponent {
         if (!pyramidFrequency.isValid()) return;
         updateNetwork();
         active = true;
+        KEY.sync(beaconBlockEntity);
     }
 
     private void deactivate() {
         pyramidFrequency = NullFrequencyIdentifier.get();
         updateNetwork();
         active = false;
+        KEY.sync(beaconBlockEntity);
     }
 
     protected Box beamBoundingBox() {
@@ -182,18 +196,6 @@ public class BeaconComponent implements IBeaconComponent {
             if (!Arrays.equals(cachedColor, currentTopColor)) {
                 cachedColor = currentTopColor;
                 if (frequencyNetwork != null) frequencyNetwork.updateBeacon(this);
-            }
-            if (world.getTime() % 5L == 0L) {
-                Vec3i pos = getBeaconPos();
-                Vec3d particlePos = new Vec3d(pos.getX() + 0.5, pos.getY() + 0.5, pos.getZ() + 0.5).add(particleVec);
-                particleVec = particleVec.rotateY(36f * (float) (Math.PI / 180));
-                serverWorld.spawnParticles(
-                        ParticleTypes.GLOW,
-                        particlePos.x,
-                        particlePos.y,
-                        particlePos.z,
-                        1, 0, 0, 0, 0
-                );
             }
             if (world.getTime() % 80L == 0L) {
                 IFrequencyIdentifier newFreqID = rescanPyramid();
