@@ -16,6 +16,8 @@ import com.lgmrszd.anshar.mixin.accessor.ServerPlayNetworkHandlerAccessor;
 
 import net.minecraft.advancement.AdvancementEntry;
 
+import net.minecraft.block.BlockState;
+import net.minecraft.world.World;
 import org.jetbrains.annotations.Nullable;
 import org.joml.Vector3f;
 import dev.onyxstudios.cca.api.v3.component.ComponentKey;
@@ -118,12 +120,23 @@ public class PlayerTransportComponent implements ServerTickingComponent, AutoSyn
 
         x = target.getPos().getX() + x;
         z = target.getPos().getZ() + z;
-        
-        double y = this.player.getWorld().getTopY(Heightmap.Type.MOTION_BLOCKING, x, z);
-        BlockPos exit = new BlockPos(x, (int)y, z);
-        while (! (this.player.getWorld().isAir(exit) || this.player.getWorld().isAir(exit.up()))) exit = exit.up();
 
-        this.player.teleport(0.5 + exit.getX(), 1.5 + exit.getY(), 0.5 + exit.getZ());
+        World world = this.player.getWorld();
+        int y = world.getTopY();
+        BlockPos exit = new BlockPos(x, y, z);
+
+        // First: go down through any light-passing blocks
+        BlockState blockState = world.getBlockState(exit);
+        while (blockState.getOpacity(world, exit) < 15) {
+            exit = exit.down();
+            blockState = world.getBlockState(exit);
+        }
+
+        // Second: go up until there's space
+        // TODO: take into account no-collision blocks like grass
+        while (! (world.isAir(exit) && world.isAir(exit.up()))) exit = exit.up();
+
+        this.player.teleport(0.5 + exit.getX(), exit.getY(), 0.5 + exit.getZ());
         sendExplosionPacketS2C(false, exit, target.getColorHex());
 
         this.networkUUID = null;
