@@ -136,8 +136,6 @@ public class NetworkManagerComponent implements Component {
 
     @Override
     public void readFromNbt(NbtCompound tag) {
-        // TODO: remove this! It's here for debug for now
-//        if (true) return;
         try {
             NbtCompound networksTag = tag.getCompound("networks");
             for (String uuid_string : networksTag.getKeys()) {

@@ -1,5 +1,6 @@
 package com.lgmrszd.anshar;
 
+import com.lgmrszd.anshar.config.ServerConfig;
 import com.lgmrszd.anshar.frequency.FrequencyNetwork;
 import com.lgmrszd.anshar.frequency.NetworkManagerComponent;
 import com.lgmrszd.anshar.storage.EmbeddedStorage;
@@ -61,6 +62,9 @@ public class ModCommands {
                                                         .executes(ModCommands::debugNearestBeaconAdvancedCommand)
                                                 )
                                         )
+                                )
+                                .then(literal("config")
+                                        .executes(ModCommands::debugServerConfigCommand)
                                 )
                         )
                 )
@@ -195,6 +199,15 @@ public class ModCommands {
         sendFeedback(context, "Total loaded beacon block entities in this dimension: %d".formatted(allLoadedBBESorted.size()));
         if (!allLoadedBBESorted.isEmpty())
             sendFeedback(context, "Nearest beacon block entity in this dimension: %s".formatted(allLoadedBBESorted.get(0).getPos().toShortString()));
+        return 0;
+    }
+
+    private static int debugServerConfigCommand(CommandContext<ServerCommandSource> context) {
+        sendFeedback(context, "Server config values:");
+        sendFeedback(context, "Beam Check Period: %d".formatted(ServerConfig.beamCheckPeriod.get()));
+        sendFeedback(context, "Beam Client Check: %b".formatted(ServerConfig.beamClientCheck.get()));
+        sendFeedback(context, "End Crystal Max Distance: %d".formatted(ServerConfig.endCrystalMaxDistance.get()));
+        sendFeedback(context, "End Crystals Per Beacon: %d".formatted(ServerConfig.endCrystalsPerBeacon.get()));
         return 0;
     }
 
