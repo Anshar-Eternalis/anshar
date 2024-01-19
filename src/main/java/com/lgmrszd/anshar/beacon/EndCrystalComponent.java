@@ -24,13 +24,15 @@ import net.minecraft.util.math.Vec3d;
 import net.minecraft.world.World;
 
 import java.util.Optional;
+import java.util.function.Consumer;
 
 
 public class EndCrystalComponent implements IEndCrystalComponent {
-    private BlockPos beaconPos;
-    private final EndCrystalEntity endCrystal;
+    protected static Consumer<EndCrystalComponent> clientTick = bc -> {};
+    protected BlockPos beaconPos;
+    protected final EndCrystalEntity endCrystal;
     private boolean linked;
-    private Vec3d vec = new Vec3d(1, 0, 0);
+    protected Vec3d vec = new Vec3d(1, 0, 0);
 
     public EndCrystalComponent(EndCrystalEntity endCrystal) {
         this.endCrystal = endCrystal;
@@ -71,6 +73,7 @@ public class EndCrystalComponent implements IEndCrystalComponent {
         beaconPos = pos;
         endCrystal.setBeamTarget(pos.offset(Direction.DOWN, 2));
         linked = true;
+        KEY.sync(endCrystal);
     }
 
     public void clearBeacon() {
@@ -128,31 +131,25 @@ public class EndCrystalComponent implements IEndCrystalComponent {
     }
 
     @Override
+    public void clientTick() {
+        clientTick.accept(this);
+    }
+
+    @Override
     public void serverTick() {
+        if (beaconPos == null) return;
         if (!(endCrystal.getWorld() instanceof ServerWorld serverWorld)) return;
         if (serverWorld.getTime() % 5 == 0) {
             if (linked && !(serverWorld.getBlockEntity(beaconPos) instanceof BeaconBlockEntity)) {
                 clearBeam();
                 linked = false;
+                KEY.sync(endCrystal);
             }
             else if (!linked && (serverWorld.getBlockEntity(beaconPos) instanceof BeaconBlockEntity)) {
                 reactivateBeam();
                 linked = true;
+                KEY.sync(endCrystal);
             }
-        }
-        if (serverWorld.getTime() % 5 == 0) {
-
-            Vec3d particlePos = endCrystal.getPos().add(vec).add(0, 0.7, 0);
-            vec = vec.rotateY(36f * (float) (Math.PI / 180));
-
-            ParticleEffect particleEffect = ParticleTypes.GLOW;
-            serverWorld.spawnParticles(
-                    particleEffect,
-                    particlePos.x,
-                    particlePos.y,
-                    particlePos.z,
-                    1, 0, 0, 0, 0
-            );
         }
     }
 

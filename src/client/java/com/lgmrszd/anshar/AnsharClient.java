@@ -1,6 +1,7 @@
 package com.lgmrszd.anshar;
 
 import com.lgmrszd.anshar.beacon.BeaconComponentClient;
+import com.lgmrszd.anshar.beacon.EndCrystalComponentClient;
 import com.lgmrszd.anshar.transport.PlayerTransportClient;
 import com.lgmrszd.anshar.transport.PlayerTransportComponent;
 import com.lgmrszd.anshar.transport.TransportEffects;
@@ -23,6 +24,7 @@ public class AnsharClient implements ClientModInitializer {
 		);
 
 		BeaconComponentClient.init();
+		EndCrystalComponentClient.init();
 		ClientTickEvents.END_CLIENT_TICK.register(client -> {
 			BeaconComponentClient.clientGlobalTick();
 		});

@@ -2,6 +2,8 @@ package com.lgmrszd.anshar.beacon;
 
 import dev.onyxstudios.cca.api.v3.component.ComponentKey;
 import dev.onyxstudios.cca.api.v3.component.ComponentRegistry;
+import dev.onyxstudios.cca.api.v3.component.sync.AutoSyncedComponent;
+import dev.onyxstudios.cca.api.v3.component.tick.ClientTickingComponent;
 import dev.onyxstudios.cca.api.v3.component.tick.ServerTickingComponent;
 import net.minecraft.entity.damage.DamageSource;
 import net.minecraft.entity.player.PlayerEntity;
@@ -15,7 +17,7 @@ import java.util.Optional;
 
 import static com.lgmrszd.anshar.Anshar.MOD_ID;
 
-public interface IEndCrystalComponent extends ServerTickingComponent {
+public interface IEndCrystalComponent extends ServerTickingComponent, ClientTickingComponent, AutoSyncedComponent {
     ComponentKey<IEndCrystalComponent> KEY = ComponentRegistry.getOrCreate(
             new Identifier(MOD_ID, "end_crystal"), IEndCrystalComponent.class
     );
