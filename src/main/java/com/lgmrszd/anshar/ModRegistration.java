@@ -9,6 +9,7 @@ import com.lgmrszd.anshar.transport.PlayerTransportComponent;
 import com.lgmrszd.anshar.transport.TransportEffects;
 
 import fuzs.forgeconfigapiport.fabric.api.neoforge.v4.NeoForgeConfigRegistry;
+import net.fabricmc.fabric.api.event.player.UseBlockCallback;
 import net.fabricmc.fabric.api.event.player.UseItemCallback;
 import net.fabricmc.fabric.api.networking.v1.ServerPlayNetworking;
 import net.minecraft.item.ItemStack;
@@ -19,6 +20,7 @@ import net.minecraft.registry.Registry;
 import static net.fabricmc.fabric.api.entity.event.v1.ServerLivingEntityEvents.ALLOW_DEATH;
 
 import net.minecraft.server.network.ServerPlayerEntity;
+import net.minecraft.util.ActionResult;
 import net.minecraft.util.Hand;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.TypedActionResult;
@@ -62,6 +64,11 @@ public class ModRegistration {
                 component.exitNetwork();
             }
             return true;
+        });
+        UseBlockCallback.EVENT.register((player, world, hand, hitResult) -> {
+            EndCrystalItemContainer container = ModApi.END_CRYSTAL_ITEM.find(player.getStackInHand(hand), null);
+            if (container == null) return ActionResult.PASS;
+            return container.onUse(player, world, hand, hitResult);
         });
         UseItemCallback.EVENT.register((player, world, hand) -> {
             if (!player.isSneaking() || !(player instanceof ServerPlayerEntity serverPlayer)) return TypedActionResult.pass(null);

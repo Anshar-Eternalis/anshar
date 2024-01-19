@@ -9,7 +9,6 @@ import net.minecraft.entity.Entity;
 import net.minecraft.entity.decoration.EndCrystalEntity;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.item.ItemStack;
-import net.minecraft.item.ItemUsageContext;
 import net.minecraft.nbt.NbtCompound;
 import net.minecraft.nbt.NbtHelper;
 import net.minecraft.particle.ParticleTypes;
@@ -19,6 +18,8 @@ import net.minecraft.sound.SoundCategory;
 import net.minecraft.sound.SoundEvents;
 import net.minecraft.text.Text;
 import net.minecraft.util.ActionResult;
+import net.minecraft.util.Hand;
+import net.minecraft.util.hit.BlockHitResult;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Box;
 import net.minecraft.world.World;
@@ -33,13 +34,10 @@ public class EndCrystalItemContainer {
         stack = itemStack;
     }
 
-    public ActionResult onUse(ItemUsageContext context) {
-        PlayerEntity player = context.getPlayer();
-        if (player == null) return ActionResult.PASS;
-        World world = context.getWorld();
-        BlockPos targetPos = context.getBlockPos();
+    public ActionResult onUse(PlayerEntity player, World world, Hand hand, BlockHitResult hitResult) {
+        if (player == null || player.isSpectator()) return ActionResult.PASS;
+        BlockPos targetPos = hitResult.getBlockPos();
         if (!player.isSneaking()) return ActionResult.PASS;
-        // Case 1: Binding End Crystal to a beacon / clearing
         if (world.getBlockState(targetPos).isOf(Blocks.BEACON)) {
             if (!(player instanceof ServerPlayerEntity serverPlayer)) return ActionResult.SUCCESS;
             boolean samePos = getBeaconPos().map(pos -> pos.equals(targetPos)).orElse(false);
@@ -105,7 +103,7 @@ public class EndCrystalItemContainer {
                 IEndCrystalComponent component = EndCrystalComponent.KEY.get(endCrystalEntity);
                 component.setBeacon(pos);
                 world.emitGameEvent(player, GameEvent.ENTITY_PLACE, up);
-                context.getStack().decrement(1);
+                player.getStackInHand(hand).decrement(1);
                 return ActionResult.SUCCESS;
             }).orElseGet(() -> {
                 playDenySound(serverWorld, x, y, z);
