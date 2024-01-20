@@ -68,7 +68,7 @@ public class EndCrystalItemContainer {
             double z = up.getZ();
             List<Entity> list = world.getOtherEntities(null, new Box(x, y, z, x + 1.0, y + 2.0, z + 1.0));
             if (!list.isEmpty()) return ActionResult.FAIL;
-            if (!(world instanceof ServerWorld serverWorld)) return ActionResult.PASS;
+            if (!(world instanceof ServerWorld serverWorld)) return ActionResult.SUCCESS;
             int maxDistance = ServerConfig.endCrystalMaxDistance.get();
 
 
