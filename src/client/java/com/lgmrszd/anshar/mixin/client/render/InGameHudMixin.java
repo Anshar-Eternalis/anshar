@@ -38,7 +38,6 @@ public class InGameHudMixin {
     public void anshar$render(DrawContext context, float tickDelta, CallbackInfo ci) {
         PlayerTransportComponent transportComponent = PlayerTransportComponent.KEY.get(client.player);
         if (transportComponent.isInNetwork() && !client.options.hudHidden) {
-            var node = transportComponent.getNearestLookedAt();
 
             // calculate text fade
             var transportClient = PlayerTransportClient.getInstance();
@@ -46,15 +45,28 @@ public class InGameHudMixin {
 
             if (alpha > 3) {
                 alpha <<= 24;
-                RenderSystem.enableBlend();
-                if (node != null) {
-                    TextRenderer textRenderer = getTextRenderer();
-                    int scaledWidth = context.getScaledWindowWidth();
-                    int scaledHeight = context.getScaledWindowHeight();
 
-                    context.getMatrices().push();
-                    context.getMatrices().translate(scaledWidth / 2, 0, 0.0f);
-                    
+                // hud render setup
+                // make into custom render layer? perchance?
+                RenderSystem.enableBlend();
+                TextRenderer textRenderer = getTextRenderer();
+                int scaledWidth = context.getScaledWindowWidth();
+                int scaledHeight = context.getScaledWindowHeight();
+                context.getMatrices().push();
+                context.getMatrices().translate(scaledWidth / 2, 0, 0.0f);
+
+                // panic instructions
+                int helpColor = 0x707070 + alpha;
+                anshar$drawText(context, textRenderer, Text.translatable("anshar.help.transport.gate", Text.keybind("key.forward")), 10, helpColor);
+                anshar$drawText(context, textRenderer, Text.translatable("anshar.help.transport.exit", Text.keybind("key.sneak")), 22, helpColor);
+
+                // current node info
+                BeaconNode target = transportComponent.getTarget();
+                if (target != null) anshar$drawText(context, textRenderer, Text.translatable("anshar.help.transport.location", target.getName()), 34, helpColor);
+
+                // dest node info
+                var node = transportComponent.getNearestLookedAt();
+                if (node != null) {
                     int rgb = (int)(node.getColor()[0] * 255);
                     rgb = (rgb<<8) + (int)(node.getColor()[1] * 255);
                     rgb = (rgb<<8) + (int)(node.getColor()[2] * 255);
@@ -62,16 +74,10 @@ public class InGameHudMixin {
                     
                     var coords = Text.literal(node.getPos().toShortString()).copy().append(" (" + (int) transportComponent.distanceTo(node) + ")");
                     anshar$drawText(context, textRenderer, coords, scaledHeight-32, 0xFFFFFF + alpha);
-
-                    // panic instructions
-                    int helpColor = 0x707070 + alpha;
-                    anshar$drawText(context, textRenderer, Text.translatable("anshar.help.transport.gate", Text.keybind("key.forward")), 10, helpColor);
-                    anshar$drawText(context, textRenderer, Text.translatable("anshar.help.transport.exit", Text.keybind("key.sneak")), 22, helpColor);
-                    BeaconNode target = transportComponent.getTarget();
-                    if (target != null) anshar$drawText(context, textRenderer, Text.translatable("anshar.help.transport.location", target.getName()), 34, helpColor);
-                    
-                    context.getMatrices().pop();
                 }
+
+                // clear render setup
+                context.getMatrices().pop();
                 
                 // allow chat rendering
                 Window window = this.client.getWindow();
