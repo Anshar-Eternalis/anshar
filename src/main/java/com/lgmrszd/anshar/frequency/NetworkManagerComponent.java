@@ -68,7 +68,7 @@ public class NetworkManagerComponent implements Component {
                 .flatMap(Collection::stream)
                 .filter(blockPos -> world.isChunkLoaded(
                         ChunkSectionPos.getSectionCoord(blockPos.getX()),
-                        ChunkSectionPos.getSectionCoord(blockPos.getY()))
+                        ChunkSectionPos.getSectionCoord(blockPos.getZ()))
                 )
                 .sorted((pos1, pos2) -> {
                     double distance1 = pos.getSquaredDistance(pos1);
