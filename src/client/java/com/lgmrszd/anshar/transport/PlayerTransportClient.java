@@ -33,8 +33,6 @@ public class PlayerTransportClient {
     private final PlayerTransportAudioClient audioManager = new PlayerTransportAudioClient(this);
     private final ClientPlayerEntity player;
     private final PlayerTransportComponent transport;
-    // private final TransportAudioManager audioManager = new TransportAudioManager();
-
     
     private int gateTicks = 0;
     private BeaconNode nearest = null;
@@ -46,10 +44,10 @@ public class PlayerTransportClient {
         this.particleManager = client.particleManager;
         this.player = client.player;
         this.transport = PlayerTransportComponent.KEY.get(player);
-        this.nearest = transport.getNearestLookedAt();
 
         // first tick behavior
-        if (nearest != null) player.lookAt(EntityAnchor.EYES, nearest.getPos().toCenterPos());
+        var n = transport.getNearestLookedAt();
+        if (n != null) player.lookAt(EntityAnchor.EYES, n.getPos().toCenterPos());
     }
     
     public void tick() {
