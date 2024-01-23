@@ -3,10 +3,9 @@
   "package": "com.lgmrszd.anshar.mixin.client",
   "compatibilityLevel": "JAVA_17",
   "client": [
-    "render.BackgroundRendererMixin",
     "render.WorldRendererMixin",
     "render.InGameHudMixin",
-    "render.HeldItemRendererMixin",
+    "render.GameRendererMixin",
     "ItemMixin",
     "EndCrystalItemMixin",
     "audio.SoundSystemMixin"
