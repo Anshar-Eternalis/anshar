@@ -297,7 +297,7 @@ public class PlayerTransportComponent implements ServerTickingComponent, AutoSyn
 
     public static final Identifier JUMP_PACKET_ID = new Identifier(MOD_ID, "player_transport_jump");
     public static final Identifier EXPLOSION_PACKET_ID = new Identifier(MOD_ID, "player_transport_explosion");
-    public static final int EXPLOSION_MAX_DISTANCE = 512;
+    public static final int EXPLOSION_MAX_DISTANCE = 32;
 
     public void sendExplosionPacketS2C(boolean skipOurselves, BlockPos pos, int color) {
         var buf = PacketByteBufs.create();
