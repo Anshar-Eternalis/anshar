@@ -36,7 +36,6 @@ import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Vec3d;
-import net.minecraft.world.Heightmap;
 
 /*
  * Manages player transport between beacons via Star Gates.
@@ -104,6 +103,7 @@ public class PlayerTransportComponent implements ServerTickingComponent, AutoSyn
                             )
                     )
                     .isDone();
+            player.setNoGravity(true);
         }
         KEY.sync(player);
         sendExplosionPacketS2C(true, entrance, target.getColorHex());
@@ -142,6 +142,7 @@ public class PlayerTransportComponent implements ServerTickingComponent, AutoSyn
         this.networkUUID = null;
         this.target = null;
         if (player.isInvisible()) player.setInvisible(false);
+        player.setNoGravity(false);
         KEY.sync(player);
     }
 
