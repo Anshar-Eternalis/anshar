@@ -12,6 +12,7 @@ import net.fabricmc.fabric.api.networking.v1.PacketSender;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.network.ClientPlayNetworkHandler;
 import net.minecraft.client.network.ClientPlayerEntity;
+import net.minecraft.client.option.Perspective;
 import net.minecraft.client.particle.ParticleManager;
 import net.minecraft.command.argument.EntityAnchorArgumentType.EntityAnchor;
 import net.minecraft.network.PacketByteBuf;
@@ -46,6 +47,7 @@ public class PlayerTransportClient {
         this.transport = PlayerTransportComponent.KEY.get(player);
 
         // first tick behavior
+        client.options.setPerspective(Perspective.FIRST_PERSON);
         var n = transport.getNearestLookedAt();
         if (n != null) player.lookAt(EntityAnchor.EYES, n.getPos().toCenterPos());
     }

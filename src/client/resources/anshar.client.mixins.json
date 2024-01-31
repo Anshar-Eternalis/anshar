@@ -8,6 +8,7 @@
     "render.GameRendererMixin",
     "ItemMixin",
     "EndCrystalItemMixin",
+    "GameOptionsMixin",
     "audio.SoundSystemMixin"
   ],
   "injectors": {
