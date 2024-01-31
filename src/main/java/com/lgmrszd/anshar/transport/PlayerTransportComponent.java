@@ -89,6 +89,11 @@ public class PlayerTransportComponent implements ServerTickingComponent, AutoSyn
 
     public void enterNetwork(FrequencyNetwork network, BlockPos through) {
         // called on server when player steps on beacon
+
+        // optional: we could serialize vehicle and put player back on it
+        // after disembarking. would this have compat consequences?
+        if (player.getVehicle() != null) player.stopRiding();
+
         this.networkUUID = network.getId();
         this.target = network.getNode(through).orElse(BeaconNode.makeFake(through));
         BlockPos entrance = player.getBlockPos();
