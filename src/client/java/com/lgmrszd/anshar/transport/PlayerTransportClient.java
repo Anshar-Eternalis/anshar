@@ -3,6 +3,7 @@ package com.lgmrszd.anshar.transport;
 import org.joml.Matrix3f;
 import org.joml.Vector3f;
 
+import com.lgmrszd.anshar.Anshar;
 import com.lgmrszd.anshar.ModResources;
 import com.lgmrszd.anshar.beacon.BeaconNode;
 
@@ -16,6 +17,7 @@ import net.minecraft.client.option.Perspective;
 import net.minecraft.client.particle.ParticleManager;
 import net.minecraft.command.argument.EntityAnchorArgumentType.EntityAnchor;
 import net.minecraft.network.PacketByteBuf;
+import net.minecraft.util.math.Vec3d;
 import net.minecraft.util.math.random.Random;
 
 public class PlayerTransportClient {
@@ -48,8 +50,7 @@ public class PlayerTransportClient {
 
         // first tick behavior
         client.options.setPerspective(Perspective.FIRST_PERSON);
-        var n = transport.getNearestLookedAt();
-        if (n != null) player.lookAt(EntityAnchor.EYES, n.getPos().toCenterPos());
+        player.setPitch(0);
     }
     
     public void tick() {
