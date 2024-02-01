@@ -3,8 +3,6 @@ package com.lgmrszd.anshar.transport;
 import org.joml.Matrix3f;
 import org.joml.Vector3f;
 
-import com.lgmrszd.anshar.Anshar;
-import com.lgmrszd.anshar.ModResources;
 import com.lgmrszd.anshar.beacon.BeaconNode;
 
 import net.fabricmc.fabric.api.client.networking.v1.ClientPlayNetworking;
@@ -15,9 +13,7 @@ import net.minecraft.client.network.ClientPlayNetworkHandler;
 import net.minecraft.client.network.ClientPlayerEntity;
 import net.minecraft.client.option.Perspective;
 import net.minecraft.client.particle.ParticleManager;
-import net.minecraft.command.argument.EntityAnchorArgumentType.EntityAnchor;
 import net.minecraft.network.PacketByteBuf;
-import net.minecraft.util.math.Vec3d;
 import net.minecraft.util.math.random.Random;
 
 public class PlayerTransportClient {
@@ -31,6 +27,8 @@ public class PlayerTransportClient {
     public static void enterNetworkCallback(){ INSTANCE = new PlayerTransportClient(); }
     public static void tickCallback(){ if(INSTANCE != null) INSTANCE.tick(); }
     public static void exitNetworkCallback(){ INSTANCE.onExit(); INSTANCE = null; }
+
+    public static PlayerTransportClient getInstance() { return INSTANCE; }
 
     private final ParticleManager particleManager;
     private final PlayerTransportAudioClient audioManager = new PlayerTransportAudioClient(this);
@@ -73,6 +71,7 @@ public class PlayerTransportClient {
             gateTicks = 0;
             nearest = null;
             audioManager.stopJump();
+            spawnOrientationParticles();
         }
 
         // draw nearest gate only if jumping, otherwise draw all
@@ -125,19 +124,16 @@ public class PlayerTransportClient {
         float gateWidth = GATE_OPENING_COEF * (intensity-1);
         float gateHeight = BASE_GATE_HEIGHT * (float)Math.pow(intensity, 4);
         float starSpeed = PARTICLE_VEL_COEF * ((float)Math.pow(intensity, 4)-1);
-
-        // if (nearest) {
-        //     System.out.println("(" + node.getPos() + ") :: ticks: "+ gateTicks + ", ratio: "+ jumpRatio + ", width: " + gateWidth + ", speed: " + starSpeed);
-        // }
         
         for (int side = -1; side <= 1; side += 2) {
             for (int i = 0; i < BASE_PARTICLE_COUNT * (int)Math.pow(intensity, 6); i++) {
                 float pY = random.nextFloat() * gateHeight - gateHeight / 2;
-                // should  probably do translate with a matrix4f instead, skipping perspective div
+                // should definitely do translate with a matrix4f instead, skipping perspective div
+                // huge performance increase
                 Vector3f pPos = new Vector3f(gateWidth * side, pY, 0f).mul(M).add(normalExt).add(player.getEyePos().toVector3f());
                 Vector3f pVel = new Vector3f(0, 0, starSpeed).mul(M);
 
-                // why am I not using a shader at this point tbh? pathetic! die scoundrel! villain!
+                // why am I not using a shader at this point? pathetic! die scoundrel! villain!
                 var particle = particleManager.addParticle(TransportEffects.GATE_STAR, pPos.x, pPos.y, pPos.z, pVel.x, pVel.y, pVel.z);
                 float[] colors = node.getColor();
                 if (nearest) {
@@ -170,5 +166,15 @@ public class PlayerTransportClient {
         });
     }
 
-    public static PlayerTransportClient getInstance() { return INSTANCE; }
+    private void spawnOrientationParticles() {
+        // draws particles above and below players to help with orientation in embedded space
+        var ppos = player.getPos();
+        for (double dir = 1; dir >= -1; dir -= 2) {
+            double x = ppos.getX() + (random.nextFloat()-0.5) * 4;
+            double y = ppos.getY() + 1.7 + dir*5;
+            double z = ppos.getZ() + (random.nextFloat()-0.5) * 4;
+            particleManager.addParticle(TransportEffects.GATE_STAR, x, y, z, 0, dir/5, 0);
+        }
+    }
+    
 }
