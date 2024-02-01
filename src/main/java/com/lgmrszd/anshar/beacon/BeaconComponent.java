@@ -22,7 +22,6 @@ import net.minecraft.util.Identifier;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Box;
 import net.minecraft.util.math.Vec3d;
-import net.minecraft.util.math.Vec3i;
 import net.minecraft.world.World;
 
 import java.util.*;
@@ -169,7 +168,7 @@ public class BeaconComponent implements IBeaconComponent {
 
     @Override
     public void tryPutPlayerIntoNetwork(ServerPlayerEntity player) {
-        if (!player.getBoundingBox().intersects(beamBoundingBox())) return;
+        if (player.isSpectator() || !player.getBoundingBox().intersects(beamBoundingBox())) return;
         if (frequencyNetwork != null) {
             PlayerTransportComponent.KEY.get(player).enterNetwork(frequencyNetwork, getBeaconPos());
         }
