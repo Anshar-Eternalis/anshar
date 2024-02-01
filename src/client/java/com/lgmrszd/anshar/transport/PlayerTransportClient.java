@@ -168,12 +168,16 @@ public class PlayerTransportClient {
 
     private void spawnOrientationParticles() {
         // draws particles above and below players to help with orientation in embedded space
+        float[] color = {1f, 1f, 1f};
+        var tgt = transport.getTarget();
+        if (tgt != null) color = tgt.getColor();
         var ppos = player.getPos();
         for (double dir = 1; dir >= -1; dir -= 2) {
             double x = ppos.getX() + (random.nextFloat()-0.5) * 4;
             double y = ppos.getY() + 1.7 + dir*5;
             double z = ppos.getZ() + (random.nextFloat()-0.5) * 4;
-            particleManager.addParticle(TransportEffects.GATE_STAR, x, y, z, 0, dir/5, 0);
+            var particle = particleManager.addParticle(TransportEffects.GATE_STAR, x, y, z, 0, dir/5, 0);
+            particle.setColor(color[0], color[1], color[2]);
         }
     }
     
