@@ -4,6 +4,7 @@ import com.lgmrszd.anshar.config.ServerConfig;
 import com.lgmrszd.anshar.frequency.FrequencyNetwork;
 import com.lgmrszd.anshar.frequency.NetworkManagerComponent;
 import com.lgmrszd.anshar.storage.EmbeddedStorage;
+import com.lgmrszd.anshar.transport.PlayerTransportComponent;
 import com.mojang.brigadier.context.CommandContext;
 import com.mojang.brigadier.exceptions.CommandSyntaxException;
 import com.mojang.brigadier.suggestion.SuggestionProvider;
@@ -11,6 +12,7 @@ import net.fabricmc.fabric.api.command.v2.CommandRegistrationCallback;
 import net.minecraft.block.entity.BeaconBlockEntity;
 import net.minecraft.command.CommandSource;
 import net.minecraft.command.argument.BlockPosArgumentType;
+import net.minecraft.command.argument.EntityArgumentType;
 import net.minecraft.command.argument.UuidArgumentType;
 import net.minecraft.screen.GenericContainerScreenHandler;
 import net.minecraft.screen.SimpleNamedScreenHandlerFactory;
@@ -21,6 +23,7 @@ import net.minecraft.text.Text;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.ChunkSectionPos;
+import net.minecraft.world.World;
 
 import java.util.Collection;
 import java.util.List;
@@ -65,6 +68,20 @@ public class ModCommands {
                                 )
                                 .then(literal("config")
                                         .executes(ModCommands::debugServerConfigCommand)
+                                )
+                        )
+                        .then(literal("player")
+                                .requires(source -> source.hasPermissionLevel(2))
+                                .then(argument("player", EntityArgumentType.player())
+                                        .then(literal("kick")
+                                                .executes(ModCommands::playerKickCommand)
+                                        )
+                                        .then(literal("enter")
+                                                .then(argument("Network ID", UuidArgumentType.uuid())
+                                                        .suggests(NETWORK_UUID_SUGGESTIONS)
+                                                        .executes(ModCommands::playerEnterCommand)
+                                                )
+                                        )
                                 )
                         )
                 )
@@ -211,14 +228,75 @@ public class ModCommands {
         return 0;
     }
 
-    private static void sendFeedback(CommandContext<ServerCommandSource> context, String text) {
-        sendFeedback(context, Text.literal(text));
+    private static int playerKickCommand(CommandContext<ServerCommandSource> context) throws CommandSyntaxException {
+        ServerPlayerEntity player = EntityArgumentType.getPlayer(context, "player");
+        PlayerTransportComponent ptc = PlayerTransportComponent.KEY.get(player);
+        if (!ptc.isInNetwork()) {
+            sendFeedback(
+                    context,
+                    Text.literal("Player ")
+                            .append(player.getDisplayName())
+                            .append(Text.literal(" is not Embedded!")),
+                    false
+            );
+            return -1;
+        }
+        ptc.exitNetwork();
+        sendFeedback(
+                context,
+                Text.literal("Kicked player ")
+                        .append(player.getDisplayName())
+                        .append(Text.literal(" from the Embedded state!")),
+                true
+        );
+        return 1;
     }
 
-    private static void sendFeedback(CommandContext<ServerCommandSource> context, Text text) {
+    private static int playerEnterCommand(CommandContext<ServerCommandSource> context) throws CommandSyntaxException {
+        ServerPlayerEntity player = EntityArgumentType.getPlayer(context, "player");
+        World world = player.getWorld();
+        PlayerTransportComponent ptc = PlayerTransportComponent.KEY.get(player);
+        if (ptc.isInNetwork()) {
+            sendFeedback(
+                    context,
+                    Text.literal("Player ")
+                            .append(player.getDisplayName())
+                            .append(Text.literal(" is already Embedded!")),
+                    false
+            );
+            return -1;
+        }
+        final UUID networkID = UuidArgumentType.getUuid(context, "Network ID");
+        return NetworkManagerComponent.KEY.get(world.getLevelProperties())
+                .getNetwork(networkID)
+                .map(frequencyNetwork -> {
+                    ptc.enterNetwork(frequencyNetwork, player.getBlockPos());
+                    sendFeedback(
+                            context,
+                            Text.literal("Sent player ")
+                                    .append(player.getDisplayName())
+                                    .append(Text.literal(" to Frequency Network with ID " + networkID.toString())),
+                            true
+                    );
+                    return 1;
+                }).orElseGet(() -> {
+                    sendFeedback(context, "Invalid Frequency Network with ID " + networkID.toString());
+                    return -1;
+                });
+    }
+
+    private static void sendFeedback(CommandContext<ServerCommandSource> context, String text) {
+        sendFeedback(context, Text.literal(text), false);
+    }
+
+    private static void sendFeedback(CommandContext<ServerCommandSource> context, String text, boolean broadcastToOps) {
+        sendFeedback(context, Text.literal(text), broadcastToOps);
+    }
+
+    private static void sendFeedback(CommandContext<ServerCommandSource> context, Text text, boolean broadcastToOps) {
         context.getSource().sendFeedback(
                 () -> text,
-                false
+                broadcastToOps
         );
     }
 }
