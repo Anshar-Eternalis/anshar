@@ -15,6 +15,7 @@ import net.minecraft.particle.ParticleTypes;
 import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.server.world.ServerWorld;
 import net.minecraft.sound.SoundEvents;
+import net.minecraft.text.Text;
 import net.minecraft.util.ActionResult;
 import net.minecraft.util.Hand;
 import net.minecraft.util.hit.BlockHitResult;
@@ -32,11 +33,13 @@ public class EndCrystalComponent implements IEndCrystalComponent {
     protected BlockPos beaconPos;
     protected final EndCrystalEntity endCrystal;
     private boolean linked;
+    private boolean invulnerable;
     protected Vec3d vec = new Vec3d(1, 0, 0);
 
     public EndCrystalComponent(EndCrystalEntity endCrystal) {
         this.endCrystal = endCrystal;
         linked = false;
+        invulnerable = false;
     }
 
 
@@ -97,6 +100,15 @@ public class EndCrystalComponent implements IEndCrystalComponent {
 
     @Override
     public boolean onCrystalDamage(DamageSource source) {
+        if (source.getAttacker() instanceof ServerPlayerEntity serverPlayer) {
+            if (serverPlayer.isHolding(Items.DEBUG_STICK)) {
+                invulnerable = !invulnerable;
+                serverPlayer.sendMessage(Text.literal("Made crystal " + (invulnerable? "in" : "") + "vulnerable"));
+                return false;
+            }
+            if (invulnerable  && !serverPlayer.isCreative())
+                return false;
+        }
         return getConnectedBeacon().map(pos -> {
             World world = endCrystal.getWorld();
             if (!(world instanceof ServerWorld serverWorld)) return true;
@@ -156,6 +168,8 @@ public class EndCrystalComponent implements IEndCrystalComponent {
     @Override
     public void readFromNbt(NbtCompound tag) {
         linked = tag.getBoolean("linked");
+        if (tag.contains("invulnerable"))
+            invulnerable = tag.getBoolean("invulnerable");
         if (tag.contains("beaconPos"))
             beaconPos = NbtHelper.toBlockPos(tag.getCompound("beaconPos"));
     }
@@ -163,6 +177,8 @@ public class EndCrystalComponent implements IEndCrystalComponent {
     @Override
     public void writeToNbt(NbtCompound tag) {
         tag.putBoolean("linked", linked);
+        if (invulnerable)
+            tag.putBoolean("invulnerable", true);
         if (beaconPos != null)
             tag.put("beaconPos", NbtHelper.fromBlockPos(beaconPos));
     }
