@@ -5,6 +5,7 @@ import com.lgmrszd.anshar.beacon.BeaconNode;
 import com.lgmrszd.anshar.beacon.EndCrystalItemContainer;
 import com.lgmrszd.anshar.config.ServerConfig;
 import com.lgmrszd.anshar.dispenser.ModDispenserBehaviors;
+import com.lgmrszd.anshar.storage.EmbeddedStorage;
 import com.lgmrszd.anshar.transport.PlayerTransportComponent;
 import com.lgmrszd.anshar.transport.TransportEffects;
 
@@ -12,6 +13,9 @@ import fuzs.forgeconfigapiport.fabric.api.neoforge.v4.NeoForgeConfigRegistry;
 import net.fabricmc.fabric.api.event.player.UseBlockCallback;
 import net.fabricmc.fabric.api.event.player.UseItemCallback;
 import net.fabricmc.fabric.api.networking.v1.ServerPlayNetworking;
+import net.fabricmc.fabric.api.transfer.v1.item.InventoryStorage;
+import net.fabricmc.fabric.api.transfer.v1.item.ItemStorage;
+import net.minecraft.block.entity.BlockEntityType;
 import net.minecraft.item.ItemStack;
 import net.minecraft.item.Items;
 import net.minecraft.registry.Registries;
@@ -29,6 +33,16 @@ import net.neoforged.fml.config.ModConfig;
 public class ModRegistration {
     public static void registerAll() {
         ModApi.register();
+
+        ItemStorage.SIDED.registerForBlockEntity(
+                (blockEntity, direction) ->
+                        EmbeddedStorage
+                                .getForEnderChestBlockEntity(blockEntity)
+                                .map(embeddedStorage ->
+                                        InventoryStorage.of(embeddedStorage, null))
+                                .orElse(null),
+                BlockEntityType.ENDER_CHEST
+        );
 
         ModDispenserBehaviors.register();
 
