@@ -1,11 +1,13 @@
 package com.lgmrszd.anshar.storage;
 
+import com.google.common.base.Suppliers;
 import com.lgmrszd.anshar.beacon.BeaconComponent;
 import com.lgmrszd.anshar.beacon.EndCrystalComponent;
 import com.lgmrszd.anshar.beacon.IEndCrystalComponent;
 import com.lgmrszd.anshar.frequency.FrequencyNetwork;
 import com.lgmrszd.anshar.frequency.NetworkManagerComponent;
 import com.lgmrszd.anshar.mixin.accessor.BeaconBlockEntityAccessor;
+import net.fabricmc.fabric.api.transfer.v1.item.InventoryStorage;
 import net.minecraft.block.entity.BeaconBlockEntity;
 import net.minecraft.block.entity.EnderChestBlockEntity;
 import net.minecraft.entity.Entity;
@@ -19,11 +21,20 @@ import net.minecraft.world.World;
 
 import java.util.List;
 import java.util.Optional;
+import java.util.function.Supplier;
 
 
 public class EmbeddedStorage extends EnderChestInventory {
     private static final int CONNECTION_RADIUS = 20;
-    
+
+    private final Supplier<InventoryStorage> embeddedStorageInventory = Suppliers.memoize(() -> {
+        return InventoryStorage.of(this, null);
+    });
+
+    public InventoryStorage getInventoryStorage() {
+        return embeddedStorageInventory.get();
+    }
+
     private static boolean isBeaconValidStorageTarget(BlockPos pos, World world, BeaconBlockEntity beacon){
         var diff = beacon.getPos().subtract(pos);
         var tier = diff.getY() + 1;

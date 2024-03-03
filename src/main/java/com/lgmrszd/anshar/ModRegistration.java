@@ -13,7 +13,6 @@ import fuzs.forgeconfigapiport.fabric.api.neoforge.v4.NeoForgeConfigRegistry;
 import net.fabricmc.fabric.api.event.player.UseBlockCallback;
 import net.fabricmc.fabric.api.event.player.UseItemCallback;
 import net.fabricmc.fabric.api.networking.v1.ServerPlayNetworking;
-import net.fabricmc.fabric.api.transfer.v1.item.InventoryStorage;
 import net.fabricmc.fabric.api.transfer.v1.item.ItemStorage;
 import net.minecraft.block.entity.BlockEntityType;
 import net.minecraft.item.ItemStack;
@@ -38,8 +37,7 @@ public class ModRegistration {
                 (blockEntity, direction) ->
                         EmbeddedStorage
                                 .getForEnderChestBlockEntity(blockEntity)
-                                .map(embeddedStorage ->
-                                        InventoryStorage.of(embeddedStorage, null))
+                                .map(EmbeddedStorage::getInventoryStorage)
                                 .orElse(null),
                 BlockEntityType.ENDER_CHEST
         );
