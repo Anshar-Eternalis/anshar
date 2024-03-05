@@ -81,7 +81,7 @@ public class EmbeddedStorage extends EnderChestInventory {
 
     public Text getContainerLabelFor(BeaconBlockEntity beacon){
         return Text.literal("[")
-            .append(beacon.getName())
+            .append(beacon == null ? Text.translatable("container.beacon") : beacon.getName())
             .append("] ")
             .append(Text.translatable("container.enderchest"));
     }

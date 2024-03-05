@@ -6,6 +6,7 @@ import com.lgmrszd.anshar.beacon.EndCrystalItemContainer;
 import com.lgmrszd.anshar.config.ServerConfig;
 import com.lgmrszd.anshar.dispenser.ModDispenserBehaviors;
 import com.lgmrszd.anshar.storage.EmbeddedStorage;
+import com.lgmrszd.anshar.storage.EnderChestComponent;
 import com.lgmrszd.anshar.transport.PlayerTransportComponent;
 import com.lgmrszd.anshar.transport.TransportEffects;
 
@@ -35,8 +36,8 @@ public class ModRegistration {
 
         ItemStorage.SIDED.registerForBlockEntity(
                 (blockEntity, direction) ->
-                        EmbeddedStorage
-                                .getForEnderChestBlockEntity(blockEntity)
+                        EnderChestComponent.KEY.get(blockEntity)
+                                .getLinkedStorage()
                                 .map(EmbeddedStorage::getInventoryStorage)
                                 .orElse(null),
                 BlockEntityType.ENDER_CHEST

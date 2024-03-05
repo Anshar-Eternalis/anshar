@@ -42,6 +42,7 @@
 		"cardinal-components" : [
 			"anshar:frequency_identifier",
 			"anshar:beacon",
+			"anshar:ender_chest",
 			"anshar:network_manager",
 			"anshar:end_crystal",
 			"anshar:player_transport"
