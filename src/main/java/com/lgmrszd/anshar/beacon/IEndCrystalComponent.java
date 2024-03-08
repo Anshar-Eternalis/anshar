@@ -31,4 +31,6 @@ public interface IEndCrystalComponent extends ServerTickingComponent, ClientTick
     Optional<BlockPos> getConnectedBeacon();
 
     ActionResult onUse(PlayerEntity player, Hand hand);
+
+    void notifyUpdate(int code);
 }

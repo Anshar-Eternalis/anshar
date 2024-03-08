@@ -1,5 +1,7 @@
 package com.lgmrszd.anshar.beacon;
 
+import com.lgmrszd.anshar.debug.DebugCommon;
+import com.lgmrszd.anshar.debug.DebugLine;
 import net.minecraft.block.entity.BeaconBlockEntity;
 import net.minecraft.block.entity.EnderChestBlockEntity;
 import net.minecraft.entity.Entity;
@@ -69,6 +71,11 @@ public class EndCrystalComponent implements IEndCrystalComponent {
                         false
                 )
         );
+    }
+
+    @Override
+    public void notifyUpdate(int code) {
+
     }
 
     @Override
@@ -162,6 +169,11 @@ public class EndCrystalComponent implements IEndCrystalComponent {
                 linked = true;
                 KEY.sync(endCrystal);
             }
+        }
+
+        if (serverWorld.getTime() % 20 == 0) {
+            DebugLine line = new DebugLine(endCrystal.getBlockPos(), beaconPos, serverWorld.getTime() + 20);
+            DebugCommon.addDebugLine(line, serverWorld);
         }
     }
 

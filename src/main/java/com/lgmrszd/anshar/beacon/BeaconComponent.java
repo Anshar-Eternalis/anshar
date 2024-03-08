@@ -1,12 +1,15 @@
 package com.lgmrszd.anshar.beacon;
 
+import com.lgmrszd.anshar.AnsharUtil;
 import com.lgmrszd.anshar.config.ServerConfig;
 import com.lgmrszd.anshar.frequency.*;
 import com.lgmrszd.anshar.mixin.accessor.BeaconBlockEntityAccessor;
 
+import com.lgmrszd.anshar.storage.EnderChestComponent;
 import com.lgmrszd.anshar.transport.PlayerTransportComponent;
 import net.fabricmc.fabric.api.networking.v1.PacketSender;
 import net.minecraft.block.entity.BeaconBlockEntity;
+import net.minecraft.block.entity.BlockEntity;
 import net.minecraft.entity.decoration.EndCrystalEntity;
 import net.minecraft.nbt.NbtCompound;
 import net.minecraft.network.PacketByteBuf;
@@ -46,6 +49,10 @@ public class BeaconComponent implements IBeaconComponent {
 
     private float[] cachedColor;
 
+    private final Set<BlockPos> pyramidConnected;
+    private final Set<BlockPos> crystalConnected;
+
+
     public BeaconComponent(BeaconBlockEntity beaconBlockEntity) {
         this.beaconBlockEntity = beaconBlockEntity;
         level = 0;
@@ -53,6 +60,45 @@ public class BeaconComponent implements IBeaconComponent {
         cachedColor = new float[]{0, 0, 0};
         pyramidFrequency = NullFrequencyIdentifier.get();
         active = false;
+        pyramidConnected = new HashSet<>();
+        crystalConnected = new HashSet<>();
+    }
+
+    public void rememberCrystal(BlockPos crystalPos) {
+        crystalConnected.add(crystalPos);
+    }
+
+    public void rememberPyramidConnected(BlockPos pyramidComponentPos) {
+        pyramidConnected.add(pyramidComponentPos);
+    }
+
+    private void notifyConnected(int code) {
+        World world = beaconBlockEntity.getWorld();
+        if (world == null) return;
+
+        // Pyramid connected blocks
+        List<BlockPos> outdatedPyramidConnected = new ArrayList<>();
+        pyramidConnected.forEach(blockPos -> {
+            BlockEntity be = world.getBlockEntity(blockPos);
+            EnderChestComponent component = EnderChestComponent.KEY.getNullable(be);
+            // TODO: also check if component is connected to us
+            if (component == null) outdatedPyramidConnected.add(blockPos);
+            else {
+                component.notifyUpdate(code);
+            }
+        });
+        outdatedPyramidConnected.forEach(pyramidConnected::remove);
+
+        // Connected Crystals
+        List<BlockPos> outdatedCrystals = new ArrayList<>();
+        crystalConnected.forEach(blockPos -> {
+            EndCrystalEntity ece = AnsharUtil.lookUpEndCrystal(world, blockPos);
+            if (ece == null) outdatedCrystals.add(blockPos);
+            else {
+                EndCrystalComponent.KEY.get(ece).notifyUpdate(code);
+            }
+        });
+        outdatedCrystals.forEach(crystalConnected::remove);
     }
 
     private IFrequencyIdentifier rescanPyramid() {

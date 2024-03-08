@@ -4,6 +4,7 @@ import com.lgmrszd.anshar.beacon.BeaconComponent;
 import com.lgmrszd.anshar.beacon.BeaconNode;
 import com.lgmrszd.anshar.beacon.EndCrystalItemContainer;
 import com.lgmrszd.anshar.config.ServerConfig;
+import com.lgmrszd.anshar.debug.DebugCommon;
 import com.lgmrszd.anshar.dispenser.ModDispenserBehaviors;
 import com.lgmrszd.anshar.storage.EmbeddedStorage;
 import com.lgmrszd.anshar.storage.EnderChestComponent;
@@ -57,6 +58,8 @@ public class ModRegistration {
         ServerPlayNetworking.registerGlobalReceiver(BeaconComponent.ENTER_PACKET_ID,
                 BeaconComponent::EnterBeamPacketC2S
         );
+
+        DebugCommon.init();
 
         Registry.register(Registries.SOUND_EVENT, ModResources.EMBED_SPACE_AMBIENT_SOUND, ModResources.EMBED_SPACE_AMBIENT_SOUND_EVENT);
         Registry.register(Registries.SOUND_EVENT, ModResources.TRANSPORT_JUMP_SOUND, ModResources.TRANSPORT_JUMP_SOUND_EVENT);

@@ -1,5 +1,6 @@
 package com.lgmrszd.anshar.storage;
 
+import com.lgmrszd.anshar.AnsharUtil;
 import com.lgmrszd.anshar.beacon.BeaconComponent;
 import com.lgmrszd.anshar.beacon.IBeaconComponent;
 import dev.onyxstudios.cca.api.v3.component.ComponentKey;
@@ -8,8 +9,8 @@ import dev.onyxstudios.cca.api.v3.component.tick.ServerTickingComponent;
 import net.minecraft.block.entity.BeaconBlockEntity;
 import net.minecraft.block.entity.EnderChestBlockEntity;
 import net.minecraft.nbt.NbtCompound;
+import net.minecraft.nbt.NbtHelper;
 import net.minecraft.particle.DustParticleEffect;
-import net.minecraft.particle.ParticleTypes;
 import net.minecraft.screen.GenericContainerScreenHandler;
 import net.minecraft.screen.SimpleNamedScreenHandlerFactory;
 import net.minecraft.server.network.ServerPlayerEntity;
@@ -18,9 +19,9 @@ import net.minecraft.stat.Stats;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Vec3d;
+import org.joml.Vector3f;
 
 
-import java.lang.ref.WeakReference;
 import java.util.Optional;
 
 import static com.lgmrszd.anshar.Anshar.LOGGER;
@@ -38,10 +39,40 @@ public class EnderChestComponent implements ServerTickingComponent {
     private boolean linked;
 //    private boolean active;
 
+    private BlockPos linkedSource;
+
+    private AnsharUtil.LinkedState linkedState;
+
+//    private Supplier<AnsharUtil.LinkedState> linkedState = Suppliers.memoize(() -> {
+//        if (linkedSource == null) return AnsharUtil.LinkedState.UNLINKED;
+//        if (linkedSource.getY() == linkedBeacon.getY() + 1) return AnsharUtil.LinkedState.LINKED_CRYSTAL;
+//        return AnsharUtil.LinkedState.LINKED_PYRAMID;
+//    });
+
+
+
+    public void setLinkedSource(BlockPos linkedSource) {
+        this.linkedSource = linkedSource;
+        linkedState = null;
+    }
+
+    public AnsharUtil.LinkedState getLinkedState() {
+        if (linkedState == null) linkedState = calculateLinkedState();
+        return linkedState;
+    }
+
+    private AnsharUtil.LinkedState calculateLinkedState() {
+        if (linkedSource == null) return AnsharUtil.LinkedState.UNLINKED;
+        if (linkedSource.getY() == linkedBeacon.getY() + 1) return AnsharUtil.LinkedState.LINKED_CRYSTAL;
+        return AnsharUtil.LinkedState.LINKED_PYRAMID;
+    }
+
     public EnderChestComponent(EnderChestBlockEntity enderChestBlockEntity) {
         this.enderChestBlockEntity = enderChestBlockEntity;
         linkedStorage = null;
     }
+
+
 
     @Override
     public void serverTick() {
@@ -59,7 +90,9 @@ public class EnderChestComponent implements ServerTickingComponent {
 //        if (world.getTime() % 20 != 0) return;
         Vec3d centralPos = enderChestBlockEntity.getPos().toCenterPos();
         world.spawnParticles(
-                linked ? ParticleTypes.GLOW : ParticleTypes.DRIPPING_LAVA,
+                new DustParticleEffect(
+                        linked ? new Vector3f(0, 1f, 0) : DustParticleEffect.RED,
+                    1f),
                 centralPos.x,
                 centralPos.y+0.7,
                 centralPos.z,
@@ -111,17 +144,23 @@ public class EnderChestComponent implements ServerTickingComponent {
         return true;
     }
 
+    public void notifyUpdate(int code) {
+
+    }
+
     public Optional<EmbeddedStorage> getLinkedStorage() {
         return Optional.ofNullable(linkedStorage);
     }
 
     @Override
     public void readFromNbt(NbtCompound tag) {
-
+        if (tag.contains("linked_source"))
+            linkedSource = NbtHelper.toBlockPos(tag.getCompound("linked_source"));
     }
 
     @Override
     public void writeToNbt(NbtCompound tag) {
-
+        if (linkedSource != null)
+            tag.put("linked_source", NbtHelper.fromBlockPos(linkedSource));
     }
 }
