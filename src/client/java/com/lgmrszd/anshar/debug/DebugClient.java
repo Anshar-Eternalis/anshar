@@ -31,8 +31,8 @@ public class DebugClient {
         }
     }
 
-    public static void addDebugLine(DebugLine line) {
-        DEBUG_LINES.put(line, line.lifetime());
+    public static void addDebugLine(DebugLine line, long lifetime) {
+        DEBUG_LINES.put(line, lifetime);
     }
 
     private static void receiveDebugLinePacket(
@@ -45,8 +45,10 @@ public class DebugClient {
         while (linesToStore-- > 0) {
             BlockPos start = buf.readBlockPos();
             BlockPos end = buf.readBlockPos();
+            int colorStart = buf.readInt();
+            int colorEnd = buf.readInt();
             long lifetime = buf.readLong();
-            addDebugLine(new DebugLine(start, end, lifetime));
+            addDebugLine(new DebugLine(start, end, colorStart, colorEnd), lifetime);
         }
     }
 }

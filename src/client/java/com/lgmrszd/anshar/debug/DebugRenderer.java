@@ -6,6 +6,7 @@ import net.fabricmc.fabric.api.client.rendering.v1.WorldRenderEvents;
 import net.minecraft.client.render.*;
 import net.minecraft.client.util.math.MatrixStack;
 import net.minecraft.util.math.BlockPos;
+import net.minecraft.util.math.ColorHelper;
 import net.minecraft.util.math.RotationAxis;
 import net.minecraft.util.math.Vec3d;
 import org.joml.Matrix4f;
@@ -23,6 +24,10 @@ public class DebugRenderer {
     }
 
     private static void debugLine(Tessellator tessellator, BufferBuilder buffer, MatrixStack matrixStack, BlockPos pos1, BlockPos pos2) {
+        debugLine(tessellator, buffer, matrixStack, pos1, pos2, ColorHelper.Argb.getArgb(255, 0, 255, 0), ColorHelper.Argb.getArgb(255, 255, 0, 0));
+    }
+
+    private static void debugLine(Tessellator tessellator, BufferBuilder buffer, MatrixStack matrixStack, BlockPos pos1, BlockPos pos2, int color1, int color2) {
         Vec3d lineStart = pos1.toCenterPos();
         Vec3d lineEnd = pos2.toCenterPos();
         Vector3f lineVec = lineEnd.subtract(lineStart).toVector3f();
@@ -33,8 +38,8 @@ public class DebugRenderer {
         Matrix4f positionMatrix = matrixStack.peek().getPositionMatrix();
 
         buffer.begin(VertexFormat.DrawMode.DEBUG_LINES, VertexFormats.POSITION_COLOR);
-        buffer.vertex(positionMatrix, 0, 0, 0).color(0f, 1f, 0f, 1f).next();
-        buffer.vertex(positionMatrix, lineVec.x, lineVec.y, lineVec.z).color(1f, 0f, 0f, 1f).next();
+        buffer.vertex(positionMatrix, 0, 0, 0).color(color1).next();
+        buffer.vertex(positionMatrix, lineVec.x, lineVec.y, lineVec.z).color(color2).next();
         RenderSystem.setShaderColor(1f, 1f, 1f, 1f);
 //        RenderSystem.lineWidth(500f);
 
@@ -43,8 +48,11 @@ public class DebugRenderer {
         matrixStack.pop();
 
     }
-
     private static void debugLineTriangle(Tessellator tessellator, BufferBuilder buffer, MatrixStack matrixStack, BlockPos pos1, BlockPos pos2) {
+        debugLineTriangle(tessellator, buffer, matrixStack, pos1, pos2, ColorHelper.Argb.getArgb(255, 0, 255, 0), ColorHelper.Argb.getArgb(255, 255, 0, 0));
+    }
+
+    private static void debugLineTriangle(Tessellator tessellator, BufferBuilder buffer, MatrixStack matrixStack, BlockPos pos1, BlockPos pos2, int color1, int color2) {
         Vec3d lineStart = pos1.toCenterPos();
         Vec3d lineEnd = pos2.toCenterPos();
         Vector3f lineVec = lineEnd.subtract(lineStart).toVector3f();
@@ -68,21 +76,21 @@ public class DebugRenderer {
 
         buffer.begin(VertexFormat.DrawMode.TRIANGLES, VertexFormats.POSITION_COLOR);
 
-        buffer.vertex(positionMatrix, v1.x, v1.y, v1.z).color(0f, 1f, 0f, 1f).next();
-        buffer.vertex(positionMatrix, v2.x, v2.y, v2.z).color(0f, 1f, 0f, 1f).next();
-        buffer.vertex(positionMatrix, lineVec.x, lineVec.y, lineVec.z).color(1f, 0f, 0f, 1f).next();
+        buffer.vertex(positionMatrix, v1.x, v1.y, v1.z).color(color1).next();
+        buffer.vertex(positionMatrix, v2.x, v2.y, v2.z).color(color1).next();
+        buffer.vertex(positionMatrix, lineVec.x, lineVec.y, lineVec.z).color(color2).next();
 
-        buffer.vertex(positionMatrix, v2.x, v2.y, v2.z).color(0f, 1f, 0f, 1f).next();
-        buffer.vertex(positionMatrix, v3.x, v3.y, v3.z).color(0f, 1f, 0f, 1f).next();
-        buffer.vertex(positionMatrix, lineVec.x, lineVec.y, lineVec.z).color(1f, 0f, 0f, 1f).next();
+        buffer.vertex(positionMatrix, v2.x, v2.y, v2.z).color(color1).next();
+        buffer.vertex(positionMatrix, v3.x, v3.y, v3.z).color(color1).next();
+        buffer.vertex(positionMatrix, lineVec.x, lineVec.y, lineVec.z).color(color2).next();
 
-        buffer.vertex(positionMatrix, v3.x, v3.y, v3.z).color(0f, 1f, 0f, 1f).next();
-        buffer.vertex(positionMatrix, v4.x, v4.y, v4.z).color(0f, 1f, 0f, 1f).next();
-        buffer.vertex(positionMatrix, lineVec.x, lineVec.y, lineVec.z).color(1f, 0f, 0f, 1f).next();
+        buffer.vertex(positionMatrix, v3.x, v3.y, v3.z).color(color1).next();
+        buffer.vertex(positionMatrix, v4.x, v4.y, v4.z).color(color1).next();
+        buffer.vertex(positionMatrix, lineVec.x, lineVec.y, lineVec.z).color(color2).next();
 
-        buffer.vertex(positionMatrix, v4.x, v4.y, v4.z).color(0f, 1f, 0f, 1f).next();
-        buffer.vertex(positionMatrix, v1.x, v1.y, v1.z).color(0f, 1f, 0f, 1f).next();
-        buffer.vertex(positionMatrix, lineVec.x, lineVec.y, lineVec.z).color(1f, 0f, 0f, 1f).next();
+        buffer.vertex(positionMatrix, v4.x, v4.y, v4.z).color(color1).next();
+        buffer.vertex(positionMatrix, v1.x, v1.y, v1.z).color(color1).next();
+        buffer.vertex(positionMatrix, lineVec.x, lineVec.y, lineVec.z).color(color2).next();
 
         RenderSystem.setShader(GameRenderer::getPositionColorProgram);
         RenderSystem.setShaderColor(1f, 1f, 1f, 1f);
@@ -122,7 +130,9 @@ public class DebugRenderer {
         for (Map.Entry<DebugLine, Long> entry : DEBUG_LINES.entrySet()) {
             BlockPos start = entry.getKey().start();
             BlockPos end = entry.getKey().end();
-            debugLineTriangle(tessellator, buffer, matrixStack, start, end);
+            int startColor = entry.getKey().startColor();
+            int endColor = entry.getKey().endColor();
+            debugLineTriangle(tessellator, buffer, matrixStack, start, end, startColor, endColor);
         }
 
         RenderSystem.depthFunc(GL11.GL_LEQUAL);

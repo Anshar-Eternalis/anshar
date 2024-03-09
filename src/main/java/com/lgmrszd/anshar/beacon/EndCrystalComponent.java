@@ -22,6 +22,7 @@ import net.minecraft.util.ActionResult;
 import net.minecraft.util.Hand;
 import net.minecraft.util.hit.BlockHitResult;
 import net.minecraft.util.math.BlockPos;
+import net.minecraft.util.math.ColorHelper;
 import net.minecraft.util.math.Direction;
 import net.minecraft.util.math.Vec3d;
 import net.minecraft.world.World;
@@ -172,7 +173,12 @@ public class EndCrystalComponent implements IEndCrystalComponent {
         }
 
         if (serverWorld.getTime() % 20 == 0) {
-            DebugLine line = new DebugLine(endCrystal.getBlockPos(), beaconPos, serverWorld.getTime() + 20);
+            DebugLine line = new DebugLine(
+                    endCrystal.getBlockPos(),
+                    beaconPos,
+                    ColorHelper.Argb.getArgb(255, 0, 255, 255),
+                    ColorHelper.Argb.getArgb(255, 0, 0, 255)
+            );
             DebugCommon.addDebugLine(line, serverWorld);
         }
     }

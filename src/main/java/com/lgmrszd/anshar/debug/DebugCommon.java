@@ -42,12 +42,13 @@ public class DebugCommon {
     private static void onEndTick(MinecraftServer server) {
         server.getPlayerManager().getPlayerList().forEach(player -> {
             UUID playerUuid = player.getUuid();
+            long time = player.getWorld().getTime();
             LinkedBlockingQueue<DebugLine> queue = DEBUG_LINES.get(playerUuid);
-            if (queue != null) onEndTick(player, queue);
+            if (queue != null) onEndTick(player, time, queue);
         });
     }
 
-    private static void onEndTick(ServerPlayerEntity player, LinkedBlockingQueue<DebugLine> queue) {
+    private static void onEndTick(ServerPlayerEntity player, long time, LinkedBlockingQueue<DebugLine> queue) {
         if (queue.isEmpty()) return;
         int i = 0;
         int linesToSend = Math.min(LINES_PER_PACKET, queue.size());
@@ -58,7 +59,9 @@ public class DebugCommon {
         while (i++ < LINES_PER_PACKET && currentLine != null) {
             buf.writeBlockPos(currentLine.start());
             buf.writeBlockPos(currentLine.end());
-            buf.writeLong(currentLine.lifetime());
+            buf.writeInt(currentLine.startColor());
+            buf.writeInt(currentLine.endColor());
+            buf.writeLong(time + 20);
 
             currentLine = queue.poll();
         }
