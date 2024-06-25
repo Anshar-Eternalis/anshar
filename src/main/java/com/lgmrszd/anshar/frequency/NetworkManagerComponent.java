@@ -61,12 +61,14 @@ public class NetworkManagerComponent implements Component {
 
     public Optional<BeaconBlockEntity> getNearestConnectedBeacon(World world, BlockPos pos) {
         if (world == null) return Optional.empty();
+        Identifier dim = world.getRegistryKey().getValue();
         return networksByUUID.values().stream()
+                .filter(frequencyNetwork -> frequencyNetwork.getFreqID().isValidInDim(dim))
                 .map(FrequencyNetwork::getBeacons)
                 .flatMap(Collection::stream)
                 .filter(blockPos -> world.isChunkLoaded(
                         ChunkSectionPos.getSectionCoord(blockPos.getX()),
-                        ChunkSectionPos.getSectionCoord(blockPos.getY()))
+                        ChunkSectionPos.getSectionCoord(blockPos.getZ()))
                 )
                 .sorted((pos1, pos2) -> {
                     double distance1 = pos.getSquaredDistance(pos1);
@@ -80,7 +82,9 @@ public class NetworkManagerComponent implements Component {
 
     public List<BeaconBlockEntity> getConnectedBeaconsInRadius(World world, BlockPos pos, Double radius) {
         if (world == null) return Collections.emptyList();
+        Identifier dim = world.getRegistryKey().getValue();
         return networksByUUID.values().stream()
+                .filter(frequencyNetwork -> frequencyNetwork.getFreqID().isValidInDim(dim))
                 .map(FrequencyNetwork::getBeacons)
                 .flatMap(Collection::stream)
                 .filter(blockPos -> pos.isWithinDistance(blockPos, radius)
@@ -132,8 +136,6 @@ public class NetworkManagerComponent implements Component {
 
     @Override
     public void readFromNbt(NbtCompound tag) {
-        // TODO: remove this! It's here for debug for now
-//        if (true) return;
         try {
             NbtCompound networksTag = tag.getCompound("networks");
             for (String uuid_string : networksTag.getKeys()) {

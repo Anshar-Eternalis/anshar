@@ -14,6 +14,7 @@ import net.minecraft.inventory.EnderChestInventory;
 import net.minecraft.text.Text;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Box;
+import net.minecraft.util.math.Vec3d;
 import net.minecraft.world.World;
 
 import java.util.List;
@@ -34,14 +35,16 @@ public class EmbeddedStorage extends EnderChestInventory {
 
     public static Optional<BeaconBlockEntity> getConnectedBeacon(World world, BlockPos pos, EnderChestBlockEntity blockEnt) {
         // check for crystal
-        BlockPos blockPos2 = pos.up();
-        double d = blockPos2.getX();
-        double e = blockPos2.getY();
-        double f = blockPos2.getZ();
-        List<Entity> list = world.getOtherEntities(null, new Box(d, e, f, d + 1.0, e + 2.0, f + 1.0));
+        Vec3d scanPos = pos.up().toCenterPos().add(0, -0.5, 0);
+        double d = scanPos.getX();
+        double e = scanPos.getY();
+        double f = scanPos.getZ();
+        List<Entity> list = world.getOtherEntities(null, new Box(d-0.1, e, f-0.1,
+                d+0.1, e+0.2, f+0.1));
         if (!list.isEmpty()) {
             for (Entity entity: list) {
                 if (!(entity instanceof EndCrystalEntity ece)) continue;
+                if (entity.getPos().relativize(scanPos).length() > 0.1) continue;
                 IEndCrystalComponent ecc = EndCrystalComponent.KEY.get(ece);
                 Optional<BeaconBlockEntity> lookUpFromCrystal = ecc.getConnectedBeacon().map(pos1 -> {
                     if (world.getBlockEntity(pos1) instanceof BeaconBlockEntity bbe) return bbe;

@@ -35,7 +35,8 @@
 		{
 			"config": "anshar.client.mixins.json",
 			"environment": "client"
-		}
+		},
+		"anshar.compat.mixins.json"
 	],
 	"custom": {
 		"cardinal-components" : [
@@ -50,9 +51,9 @@
 		"fabricloader": ">=0.15.1",
 		"minecraft": "~1.20.4",
 		"java": ">=17",
-		"fabric-api": "*"
+		"fabric-api": "*",
+		"forgeconfigapiport": ">=20.4.2"
 	},
 	"suggests": {
-		"another-mod": "*"
     }
 }

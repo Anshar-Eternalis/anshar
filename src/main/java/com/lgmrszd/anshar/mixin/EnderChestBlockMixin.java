@@ -22,8 +22,6 @@ import net.minecraft.util.hit.BlockHitResult;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.World;
 
-import static com.lgmrszd.anshar.Anshar.LOGGER;
-
 @Mixin(EnderChestBlock.class)
 public abstract class EnderChestBlockMixin {
 

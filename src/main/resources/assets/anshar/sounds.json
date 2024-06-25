@@ -8,7 +8,15 @@
     "transport_jump": {
         "subtitle": "subtitles.anshar.transport_jump",
         "sounds": [
-          "anshar:transport_jump"
+            "anshar:transport_arrive_11_5"
         ]
-      }
+    },
+    "eternal_tunes": {
+        "subtitle": "subtitles.anshar.eternal_tunes",
+        "sounds": [
+            "anshar:tunes/lithium_drops",
+            "anshar:tunes/melancholy_mimir",
+            "anshar:tunes/beep_boop"
+        ]
+    }
   }

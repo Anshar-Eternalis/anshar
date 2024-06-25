@@ -32,6 +32,11 @@ public final class PyramidFrequencyIdentifier implements IFrequencyIdentifier {
     }
 
     @Override
+    public boolean isValidInDim(Identifier dim) {
+        return dim.equals(dimension);
+    }
+
+    @Override
     public int hashCode() {
         int hash = Integer.MAX_VALUE;
         for (List<Identifier> pyramidArrangement: pyramidArrangements) {

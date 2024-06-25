@@ -50,6 +50,12 @@ public class FrequencyNetwork {
         return beacons.put(node.getPos(), node) == null;
     }
 
+    public void updateBeacon (BeaconComponent beaconComponent) {
+        BeaconNode node = new BeaconNode(beaconComponent);
+        if (beacons.containsKey(node.getPos()))
+            beacons.put(node.getPos(), node);
+    }
+
     public Optional<BeaconNode> getNode(BlockPos pos) {
         return Optional.ofNullable(beacons.get(pos));
     }
