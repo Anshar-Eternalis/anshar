@@ -141,7 +141,7 @@ public class PlayerTransportComponent implements ServerTickingComponent, AutoSyn
         // TODO: take into account no-collision blocks like grass
         while (! (world.isAir(exit) && world.isAir(exit.up()))) exit = exit.up();
 
-        this.player.teleport(0.5 + exit.getX(), exit.getY(), 0.5 + exit.getZ(), false);
+        this.player.requestTeleport(0.5 + exit.getX(), exit.getY(), 0.5 + exit.getZ());
         sendExplosionPacketS2C(false, exit, target.getColorHex());
 
         this.networkUUID = null;
@@ -199,7 +199,7 @@ public class PlayerTransportComponent implements ServerTickingComponent, AutoSyn
     }
 
     private void moveToCurrentTarget() {
-        this.player.teleport(target.getPos().getX(), 10000, target.getPos().getZ(), false);
+        this.player.requestTeleport(target.getPos().getX(), 10000, target.getPos().getZ());
     }
 
     private static final double MIN_NODE_SEPARATION_RADS = Math.PI * 0.25;
