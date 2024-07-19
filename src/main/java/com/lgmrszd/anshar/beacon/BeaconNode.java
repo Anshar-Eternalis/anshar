@@ -2,10 +2,9 @@ package com.lgmrszd.anshar.beacon;
 
 import java.util.Optional;
 
-import com.lgmrszd.anshar.util.RegistryUtil;
-
 import net.minecraft.block.entity.BeaconBlockEntity;
 import net.minecraft.nbt.NbtCompound;
+import net.minecraft.registry.RegistryWrapper;
 import net.minecraft.text.Text;
 import net.minecraft.util.math.BlockPos;
 
@@ -35,18 +34,18 @@ public class BeaconNode {
         this.color = color;
     }
 
-    public static BeaconNode fromNBT(NbtCompound tag) {
+    public static BeaconNode fromNBT(NbtCompound tag, RegistryWrapper.WrapperLookup registries) {
         return new BeaconNode(
             BlockPos.fromLong(tag.getLong("pos")),
-            Text.Serialization.fromJson(tag.getString("name"), RegistryUtil.getRegistries()),
+            Text.Serialization.fromJson(tag.getString("name"), registries),
             new float[]{tag.getFloat("r"), tag.getFloat("g"), tag.getFloat("b")}
         );
     }
 
-    public NbtCompound toNBT() {
+    public NbtCompound toNBT(RegistryWrapper.WrapperLookup registries) {
         var tag = new NbtCompound();
         tag.putLong("pos", pos.asLong());
-        tag.putString("name", Text.Serialization.toJsonString(this.name, RegistryUtil.getRegistries()));
+        tag.putString("name", Text.Serialization.toJsonString(this.name, registries));
         tag.putFloat("r", color[0]);
         tag.putFloat("g", color[1]);
         tag.putFloat("b", color[2]);

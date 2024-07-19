@@ -7,7 +7,6 @@ import com.lgmrszd.anshar.transport.PlayerTransportClient;
 import com.lgmrszd.anshar.transport.PlayerTransportComponent;
 import com.lgmrszd.anshar.transport.TransportEffects;
 import com.lgmrszd.anshar.transport.TransportGateParticle;
-import com.lgmrszd.anshar.util.RegistryUtil;
 
 import net.fabricmc.api.ClientModInitializer;
 import net.fabricmc.fabric.api.client.event.lifecycle.v1.ClientEntityEvents;
@@ -39,7 +38,6 @@ public class AnsharClient implements ClientModInitializer {
 				transport.setClientEnterCallback(PlayerTransportClient::enterNetworkCallback);
 				transport.setClientTickCallback(PlayerTransportClient::tickCallback);
 				transport.setClientExitCallback(PlayerTransportClient::exitNetworkCallback);
-				RegistryUtil.setCachedWorld(clientWorld);
 			}
 		});
 	}

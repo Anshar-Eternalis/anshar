@@ -155,11 +155,11 @@ public class PlayerTransportComponent implements ServerTickingComponent, AutoSyn
     public void readFromNbt(NbtCompound tag, RegistryWrapper.WrapperLookup registryLookup) {
         if (tag.containsUuid("network")) {
             networkUUID = tag.getUuid("network");
-            if (tag.contains("target")) this.target = BeaconNode.fromNBT(tag.getCompound("target"));
+            if (tag.contains("target")) this.target = BeaconNode.fromNBT(tag.getCompound("target"), registryLookup);
             if (tag.contains("jump_targets")) {
                 this.jumpCandidates = new HashSet<>();
                 tag.getList("jump_targets", NbtElement.COMPOUND_TYPE).forEach(
-                    element -> jumpCandidates.add(BeaconNode.fromNBT((NbtCompound)element))
+                    element -> jumpCandidates.add(BeaconNode.fromNBT((NbtCompound)element, registryLookup))
                 );
             }
             neverJumped = !tag.contains("never_jumped") || tag.getBoolean("never_jumped");
@@ -174,10 +174,10 @@ public class PlayerTransportComponent implements ServerTickingComponent, AutoSyn
     public void writeToNbt(NbtCompound tag, RegistryWrapper.WrapperLookup registryLookup) {
         if (networkUUID != null) {
             tag.putUuid("network", networkUUID);
-            if (target != null) tag.put("target", target.toNBT());
+            if (target != null) tag.put("target", target.toNBT(registryLookup));
             
             var nodeList = new NbtList();
-            for (BeaconNode node : jumpCandidates) nodeList.add(node.toNBT());
+            for (BeaconNode node : jumpCandidates) nodeList.add(node.toNBT(registryLookup));
             tag.put("jump_targets", nodeList);
             tag.putBoolean("never_jumped", neverJumped);
         }

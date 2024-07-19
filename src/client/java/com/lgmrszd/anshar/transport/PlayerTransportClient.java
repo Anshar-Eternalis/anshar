@@ -83,7 +83,7 @@ public class PlayerTransportClient {
 
         // jump if we ball
         if (gateTicks >= TICKS_TO_JUMP) {
-            ClientPlayNetworking.send(new JumpPayload(nearest.toNBT()));
+            ClientPlayNetworking.send(new JumpPayload(nearest.toNBT(MinecraftClient.getInstance().world.getRegistryManager())));
             audioManager.stopJump();
             gateTicks = 0;
             nearest = null;

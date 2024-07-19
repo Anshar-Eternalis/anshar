@@ -10,11 +10,9 @@ import com.lgmrszd.anshar.payload.c2s.JumpPayload;
 import com.lgmrszd.anshar.payload.s2c.ExplosionPayload;
 import com.lgmrszd.anshar.transport.PlayerTransportComponent;
 import com.lgmrszd.anshar.transport.TransportEffects;
-import com.lgmrszd.anshar.util.RegistryUtil;
 
 import fuzs.forgeconfigapiport.fabric.api.neoforge.v4.NeoForgeConfigRegistry;
 import net.fabricmc.fabric.api.entity.event.v1.ServerLivingEntityEvents;
-import net.fabricmc.fabric.api.event.lifecycle.v1.ServerLifecycleEvents;
 import net.fabricmc.fabric.api.event.player.UseBlockCallback;
 import net.fabricmc.fabric.api.event.player.UseItemCallback;
 import net.fabricmc.fabric.api.networking.v1.PayloadTypeRegistry;
@@ -48,7 +46,7 @@ public class ModRegistration {
         PayloadTypeRegistry.playS2C().register(ExplosionPayload.ID, ExplosionPayload.CODEC);
 
         ServerPlayNetworking.registerGlobalReceiver(JumpPayload.ID, 
-            (payload, ctx) -> ctx.server().execute(() -> PlayerTransportComponent.KEY.get(ctx.player()).tryJump(BeaconNode.fromNBT(payload.nbt())))
+            (payload, ctx) -> ctx.server().execute(() -> PlayerTransportComponent.KEY.get(ctx.player()).tryJump(BeaconNode.fromNBT(payload.nbt(), ctx.server().getRegistryManager())))
         );
 
         ServerPlayNetworking.registerGlobalReceiver(EnterPayload.ID,
@@ -88,9 +86,6 @@ public class ModRegistration {
             if (container == null || container.getBeaconPos().isEmpty()) return TypedActionResult.pass(null);
             container.clearBeaconPos(serverPlayer);
             return TypedActionResult.success(stack);
-        });
-        ServerLifecycleEvents.SERVER_STARTED.register((server) -> {
-            RegistryUtil.setCachedWorld(server.getOverworld());
         });
     }
 

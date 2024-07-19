@@ -143,7 +143,7 @@ public class NetworkManagerComponent implements Component {
             for (String uuid_string : networksTag.getKeys()) {
                 UUID uuid = UUID.fromString(uuid_string);
                 NbtCompound networkTag = networksTag.getCompound(uuid_string);
-                FrequencyNetwork network = FrequencyNetwork.fromNbt(uuid, networkTag);
+                FrequencyNetwork network = FrequencyNetwork.fromNbt(uuid, networkTag, registryLookup);
                 if (network == null) {
                     LOGGER.error("Failed to load Network! Network Compound: {}", networkTag);
                     continue;
@@ -162,7 +162,7 @@ public class NetworkManagerComponent implements Component {
         NbtCompound networksTag = new NbtCompound();
         networksByUUID.forEach((uuid, network) -> {
             NbtCompound networkTag = new NbtCompound();
-            network.writeToNbt(networkTag);
+            network.writeToNbt(networkTag, registryLookup);
             networksTag.put(uuid.toString(), networkTag);
         });
         tag.put("networks", networksTag);
