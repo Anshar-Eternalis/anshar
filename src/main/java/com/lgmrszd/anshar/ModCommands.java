@@ -215,7 +215,7 @@ public class ModCommands {
                 .toList();
         sendFeedback(context, "Total loaded beacon block entities in this dimension: %d".formatted(allLoadedBBESorted.size()));
         if (!allLoadedBBESorted.isEmpty())
-            sendFeedback(context, "Nearest beacon block entity in this dimension: %s".formatted(allLoadedBBESorted.get(0).getPos().toShortString()));
+            sendFeedback(context, "Nearest beacon block entity in this dimension: %s".formatted(allLoadedBBESorted.getFirst().getPos().toShortString()));
         return 0;
     }
 

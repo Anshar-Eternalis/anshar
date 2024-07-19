@@ -7,13 +7,15 @@ import java.util.*;
 import java.util.function.Consumer;
 
 import com.lgmrszd.anshar.beacon.BeaconComponent;
-import dev.onyxstudios.cca.api.v3.component.Component;
-import dev.onyxstudios.cca.api.v3.component.ComponentKey;
-import dev.onyxstudios.cca.api.v3.component.ComponentRegistry;
+import org.ladysnake.cca.api.v3.component.Component;
+import org.ladysnake.cca.api.v3.component.ComponentKey;
+import org.ladysnake.cca.api.v3.component.ComponentRegistry;
 import net.minecraft.block.entity.BeaconBlockEntity;
 import net.minecraft.nbt.NbtCompound;
+import net.minecraft.registry.RegistryWrapper;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.crash.CrashException;
+import net.minecraft.util.crash.ReportType;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.ChunkSectionPos;
 import net.minecraft.world.World;
@@ -21,7 +23,7 @@ import net.minecraft.world.World;
 public class NetworkManagerComponent implements Component {
     private final HashMap<UUID, FrequencyNetwork> networksByUUID;
     public static final ComponentKey<NetworkManagerComponent> KEY = ComponentRegistry.getOrCreate(
-        new Identifier(MOD_ID, "network_manager"), NetworkManagerComponent.class
+        Identifier.of(MOD_ID, "network_manager"), NetworkManagerComponent.class
     );
 
     public NetworkManagerComponent() {
@@ -52,7 +54,7 @@ public class NetworkManagerComponent implements Component {
                             frequencyNetwork.getBeacons().size()
                     )));
         }
-        return matchedNetworks.get(0);
+        return matchedNetworks.getFirst();
     }
 
     public Optional<FrequencyNetwork> getNetwork(UUID uuid){
@@ -135,7 +137,7 @@ public class NetworkManagerComponent implements Component {
     }
 
     @Override
-    public void readFromNbt(NbtCompound tag) {
+    public void readFromNbt(NbtCompound tag, RegistryWrapper.WrapperLookup registryLookup) {
         try {
             NbtCompound networksTag = tag.getCompound("networks");
             for (String uuid_string : networksTag.getKeys()) {
@@ -151,12 +153,12 @@ public class NetworkManagerComponent implements Component {
         } catch (CrashException e) {
             LOGGER.error("Error while reading Network data from world save!");
             LOGGER.error("crash report as follows:");
-            LOGGER.error("\n"+e.getReport().asString());
+            LOGGER.error("\n"+e.getReport().asString(ReportType.MINECRAFT_CRASH_REPORT));
         }
     }
 
     @Override
-    public void writeToNbt(NbtCompound tag) {
+    public void writeToNbt(NbtCompound tag, RegistryWrapper.WrapperLookup registryLookup) {
         NbtCompound networksTag = new NbtCompound();
         networksByUUID.forEach((uuid, network) -> {
             NbtCompound networkTag = new NbtCompound();

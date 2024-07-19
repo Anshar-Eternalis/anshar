@@ -22,7 +22,7 @@ public class GodsOlympusMixin {
         GodsOlympusCompat.setFunny((player, item) -> {
             removeRepPoseidon(player, (short)(getRepPoseidon(player)-5));
             removeRepZeus(player, (short)(getRepZeus(player)-5));
-            player.getWorld().playSound(player, player.getX(), player.getY(), player.getZ(), SoundEvents.ITEM_TRIDENT_THUNDER, SoundCategory.PLAYERS);
+            player.getWorld().playSound(player, player.getBlockPos(), SoundEvents.ITEM_TRIDENT_THUNDER.value(), SoundCategory.PLAYERS);
             item.kill();
         });
     }

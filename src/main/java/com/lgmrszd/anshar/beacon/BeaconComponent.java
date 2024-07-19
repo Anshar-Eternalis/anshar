@@ -3,22 +3,21 @@ package com.lgmrszd.anshar.beacon;
 import com.lgmrszd.anshar.config.ServerConfig;
 import com.lgmrszd.anshar.frequency.*;
 import com.lgmrszd.anshar.mixin.accessor.BeaconBlockEntityAccessor;
-
+import com.lgmrszd.anshar.payload.c2s.EnterPayload;
 import com.lgmrszd.anshar.transport.PlayerTransportComponent;
-import net.fabricmc.fabric.api.networking.v1.PacketSender;
+
+import net.fabricmc.fabric.api.networking.v1.ServerPlayNetworking;
 import net.minecraft.block.entity.BeaconBlockEntity;
 import net.minecraft.entity.decoration.EndCrystalEntity;
 import net.minecraft.nbt.NbtCompound;
-import net.minecraft.network.PacketByteBuf;
+import net.minecraft.network.RegistryByteBuf;
 import net.minecraft.particle.ParticleTypes;
-import net.minecraft.server.MinecraftServer;
-import net.minecraft.server.network.ServerPlayNetworkHandler;
+import net.minecraft.registry.RegistryWrapper;
 import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.server.world.ServerWorld;
 import net.minecraft.sound.SoundCategory;
 import net.minecraft.sound.SoundEvents;
 import net.minecraft.text.Text;
-import net.minecraft.util.Identifier;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Box;
 import net.minecraft.util.math.Vec3d;
@@ -27,10 +26,7 @@ import net.minecraft.world.World;
 import java.util.*;
 import java.util.function.Consumer;
 
-import static com.lgmrszd.anshar.Anshar.MOD_ID;
-
 public class BeaconComponent implements IBeaconComponent {
-    public static final Identifier ENTER_PACKET_ID = new Identifier(MOD_ID, "player_transport_enter");
     protected static Consumer<BeaconComponent> clientTick = bc -> {};
 
     private static final double beamWidth = 0.25;
@@ -98,23 +94,23 @@ public class BeaconComponent implements IBeaconComponent {
     }
 
     @Override
-    public void readFromNbt(NbtCompound tag) {
+    public void readFromNbt(NbtCompound tag, RegistryWrapper.WrapperLookup registryLookup) {
         level = tag.getInt("level");
     }
 
     @Override
-    public void writeToNbt(NbtCompound tag) {
+    public void writeToNbt(NbtCompound tag, RegistryWrapper.WrapperLookup registryLookup) {
         tag.putInt("level", level);
     }
 
     @Override
-    public void writeSyncPacket(PacketByteBuf buf, ServerPlayerEntity recipient) {
+    public void writeSyncPacket(RegistryByteBuf buf, ServerPlayerEntity recipient) {
         buf.writeBoolean(active);
 //        IBeaconComponent.super.writeSyncPacket(buf, recipient);
     }
 
     @Override
-    public void applySyncPacket(PacketByteBuf buf) {
+    public void applySyncPacket(RegistryByteBuf buf) {
         active = buf.readBoolean();
 //        IBeaconComponent.super.applySyncPacket(buf);
     }
@@ -157,12 +153,12 @@ public class BeaconComponent implements IBeaconComponent {
         clientTick.accept(this);
     }
 
-    public static void EnterBeamPacketC2S(MinecraftServer server, ServerPlayerEntity player, ServerPlayNetworkHandler b, PacketByteBuf packet, PacketSender d) {
+    public static void EnterBeamPacketC2S(EnterPayload payload, ServerPlayNetworking.Context ctx) {
         if (!ServerConfig.beamClientCheck.get()) return;
-        BlockPos pos = packet.readBlockPos();
-        server.execute(() -> {
-            if (!(player.getWorld().getBlockEntity(pos) instanceof BeaconBlockEntity bbe)) return;
-            KEY.get(bbe).tryPutPlayerIntoNetwork(player);
+        BlockPos pos = payload.pos();
+        ctx.server().execute(() -> {
+            if (!(ctx.player().getWorld().getBlockEntity(pos) instanceof BeaconBlockEntity bbe)) return;
+            KEY.get(bbe).tryPutPlayerIntoNetwork(ctx.player());
         });
     }
 
@@ -225,7 +221,8 @@ public class BeaconComponent implements IBeaconComponent {
     private float[] getTopColor() {
         var segments = beaconBlockEntity.getBeamSegments();
         if (!segments.isEmpty()) {
-            return segments.get(segments.size()-1).getColor();
+            int color =  0xFF000000 | segments.getLast().getColor();
+            return new float[]{(color >> 16) & 0xFF, (color >> 8) & 0xFF, (color >> 0) & 0xFF};
         }
         return new float[]{0, 0, 0};
     }

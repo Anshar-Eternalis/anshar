@@ -6,7 +6,7 @@ import net.minecraft.client.particle.ParticleTextureSheet;
 import net.minecraft.client.particle.SpriteBillboardParticle;
 import net.minecraft.client.particle.SpriteProvider;
 import net.minecraft.client.world.ClientWorld;
-import net.minecraft.particle.DefaultParticleType;
+import net.minecraft.particle.SimpleParticleType;
 
 public class TransportGateParticle extends SpriteBillboardParticle {
     
@@ -21,10 +21,10 @@ public class TransportGateParticle extends SpriteBillboardParticle {
 
     // copy [vanilla]
     public static class Factory
-    implements ParticleFactory<DefaultParticleType> {
+    implements ParticleFactory<SimpleParticleType> {
 
         @Override
-        public Particle createParticle(DefaultParticleType defaultParticleType, ClientWorld clientWorld, 
+        public Particle createParticle(SimpleParticleType defaultParticleType, ClientWorld clientWorld, 
         double px, double py, double pz, double vx, double vy, double vz) {
             TransportGateParticle gateParticle = new TransportGateParticle(clientWorld, px, py, pz, vx, vy, vz, this.spriteProvider);
             return gateParticle;

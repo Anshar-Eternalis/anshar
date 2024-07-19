@@ -1,6 +1,7 @@
 package com.lgmrszd.anshar.mixin.client.render;
 
 import org.spongepowered.asm.mixin.Mixin;
+import org.spongepowered.asm.mixin.Unique;
 import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.Redirect;
@@ -13,16 +14,13 @@ import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.particle.Particle;
 import net.minecraft.client.particle.ParticleManager;
 import net.minecraft.client.render.Camera;
-import net.minecraft.client.render.LightmapTextureManager;
 import net.minecraft.client.render.VertexConsumer;
-import net.minecraft.client.render.VertexConsumerProvider;
-import net.minecraft.client.util.math.MatrixStack;
 
 @Mixin(ParticleManager.class)
 public class ParticleManagerMixin {
-    private boolean anshar$filterParticles = false;
+    @Unique private boolean anshar$filterParticles = false;
     @Inject(method = "renderParticles", at = @At("HEAD"))
-    public void renderParticles(MatrixStack matrices, VertexConsumerProvider.Immediate vertexConsumers, LightmapTextureManager lightmapTextureManager, Camera camera, float tickDelta, CallbackInfo ci) {
+    public void renderParticles(CallbackInfo ci) {
         anshar$filterParticles = PlayerTransportComponent.KEY.get(MinecraftClient.getInstance().player).isInNetwork();
     }
 

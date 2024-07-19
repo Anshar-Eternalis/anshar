@@ -4,16 +4,14 @@ import org.joml.Matrix3f;
 import org.joml.Vector3f;
 
 import com.lgmrszd.anshar.beacon.BeaconNode;
+import com.lgmrszd.anshar.payload.c2s.JumpPayload;
+import com.lgmrszd.anshar.payload.s2c.ExplosionPayload;
 
 import net.fabricmc.fabric.api.client.networking.v1.ClientPlayNetworking;
-import net.fabricmc.fabric.api.networking.v1.PacketByteBufs;
-import net.fabricmc.fabric.api.networking.v1.PacketSender;
 import net.minecraft.client.MinecraftClient;
-import net.minecraft.client.network.ClientPlayNetworkHandler;
 import net.minecraft.client.network.ClientPlayerEntity;
 import net.minecraft.client.option.Perspective;
 import net.minecraft.client.particle.ParticleManager;
-import net.minecraft.network.PacketByteBuf;
 import net.minecraft.util.math.random.Random;
 
 public class PlayerTransportClient {
@@ -85,9 +83,7 @@ public class PlayerTransportClient {
 
         // jump if we ball
         if (gateTicks >= TICKS_TO_JUMP) {
-            var jumpPacket = PacketByteBufs.create();
-            jumpPacket.writeNbt(nearest.toNBT());
-            ClientPlayNetworking.send(PlayerTransportComponent.JUMP_PACKET_ID, jumpPacket);
+            ClientPlayNetworking.send(new JumpPayload(nearest.toNBT()));
             audioManager.stopJump();
             gateTicks = 0;
             nearest = null;
@@ -151,18 +147,18 @@ public class PlayerTransportClient {
 
     public float getJumpPercentage() { return (float)gateTicks / (float)TICKS_TO_JUMP; }
 
-    public static void acceptExplosionPacketS2C(MinecraftClient client, ClientPlayNetworkHandler handler, PacketByteBuf buf, PacketSender responseSender) {
-        if (client.player == null) return;
-        var pos = buf.readBlockPos().toCenterPos();
-        var color = buf.readInt();
-        client.execute(() -> {
+    public static void acceptExplosionPacketS2C(ExplosionPayload payload, ClientPlayNetworking.Context ctx) {
+        if (ctx.player() == null) return;
+        var pos = payload.pos();
+        var color = payload.color();
+        ctx.client().execute(() -> {
             // TODO This has opposite effect of not showing effect when landing, so I commented it out :/
             // we really should delay sending the packet by like two ticks
             // Alternatively if the problem doesn't happen when exiting the network, we can just remove this
             // (As I made it not create the effect when entering for the player who enters)
 //            var playerPos = MinecraftClient.getInstance().player.getPos();
 //            if (!playerPos.isInRange(pos, PlayerTransportComponent.EXPLOSION_MAX_DISTANCE)) return;
-            handler.getWorld().addFireworkParticle(pos.getX(), pos.getY(), pos.getZ(), 0, 0, 0, TransportEffects.makeTransportFirework(color));
+            ctx.player().getWorld().addFireworkParticle(pos.getX(), pos.getY(), pos.getZ(), 0, 0, 0, TransportEffects.makeTransportFirework(color));
         });
     }
 

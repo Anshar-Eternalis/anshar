@@ -12,7 +12,8 @@
     "frame": "goal",
     "hidden": true,
     "icon": {
-      "item": "minecraft:beacon"
+      "count": 1,
+      "id": "minecraft:beacon"
     },
     "title": {
       "translate": "advancements.anshar.network_enter.title"

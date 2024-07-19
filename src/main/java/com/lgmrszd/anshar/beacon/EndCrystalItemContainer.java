@@ -1,5 +1,6 @@
 package com.lgmrszd.anshar.beacon;
 
+import com.lgmrszd.anshar.ModComponentTypes;
 import com.lgmrszd.anshar.config.ServerConfig;
 import com.lgmrszd.anshar.frequency.NetworkManagerComponent;
 import net.minecraft.block.Blocks;
@@ -9,8 +10,6 @@ import net.minecraft.entity.Entity;
 import net.minecraft.entity.decoration.EndCrystalEntity;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.item.ItemStack;
-import net.minecraft.nbt.NbtCompound;
-import net.minecraft.nbt.NbtHelper;
 import net.minecraft.particle.ParticleTypes;
 import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.server.world.ServerWorld;
@@ -125,8 +124,8 @@ public class EndCrystalItemContainer {
     }
 
     private static void playLinkingSound(ServerPlayerEntity player, boolean clear) {
-        player.playSound(
-                clear ? SoundEvents.ITEM_ARMOR_EQUIP_NETHERITE : SoundEvents.ITEM_LODESTONE_COMPASS_LOCK,
+        player.playSoundToPlayer(
+                clear ? SoundEvents.ITEM_ARMOR_EQUIP_NETHERITE.value() : SoundEvents.ITEM_LODESTONE_COMPASS_LOCK,
                 SoundCategory.BLOCKS,
                 1f,
                 clear ? 2.0f : 1.0f
@@ -134,26 +133,16 @@ public class EndCrystalItemContainer {
     }
 
     public void saveBeaconPos(BlockPos pos) {
-        NbtCompound tag = stack.getOrCreateNbt();
-        NbtCompound posTag = NbtHelper.fromBlockPos(pos);
-        tag.put("BeaconPos", posTag);
-        stack.setNbt(tag);
+        stack.set(ModComponentTypes.BEACON_POS, pos);
     }
 
     public void clearBeaconPos(ServerPlayerEntity player) {
         player.sendMessage(Text.translatable("anshar.tooltip.end_crystal.use.unlinked"));
         playLinkingSound(player, true);
-        NbtCompound tag = stack.getNbt();
-        if (tag == null) return;
-        tag.remove("BeaconPos");
-        if (tag.isEmpty()) stack.setNbt(null);
-        else stack.setNbt(tag);
+        stack.remove(ModComponentTypes.BEACON_POS);
     }
 
     public Optional<BlockPos> getBeaconPos() {
-        if (!stack.hasNbt()) return Optional.empty();
-        NbtCompound tag = stack.getNbt();
-        if (tag == null || !tag.contains("BeaconPos")) return Optional.empty();
-        return Optional.of(NbtHelper.toBlockPos(tag.getCompound("BeaconPos")));
+        return Optional.ofNullable(stack.get(ModComponentTypes.BEACON_POS));
     }
 }

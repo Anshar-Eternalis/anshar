@@ -1,4 +1,4 @@
-// 1.20.4	2024-01-04T18:55:47.579564032	Anshar/Advancements
-477d8e04f6aaf80fff80db83a56a7576ef5be9b4 data/minecraft/advancements/anshar/network_enter.json
-b489c4e9b74631369c1d786209f441e68e221fbe data/minecraft/advancements/anshar/network_jump.json
-f37f668bbf22a17be77e64344bc93a8b4d1e7141 data/minecraft/advancements/anshar/root.json
+// 1.21	2024-07-19T11:45:57.692614556	Anshar/Advancements
+92e3a0747efd0adf4ae219a6c6ce12fd1238f6c1 data/minecraft/advancement/anshar/network_jump.json
+77d37b2ba8231cbe0bba2eeda4031b299e93aecd data/minecraft/advancement/anshar/network_enter.json
+d9ee42a0c93c2905b4e1b6dbb75cd49b53d78727 data/minecraft/advancement/anshar/root.json

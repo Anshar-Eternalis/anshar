@@ -8,7 +8,6 @@ import net.minecraft.advancement.criterion.AbstractCriterion;
 import net.minecraft.predicate.entity.EntityPredicate;
 import net.minecraft.predicate.entity.LootContextPredicate;
 import net.minecraft.server.network.ServerPlayerEntity;
-import net.minecraft.util.dynamic.Codecs;
 
 import java.util.Optional;
 
@@ -26,7 +25,7 @@ public class NetworkJumpCriterion extends AbstractCriterion<NetworkJumpCriterion
     public record Conditions(Optional<LootContextPredicate> player) implements AbstractCriterion.Conditions {
         public static final Codec<NetworkJumpCriterion.Conditions> CODEC = RecordCodecBuilder.create(
                 conditionsInstance -> conditionsInstance.group(
-                        Codecs.createStrictOptionalFieldCodec(EntityPredicate.LOOT_CONTEXT_PREDICATE_CODEC, "player").forGetter(Conditions::player)
+                        EntityPredicate.LOOT_CONTEXT_PREDICATE_CODEC.optionalFieldOf("player").forGetter(Conditions::player)
                 ).apply(conditionsInstance, Conditions::new));
 
         public static AdvancementCriterion<NetworkJumpCriterion.Conditions> create() {

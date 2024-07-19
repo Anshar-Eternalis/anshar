@@ -23,6 +23,6 @@ public class ModGroup {
             .build();
 
     public static void register() {
-        Registry.register(Registries.ITEM_GROUP, new Identifier(MOD_ID, "anshar_group"), ANSHAR_GROUP);
+        Registry.register(Registries.ITEM_GROUP, Identifier.of(MOD_ID, "anshar_group"), ANSHAR_GROUP);
     }
 }

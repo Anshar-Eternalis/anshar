@@ -1,7 +1,7 @@
 {
   "required": false,
   "package": "com.lgmrszd.anshar.mixin.compat",
-  "compatibilityLevel": "JAVA_17",
+  "compatibilityLevel": "JAVA_21",
   "mixins": [
     "GodsOlympusMixin"
   ],
