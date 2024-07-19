@@ -13,29 +13,29 @@ import com.lgmrszd.anshar.beacon.BeaconNode;
 import com.lgmrszd.anshar.frequency.FrequencyNetwork;
 import com.lgmrszd.anshar.frequency.NetworkManagerComponent;
 import com.lgmrszd.anshar.mixin.accessor.ServerPlayNetworkHandlerAccessor;
+import com.lgmrszd.anshar.payload.s2c.ExplosionPayload;
 
-import net.minecraft.advancement.AdvancementEntry;
-
-import net.minecraft.block.BlockState;
-import net.minecraft.world.World;
 import org.jetbrains.annotations.Nullable;
 import org.joml.Vector3f;
-import dev.onyxstudios.cca.api.v3.component.ComponentKey;
-import dev.onyxstudios.cca.api.v3.component.ComponentRegistry;
-import dev.onyxstudios.cca.api.v3.component.sync.AutoSyncedComponent;
-import dev.onyxstudios.cca.api.v3.component.tick.ClientTickingComponent;
-import dev.onyxstudios.cca.api.v3.component.tick.ServerTickingComponent;
-import net.fabricmc.fabric.api.networking.v1.PacketByteBufs;
+import org.ladysnake.cca.api.v3.component.ComponentKey;
+import org.ladysnake.cca.api.v3.component.ComponentRegistry;
+import org.ladysnake.cca.api.v3.component.sync.AutoSyncedComponent;
+import org.ladysnake.cca.api.v3.component.tick.ClientTickingComponent;
+import org.ladysnake.cca.api.v3.component.tick.ServerTickingComponent;
 import net.fabricmc.fabric.api.networking.v1.ServerPlayNetworking;
+import net.minecraft.advancement.AdvancementEntry;
+import net.minecraft.block.BlockState;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.nbt.NbtCompound;
 import net.minecraft.nbt.NbtElement;
 import net.minecraft.nbt.NbtList;
-import net.minecraft.network.PacketByteBuf;
+import net.minecraft.network.RegistryByteBuf;
+import net.minecraft.registry.RegistryWrapper;
 import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Vec3d;
+import net.minecraft.world.World;
 
 /*
  * Manages player transport between beacons via Star Gates.
@@ -52,7 +52,7 @@ import net.minecraft.util.math.Vec3d;
 public class PlayerTransportComponent implements ServerTickingComponent, AutoSyncedComponent, ClientTickingComponent {
 
     public static final ComponentKey<PlayerTransportComponent> KEY = ComponentRegistry.getOrCreate(
-        new Identifier(MOD_ID, "player_transport"), PlayerTransportComponent.class
+        Identifier.of(MOD_ID, "player_transport"), PlayerTransportComponent.class
     );
 
     private final PlayerEntity player;
@@ -103,7 +103,7 @@ public class PlayerTransportComponent implements ServerTickingComponent, AutoSyn
                     .getAdvancementTracker()
                     .getProgress(
                             new AdvancementEntry(
-                                    new Identifier(MOD_ID + "/network_jump"),
+                                    Identifier.of(MOD_ID + "/network_jump"),
                                     null
                             )
                     )
@@ -141,7 +141,7 @@ public class PlayerTransportComponent implements ServerTickingComponent, AutoSyn
         // TODO: take into account no-collision blocks like grass
         while (! (world.isAir(exit) && world.isAir(exit.up()))) exit = exit.up();
 
-        this.player.teleport(0.5 + exit.getX(), exit.getY(), 0.5 + exit.getZ());
+        this.player.requestTeleport(0.5 + exit.getX(), exit.getY(), 0.5 + exit.getZ());
         sendExplosionPacketS2C(false, exit, target.getColorHex());
 
         this.networkUUID = null;
@@ -152,14 +152,14 @@ public class PlayerTransportComponent implements ServerTickingComponent, AutoSyn
     }
 
     @Override
-    public void readFromNbt(NbtCompound tag) {
+    public void readFromNbt(NbtCompound tag, RegistryWrapper.WrapperLookup registryLookup) {
         if (tag.containsUuid("network")) {
             networkUUID = tag.getUuid("network");
-            if (tag.contains("target")) this.target = BeaconNode.fromNBT(tag.getCompound("target"));
+            if (tag.contains("target")) this.target = BeaconNode.fromNBT(tag.getCompound("target"), registryLookup);
             if (tag.contains("jump_targets")) {
                 this.jumpCandidates = new HashSet<>();
                 tag.getList("jump_targets", NbtElement.COMPOUND_TYPE).forEach(
-                    element -> jumpCandidates.add(BeaconNode.fromNBT((NbtCompound)element))
+                    element -> jumpCandidates.add(BeaconNode.fromNBT((NbtCompound)element, registryLookup))
                 );
             }
             neverJumped = !tag.contains("never_jumped") || tag.getBoolean("never_jumped");
@@ -171,13 +171,13 @@ public class PlayerTransportComponent implements ServerTickingComponent, AutoSyn
     }
 
     @Override
-    public void writeToNbt(NbtCompound tag) {
+    public void writeToNbt(NbtCompound tag, RegistryWrapper.WrapperLookup registryLookup) {
         if (networkUUID != null) {
             tag.putUuid("network", networkUUID);
-            if (target != null) tag.put("target", target.toNBT());
+            if (target != null) tag.put("target", target.toNBT(registryLookup));
             
             var nodeList = new NbtList();
-            for (BeaconNode node : jumpCandidates) nodeList.add(node.toNBT());
+            for (BeaconNode node : jumpCandidates) nodeList.add(node.toNBT(registryLookup));
             tag.put("jump_targets", nodeList);
             tag.putBoolean("never_jumped", neverJumped);
         }
@@ -187,10 +187,10 @@ public class PlayerTransportComponent implements ServerTickingComponent, AutoSyn
     public boolean shouldSyncWith(ServerPlayerEntity serverPlayer) { return player == serverPlayer; }
 
     @Override
-    public void applySyncPacket(PacketByteBuf buf) {
+    public void applySyncPacket(RegistryByteBuf buf) {
         NbtCompound tag = buf.readNbt();
         if (tag != null) {
-            this.readFromNbt(tag);
+            this.readFromNbt(tag, buf.getRegistryManager());
         }
     }
 
@@ -199,7 +199,7 @@ public class PlayerTransportComponent implements ServerTickingComponent, AutoSyn
     }
 
     private void moveToCurrentTarget() {
-        this.player.teleport(target.getPos().getX(), 10000, target.getPos().getZ());
+        this.player.requestTeleport(target.getPos().getX(), 10000, target.getPos().getZ());
     }
 
     private static final double MIN_NODE_SEPARATION_RADS = Math.PI * 0.25;
@@ -301,18 +301,13 @@ public class PlayerTransportComponent implements ServerTickingComponent, AutoSyn
 
     @Nullable public BeaconNode getTarget(){ return target; }
 
-    public static final Identifier JUMP_PACKET_ID = new Identifier(MOD_ID, "player_transport_jump");
-    public static final Identifier EXPLOSION_PACKET_ID = new Identifier(MOD_ID, "player_transport_explosion");
     public static final int EXPLOSION_MAX_DISTANCE = 32;
 
     public void sendExplosionPacketS2C(boolean skipOurselves, BlockPos pos, int color) {
-        var buf = PacketByteBufs.create();
-        buf.writeBlockPos(pos);
-        buf.writeInt(color);
         for (var player : player.getWorld().getPlayers()) {
             if (skipOurselves && this.player.equals(player)) continue;
             if (!this.player.getPos().isInRange(player.getPos(), EXPLOSION_MAX_DISTANCE)) continue;
-            ServerPlayNetworking.send((ServerPlayerEntity)player, EXPLOSION_PACKET_ID, buf);
+            ServerPlayNetworking.send((ServerPlayerEntity)player, new ExplosionPayload(pos, color));
         }
     }
 

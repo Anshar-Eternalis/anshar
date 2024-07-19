@@ -50,7 +50,7 @@ public final class PyramidFrequencyIdentifier implements IFrequencyIdentifier {
         if (this == obj) return true;
         if (!(obj instanceof PyramidFrequencyIdentifier other)) return false;
         if (!dimension.equals(other.dimension)) return false;
-        List<Identifier> otherArrangement = other.pyramidArrangements.get(0);
+        List<Identifier> otherArrangement = other.pyramidArrangements.getFirst();
         for (List<Identifier> pyramidArrangement: pyramidArrangements) {
             if (pyramidArrangement.equals(otherArrangement)) return true;
         }
@@ -58,7 +58,7 @@ public final class PyramidFrequencyIdentifier implements IFrequencyIdentifier {
     }
 
     public void toNbt(NbtCompound tag) {
-        List<Identifier> flattened = pyramidArrangements.get(0);
+        List<Identifier> flattened = pyramidArrangements.getFirst();
         String blockList = flattened.stream()
                 .map(Identifier::toString)
                 .collect(StringBuilder::new, (builder, str) -> builder.append(str).append(","), StringBuilder::append)

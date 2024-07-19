@@ -2,6 +2,7 @@ package com.lgmrszd.anshar;
 
 import com.lgmrszd.anshar.beacon.BeaconComponentClient;
 import com.lgmrszd.anshar.beacon.EndCrystalComponentClient;
+import com.lgmrszd.anshar.payload.s2c.ExplosionPayload;
 import com.lgmrszd.anshar.transport.PlayerTransportClient;
 import com.lgmrszd.anshar.transport.PlayerTransportComponent;
 import com.lgmrszd.anshar.transport.TransportEffects;
@@ -19,7 +20,7 @@ public class AnsharClient implements ClientModInitializer {
 	@Override
 	public void onInitializeClient() {
 		ClientPlayNetworking.registerGlobalReceiver(
-			PlayerTransportComponent.EXPLOSION_PACKET_ID, 
+			ExplosionPayload.ID, 
 			PlayerTransportClient::acceptExplosionPacketS2C
 		);
 

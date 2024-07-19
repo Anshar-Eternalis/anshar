@@ -19,10 +19,9 @@ import net.minecraft.client.gui.DrawContext;
 import net.minecraft.client.gui.hud.ChatHud;
 import net.minecraft.client.gui.hud.InGameHud;
 import net.minecraft.client.util.Window;
-import net.minecraft.text.StringVisitable;
+import net.minecraft.client.render.RenderTickCounter;
 import net.minecraft.text.Text;
 import net.minecraft.util.math.MathHelper;
-
 
 @Mixin(InGameHud.class)
 public class InGameHudMixin {
@@ -32,10 +31,10 @@ public class InGameHudMixin {
 
     @Shadow private int ticks;
     
-    @Shadow private TextRenderer getTextRenderer() { return null; }
+    @Shadow public TextRenderer getTextRenderer() { return null; }
     
     @Inject(method = "render", at = @At("HEAD"), cancellable = true)
-    public void anshar$render(DrawContext context, float tickDelta, CallbackInfo ci) {
+    public void anshar$render(DrawContext context, RenderTickCounter tickCounter, CallbackInfo ci) {
         PlayerTransportComponent transportComponent = PlayerTransportComponent.KEY.get(client.player);
         if (transportComponent.isInNetwork() && !client.options.hudHidden) {
 
@@ -84,7 +83,7 @@ public class InGameHudMixin {
                 int n = MathHelper.floor((double)(this.client.mouse.getX() * (double)window.getScaledWidth() / (double)window.getWidth()));
                 int p = MathHelper.floor((double)(this.client.mouse.getY() * (double)window.getScaledHeight() / (double)window.getHeight()));
                 this.client.getProfiler().push("chat");
-                this.chatHud.render(context, this.ticks, n, p);
+                this.chatHud.render(context, this.ticks, n, p, this.chatHud.isChatFocused());
                 this.client.getProfiler().pop();
                 RenderSystem.disableBlend();
             }
@@ -95,6 +94,6 @@ public class InGameHudMixin {
 
     @Unique
     private void anshar$drawText(DrawContext context, TextRenderer textRenderer, Text text, int verticalPos, int color) {
-        context.drawText(textRenderer, text, -getTextRenderer().getWidth((StringVisitable)text)/2, verticalPos, color, false);
+        context.drawText(textRenderer, text, -getTextRenderer().getWidth(text)/2, verticalPos, color, false);
     }
 }

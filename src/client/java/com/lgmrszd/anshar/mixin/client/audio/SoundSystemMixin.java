@@ -1,5 +1,6 @@
 package com.lgmrszd.anshar.mixin.client.audio;
 
+import com.llamalad7.mixinextras.sugar.Local;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
@@ -14,8 +15,8 @@ import net.minecraft.client.sound.SoundSystem;
 
 @Mixin(SoundSystem.class)
 public class SoundSystemMixin {
-    @Inject(method = "play", at = @At("HEAD"), cancellable = true)
-    public void play(SoundInstance sound, CallbackInfo ci) {
+    @Inject(method = "play*", at = @At("HEAD"), cancellable = true)
+    public void play(CallbackInfo ci, @Local(argsOnly = true) SoundInstance sound) {
         var client = MinecraftClient.getInstance();
         // cancel all audio  while in embedded space other than those whitelisted with IEmbeddedAudio
         if (client.player != null && !client.isPaused() && PlayerTransportComponent.KEY.get(client.player).isInNetwork() && !(sound instanceof IEmbeddedAudio)) ci.cancel();

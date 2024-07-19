@@ -5,6 +5,7 @@ import java.util.*;
 import com.lgmrszd.anshar.beacon.BeaconComponent;
 import net.minecraft.nbt.NbtCompound;
 import net.minecraft.nbt.NbtList;
+import net.minecraft.registry.RegistryWrapper;
 import net.minecraft.util.math.BlockPos;
 
 import com.lgmrszd.anshar.beacon.BeaconNode;
@@ -76,24 +77,24 @@ public class FrequencyNetwork {
 
     // TODO: store key as constant
     // TODO: generalize to an interface
-    public static FrequencyNetwork fromNbt(UUID id, NbtCompound tag) {
+    public static FrequencyNetwork fromNbt(UUID id, NbtCompound tag, RegistryWrapper.WrapperLookup registries) {
         IFrequencyIdentifier freqID = PyramidFrequencyIdentifier.fromNbt(tag.getCompound("frequency"));
         if (freqID == null) {
             LOGGER.error("Failed to retrieve Frequency! Frequency Compound: {}", tag.getCompound("frequency"));
             return null;
         }
         var network = new FrequencyNetwork(id, freqID);
-        network.getStorage().readNbtList(tag.getList("storage", NbtCompound.COMPOUND_TYPE));
+        network.getStorage().readNbtList(tag.getList("storage", NbtCompound.COMPOUND_TYPE), registries);
         NbtList allBeaconsList = tag.getList("beaconNodes", NbtCompound.COMPOUND_TYPE);
         for (int i = 0; i < allBeaconsList.size(); i++) {
             NbtCompound nbtCompound = allBeaconsList.getCompound(i);
-            BeaconNode beaconNode = BeaconNode.fromNBT(nbtCompound);
+            BeaconNode beaconNode = BeaconNode.fromNBT(nbtCompound, registries);
             network.beacons.put(beaconNode.getPos(), beaconNode);
         }
         return network;
     }
 
-    public void writeToNbt(NbtCompound tag) {
+    public void writeToNbt(NbtCompound tag, RegistryWrapper.WrapperLookup registries) {
         NbtCompound pfIDTag = new NbtCompound();
         // TODO improve this
         if (freqID instanceof PyramidFrequencyIdentifier pfID) {
@@ -101,9 +102,9 @@ public class FrequencyNetwork {
             tag.put("frequency", pfIDTag);
         } else
             tag.putInt("frequency", freqID.hashCode());
-        tag.put("storage", this.getStorage().toNbtList());
+        tag.put("storage", this.getStorage().toNbtList(registries));
         NbtList allBeaconsList = new NbtList();
-        beacons.values().forEach(beaconNode -> allBeaconsList.add(beaconNode.toNBT()));
+        beacons.values().forEach(beaconNode -> allBeaconsList.add(beaconNode.toNBT(registries)));
         tag.put("beaconNodes", allBeaconsList);
     }
 

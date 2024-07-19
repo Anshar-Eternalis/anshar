@@ -12,6 +12,7 @@ import net.minecraft.nbt.NbtCompound;
 import net.minecraft.nbt.NbtHelper;
 import net.minecraft.particle.ParticleEffect;
 import net.minecraft.particle.ParticleTypes;
+import net.minecraft.registry.RegistryWrapper;
 import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.server.world.ServerWorld;
 import net.minecraft.sound.SoundEvents;
@@ -61,7 +62,6 @@ public class EndCrystalComponent implements IEndCrystalComponent {
         return world.getBlockState(pos).onUse(
                 world,
                 player,
-                hand,
                 new BlockHitResult(
                         new Vec3d(pos.getX() + 0.5, pos.getY() + 1, pos.getZ() + 0.5),
                         Direction.UP,
@@ -166,16 +166,16 @@ public class EndCrystalComponent implements IEndCrystalComponent {
     }
 
     @Override
-    public void readFromNbt(NbtCompound tag) {
+    public void readFromNbt(NbtCompound tag, RegistryWrapper.WrapperLookup registryLookup) {
         linked = tag.getBoolean("linked");
         if (tag.contains("invulnerable"))
             invulnerable = tag.getBoolean("invulnerable");
         if (tag.contains("beaconPos"))
-            beaconPos = NbtHelper.toBlockPos(tag.getCompound("beaconPos"));
+            beaconPos = NbtHelper.toBlockPos(tag, "beaconPos").orElseThrow();
     }
 
     @Override
-    public void writeToNbt(NbtCompound tag) {
+    public void writeToNbt(NbtCompound tag, RegistryWrapper.WrapperLookup registryLookup) {
         tag.putBoolean("linked", linked);
         if (invulnerable)
             tag.putBoolean("invulnerable", true);

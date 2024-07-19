@@ -12,7 +12,8 @@
     "frame": "goal",
     "hidden": true,
     "icon": {
-      "item": "minecraft:nether_star"
+      "count": 1,
+      "id": "minecraft:nether_star"
     },
     "title": {
       "translate": "advancements.anshar.network_jump.title"

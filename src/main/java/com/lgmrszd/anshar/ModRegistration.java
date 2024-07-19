@@ -5,19 +5,22 @@ import com.lgmrszd.anshar.beacon.BeaconNode;
 import com.lgmrszd.anshar.beacon.EndCrystalItemContainer;
 import com.lgmrszd.anshar.config.ServerConfig;
 import com.lgmrszd.anshar.dispenser.ModDispenserBehaviors;
+import com.lgmrszd.anshar.payload.c2s.EnterPayload;
+import com.lgmrszd.anshar.payload.c2s.JumpPayload;
+import com.lgmrszd.anshar.payload.s2c.ExplosionPayload;
 import com.lgmrszd.anshar.transport.PlayerTransportComponent;
 import com.lgmrszd.anshar.transport.TransportEffects;
 
 import fuzs.forgeconfigapiport.fabric.api.neoforge.v4.NeoForgeConfigRegistry;
+import net.fabricmc.fabric.api.entity.event.v1.ServerLivingEntityEvents;
 import net.fabricmc.fabric.api.event.player.UseBlockCallback;
 import net.fabricmc.fabric.api.event.player.UseItemCallback;
+import net.fabricmc.fabric.api.networking.v1.PayloadTypeRegistry;
 import net.fabricmc.fabric.api.networking.v1.ServerPlayNetworking;
 import net.minecraft.item.ItemStack;
 import net.minecraft.item.Items;
 import net.minecraft.registry.Registries;
 import net.minecraft.registry.Registry;
-
-import static net.fabricmc.fabric.api.entity.event.v1.ServerLivingEntityEvents.ALLOW_DEATH;
 
 import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.util.ActionResult;
@@ -30,18 +33,23 @@ public class ModRegistration {
     public static void registerAll() {
         ModApi.register();
 
+        ModComponentTypes.register();
+
         ModDispenserBehaviors.register();
 
         ModGroup.register();
 
         NeoForgeConfigRegistry.INSTANCE.register(Anshar.MOD_ID, ModConfig.Type.SERVER, ServerConfig.CONFIG_SPEC);
 
+        PayloadTypeRegistry.playC2S().register(EnterPayload.ID, EnterPayload.CODEC);
+        PayloadTypeRegistry.playC2S().register(JumpPayload.ID, JumpPayload.CODEC);
+        PayloadTypeRegistry.playS2C().register(ExplosionPayload.ID, ExplosionPayload.CODEC);
 
-        ServerPlayNetworking.registerGlobalReceiver(PlayerTransportComponent.JUMP_PACKET_ID, 
-            (server, player, b, packet, d) -> server.execute(() -> PlayerTransportComponent.KEY.get(player).tryJump(BeaconNode.fromNBT(packet.readNbt())))
+        ServerPlayNetworking.registerGlobalReceiver(JumpPayload.ID, 
+            (payload, ctx) -> ctx.server().execute(() -> PlayerTransportComponent.KEY.get(ctx.player()).tryJump(BeaconNode.fromNBT(payload.nbt(), ctx.server().getRegistryManager())))
         );
 
-        ServerPlayNetworking.registerGlobalReceiver(BeaconComponent.ENTER_PACKET_ID,
+        ServerPlayNetworking.registerGlobalReceiver(EnterPayload.ID,
                 BeaconComponent::EnterBeamPacketC2S
         );
 
@@ -57,7 +65,7 @@ public class ModRegistration {
 
     private static void registerEvents() {
 //        DebugEvents.register();
-        ALLOW_DEATH.register((entity, damageSource, damageAmount) -> {
+        ServerLivingEntityEvents.ALLOW_DEATH.register((entity, damageSource, damageAmount) -> {
             if (!(entity instanceof ServerPlayerEntity serverPlayer)) return true;
             PlayerTransportComponent component = PlayerTransportComponent.KEY.get(serverPlayer);
             if (component.isInNetwork()) {

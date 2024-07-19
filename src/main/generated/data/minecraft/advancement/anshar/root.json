@@ -16,7 +16,8 @@
       "translate": "advancements.anshar.root.description"
     },
     "icon": {
-      "item": "minecraft:beacon"
+      "count": 1,
+      "id": "minecraft:beacon"
     },
     "show_toast": false,
     "title": {
