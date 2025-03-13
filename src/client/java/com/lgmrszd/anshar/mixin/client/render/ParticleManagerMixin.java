@@ -22,7 +22,7 @@ import net.minecraft.client.util.math.MatrixStack;
 public class ParticleManagerMixin {
     private boolean anshar$filterParticles = false;
     @Inject(method = "renderParticles", at = @At("HEAD"))
-    public void renderParticles(MatrixStack matrices, VertexConsumerProvider.Immediate vertexConsumers, LightmapTextureManager lightmapTextureManager, Camera camera, float tickDelta, CallbackInfo ci) {
+    public void renderParticles(LightmapTextureManager lightmapTextureManager, Camera camera, float tickDelta, CallbackInfo ci) {
         anshar$filterParticles = PlayerTransportComponent.KEY.get(MinecraftClient.getInstance().player).isInNetwork();
     }
 

@@ -23,9 +23,9 @@ import static com.lgmrszd.anshar.Anshar.LOGGER;
 
 @Mixin(BeaconBlock.class)
 public abstract class BeaconBlockMixin extends BlockMixin {    
-    @Override
-    public void anshar$onSteppedOn(World world, BlockPos pos, BlockState state, Entity entity, CallbackInfo ci) {
-        if (world.getTime() % 5L == 0L && !world.isClient) {
+//    @Override
+//    public void anshar$onSteppedOn(World world, BlockPos pos, BlockState state, Entity entity, CallbackInfo ci) {
+//        if (world.getTime() % 5L == 0L && !world.isClient) {
             // TODO remove this completely or keep as configurable option
 //            if (entity instanceof PlayerEntity player) {
 //                world.getBlockEntity(pos, BlockEntityType.BEACON).ifPresent(
@@ -36,18 +36,19 @@ public abstract class BeaconBlockMixin extends BlockMixin {
 //                    )
 //                );
 //            } else
-            if (entity instanceof ItemEntity item && item.getStack().isOf(Items.BREAD)) {
-                // player may be attempting to teleport bread, apply countermeasures if possible
-                world.getBlockEntity(pos, BlockEntityType.BEACON).ifPresent(beacon -> {
-                    if (!IBeaconComponent.KEY.get(beacon).isActive()) return;
-                    var owner = item.getOwner();
-                    if (owner instanceof PlayerEntity player) {
-                        GodsOlympusCompat.doFunny(player, item);
-                    }
-                });
-            }
-        }
-    }
+            // TODO could do something else instead?
+//            if (entity instanceof ItemEntity item && item.getStack().isOf(Items.BREAD)) {
+//                // player may be attempting to teleport bread, apply countermeasures if possible
+//                world.getBlockEntity(pos, BlockEntityType.BEACON).ifPresent(beacon -> {
+//                    if (!IBeaconComponent.KEY.get(beacon).isActive()) return;
+//                    var owner = item.getOwner();
+//                    if (owner instanceof PlayerEntity player) {
+//                        GodsOlympusCompat.doFunny(player, item);
+//                    }
+//                });
+//            }
+//        }
+//    }
 
     @Override
     public void anshar$onStateReplaced(BlockState state, World world, BlockPos pos, BlockState newState, boolean moved, CallbackInfo ci) {

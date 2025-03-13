@@ -1,5 +1,6 @@
 package com.lgmrszd.anshar.mixin.client.render;
 
+import net.minecraft.client.render.RenderTickCounter;
 import org.spongepowered.asm.mixin.Final;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Shadow;
@@ -35,7 +36,7 @@ public class InGameHudMixin {
     @Shadow private TextRenderer getTextRenderer() { return null; }
     
     @Inject(method = "render", at = @At("HEAD"), cancellable = true)
-    public void anshar$render(DrawContext context, float tickDelta, CallbackInfo ci) {
+    public void anshar$render(DrawContext context, RenderTickCounter tickCounter, CallbackInfo ci) {
         PlayerTransportComponent transportComponent = PlayerTransportComponent.KEY.get(client.player);
         if (transportComponent.isInNetwork() && !client.options.hudHidden) {
 
@@ -82,7 +83,7 @@ public class InGameHudMixin {
                 int n = MathHelper.floor((double)(this.client.mouse.getX() * (double)window.getScaledWidth() / (double)window.getWidth()));
                 int p = MathHelper.floor((double)(this.client.mouse.getY() * (double)window.getScaledHeight() / (double)window.getHeight()));
                 this.client.getProfiler().push("chat");
-                this.chatHud.render(context, this.ticks, n, p);
+                this.chatHud.render(context, this.ticks, n, p, true);
                 this.client.getProfiler().pop();
                 RenderSystem.disableBlend();
             }

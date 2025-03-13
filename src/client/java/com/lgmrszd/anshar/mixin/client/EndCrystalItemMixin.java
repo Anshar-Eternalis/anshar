@@ -4,9 +4,10 @@ import com.lgmrszd.anshar.ModApi;
 import com.lgmrszd.anshar.beacon.EndCrystalItemContainer;
 import com.lgmrszd.anshar.config.ServerConfig;
 import net.minecraft.client.MinecraftClient;
-import net.minecraft.client.item.TooltipContext;
 import net.minecraft.item.EndCrystalItem;
+import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
+import net.minecraft.item.tooltip.TooltipType;
 import net.minecraft.text.Text;
 import net.minecraft.util.Colors;
 import net.minecraft.util.math.Vec3d;
@@ -22,7 +23,7 @@ import java.util.List;
 public abstract class EndCrystalItemMixin extends ItemMixin {
 
     @Override
-    public void anshar$addToTooltip(ItemStack stack, @Nullable World world, List<Text> tooltip, TooltipContext context, CallbackInfo ci) {
+    public void anshar$addToTooltip(ItemStack stack, Item.TooltipContext context, List<Text> tooltip, TooltipType type, CallbackInfo ci) {
         EndCrystalItemContainer container = ModApi.END_CRYSTAL_ITEM.find(stack, null);
         if (container == null || MinecraftClient.getInstance().player == null) return;
         int maxDistance = ServerConfig.endCrystalMaxDistance.get();

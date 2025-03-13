@@ -1,5 +1,6 @@
 package com.lgmrszd.anshar.mixin.client.render;
 
+import net.minecraft.client.render.RenderTickCounter;
 import org.objectweb.asm.Opcodes;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Shadow;
@@ -23,7 +24,7 @@ public class GameRendererMixin {
     private boolean networkMode = false;
 
     @Inject(method = "render", at = @At("HEAD"))
-    private void anshar$render(float tickDelta, long startTime, boolean tick, CallbackInfo ci) {
+    private void anshar$render(RenderTickCounter tickCounter, boolean tick, CallbackInfo ci) {
         networkMode = client.getCameraEntity() instanceof ClientPlayerEntity player && PlayerTransportComponent.KEY.get(player).isInNetwork();
     }
 
