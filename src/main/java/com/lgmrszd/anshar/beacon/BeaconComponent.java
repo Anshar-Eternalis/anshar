@@ -4,15 +4,14 @@ import com.lgmrszd.anshar.config.ServerConfig;
 import com.lgmrszd.anshar.frequency.*;
 import com.lgmrszd.anshar.mixin.accessor.BeaconBlockEntityAccessor;
 
+import com.lgmrszd.anshar.transport.EnterBeamPayload;
 import com.lgmrszd.anshar.transport.PlayerTransportComponent;
-import net.fabricmc.fabric.api.networking.v1.PacketSender;
+import net.fabricmc.fabric.api.networking.v1.ServerPlayNetworking;
 import net.minecraft.block.entity.BeaconBlockEntity;
 import net.minecraft.entity.decoration.EndCrystalEntity;
 import net.minecraft.nbt.NbtCompound;
 import net.minecraft.network.PacketByteBuf;
 import net.minecraft.particle.ParticleTypes;
-import net.minecraft.server.MinecraftServer;
-import net.minecraft.server.network.ServerPlayNetworkHandler;
 import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.server.world.ServerWorld;
 import net.minecraft.sound.SoundCategory;
@@ -157,12 +156,12 @@ public class BeaconComponent implements IBeaconComponent {
         clientTick.accept(this);
     }
 
-    public static void EnterBeamPacketC2S(MinecraftServer server, ServerPlayerEntity player, ServerPlayNetworkHandler b, PacketByteBuf packet, PacketSender d) {
+    public static void EnterBeamPacketC2S(EnterBeamPayload payload, ServerPlayNetworking.Context context) {
         if (!ServerConfig.beamClientCheck.get()) return;
-        BlockPos pos = packet.readBlockPos();
-        server.execute(() -> {
-            if (!(player.getWorld().getBlockEntity(pos) instanceof BeaconBlockEntity bbe)) return;
-            KEY.get(bbe).tryPutPlayerIntoNetwork(player);
+        BlockPos pos = payload.blockPos();
+        context.server().execute(() -> {
+            if (!(context.player().getWorld().getBlockEntity(pos) instanceof BeaconBlockEntity bbe)) return;
+            KEY.get(bbe).tryPutPlayerIntoNetwork(context.player());
         });
     }
 

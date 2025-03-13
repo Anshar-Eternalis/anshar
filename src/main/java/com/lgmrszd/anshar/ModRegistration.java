@@ -5,9 +5,7 @@ import com.lgmrszd.anshar.beacon.BeaconNode;
 import com.lgmrszd.anshar.beacon.EndCrystalItemContainer;
 import com.lgmrszd.anshar.config.ServerConfig;
 import com.lgmrszd.anshar.dispenser.ModDispenserBehaviors;
-import com.lgmrszd.anshar.transport.ExplosionPayload;
-import com.lgmrszd.anshar.transport.PlayerTransportComponent;
-import com.lgmrszd.anshar.transport.TransportEffects;
+import com.lgmrszd.anshar.transport.*;
 
 import fuzs.forgeconfigapiport.fabric.api.neoforge.v4.NeoForgeConfigRegistry;
 import net.fabricmc.fabric.api.event.player.UseBlockCallback;
@@ -38,17 +36,20 @@ public class ModRegistration {
 
         NeoForgeConfigRegistry.INSTANCE.register(Anshar.MOD_ID, ModConfig.Type.SERVER, ServerConfig.CONFIG_SPEC);
 
-
-        ServerPlayNetworking.registerGlobalReceiver(PlayerTransportComponent.JUMP_PACKET_ID, 
-            (server, player, b, packet, d) -> server.execute(() -> PlayerTransportComponent.KEY.get(player).tryJump(BeaconNode.fromNBT(packet.readNbt())))
-        );
-
-        ServerPlayNetworking.registerGlobalReceiver(BeaconComponent.ENTER_PACKET_ID,
-                BeaconComponent::EnterBeamPacketC2S
-        );
-
+        // Networking
         PayloadTypeRegistry.playS2C().register(ExplosionPayload.ID, ExplosionPayload.CODEC);
+        PayloadTypeRegistry.playC2S().register(JumpPayload.ID, JumpPayload.CODEC);
+        PayloadTypeRegistry.playC2S().register(EnterBeamPayload.ID, EnterBeamPayload.CODEC);
 
+        ServerPlayNetworking.registerGlobalReceiver(JumpPayload.ID, (payload, context) -> {
+            context.server().execute(() -> {
+                PlayerTransportComponent.KEY.get(context.player()).tryJump(BeaconNode.fromJumpPayload(payload));
+            });
+        });
+
+        ServerPlayNetworking.registerGlobalReceiver(EnterBeamPayload.ID, BeaconComponent::EnterBeamPacketC2S);
+
+        // Sounds
         Registry.register(Registries.SOUND_EVENT, ModResources.EMBED_SPACE_AMBIENT_SOUND, ModResources.EMBED_SPACE_AMBIENT_SOUND_EVENT);
         Registry.register(Registries.SOUND_EVENT, ModResources.TRANSPORT_JUMP_SOUND, ModResources.TRANSPORT_JUMP_SOUND_EVENT);
         Registry.register(Registries.SOUND_EVENT, ModResources.EMBED_SPACE_MUSIC, ModResources.EMBED_SPACE_MUSIC_EVENT);

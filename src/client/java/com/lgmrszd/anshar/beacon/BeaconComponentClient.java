@@ -1,6 +1,7 @@
 package com.lgmrszd.anshar.beacon;
 
 import com.lgmrszd.anshar.config.ServerConfig;
+import com.lgmrszd.anshar.transport.EnterBeamPayload;
 import net.fabricmc.fabric.api.client.networking.v1.ClientPlayNetworking;
 import net.fabricmc.fabric.api.networking.v1.PacketByteBufs;
 import net.minecraft.client.MinecraftClient;
@@ -57,9 +58,7 @@ public class BeaconComponentClient {
     }
 
     private static void sendEnterNetworkPacketC2S(BlockPos pos) {
-        var enterPacket = PacketByteBufs.create();
-        enterPacket.writeBlockPos(pos);
-        ClientPlayNetworking.send(BeaconComponent.ENTER_PACKET_ID, enterPacket);
+        ClientPlayNetworking.send(new EnterBeamPayload(pos));
     }
 
 //    private static void sendEnterNetworkPacketC2S(BlockPos pos, UUID freqUUID) {

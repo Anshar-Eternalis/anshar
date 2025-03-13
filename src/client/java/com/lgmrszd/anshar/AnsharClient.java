@@ -15,9 +15,7 @@ public class AnsharClient implements ClientModInitializer {
 
 	@Override
 	public void onInitializeClient() {
-		ClientPlayNetworking.registerGlobalReceiver(ExplosionPayload.ID, (payload, context) -> {
-			PlayerTransportClient.acceptExplosionPacketS2C(context.client(), payload.blockPos(), payload.color());
-		});
+		ClientPlayNetworking.registerGlobalReceiver(ExplosionPayload.ID, PlayerTransportClient::acceptExplosionPacketS2C);
 
 		BeaconComponentClient.init();
 		EndCrystalComponentClient.init();

@@ -51,7 +51,7 @@ public class PlayerTransportClient {
         client.options.setPerspective(Perspective.FIRST_PERSON);
         player.setPitch(0);
     }
-    
+
     public void tick() {
         if (done) return;
         if (jumpCooldown > 0) {
@@ -86,9 +86,7 @@ public class PlayerTransportClient {
 
         // jump if we ball
         if (gateTicks >= TICKS_TO_JUMP) {
-            var jumpPacket = PacketByteBufs.create();
-            jumpPacket.writeNbt(nearest.toNBT());
-            ClientPlayNetworking.send(PlayerTransportComponent.JUMP_PACKET_ID, jumpPacket);
+            ClientPlayNetworking.send(JumpPayload.fromBeaconNode(nearest));
             audioManager.stopJump();
             gateTicks = 0;
             nearest = null;
@@ -152,16 +150,18 @@ public class PlayerTransportClient {
 
     public float getJumpPercentage() { return (float)gateTicks / (float)TICKS_TO_JUMP; }
 
-    public static void acceptExplosionPacketS2C(MinecraftClient client, BlockPos pos, Integer color) {
-        if (client.player == null) return;
-        client.execute(() -> {
+    public static void acceptExplosionPacketS2C(ExplosionPayload payload, ClientPlayNetworking.Context context) {
+        if (context.client().player == null) return;
+        BlockPos pos = payload.blockPos();
+        int Color = payload.color();
+        context.client().execute(() -> {
             // TODO This has opposite effect of not showing effect when landing, so I commented it out :/
             // we really should delay sending the packet by like two ticks
             // Alternatively if the problem doesn't happen when exiting the network, we can just remove this
             // (As I made it not create the effect when entering for the player who enters)
 //            var playerPos = MinecraftClient.getInstance().player.getPos();
 //            if (!playerPos.isInRange(pos, PlayerTransportComponent.EXPLOSION_MAX_DISTANCE)) return;
-            client.world.addFireworkParticle(pos.getX(), pos.getY(), pos.getZ(), 0, 0, 0, TransportEffects.makeTransportFirework(color));
+            context.client().world.addFireworkParticle(pos.getX(), pos.getY(), pos.getZ(), 0, 0, 0, TransportEffects.makeTransportFirework(color));
         });
     }
 

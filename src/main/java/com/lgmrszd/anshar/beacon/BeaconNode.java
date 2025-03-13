@@ -1,6 +1,8 @@
 package com.lgmrszd.anshar.beacon;
 
 import java.util.Optional;
+
+import com.lgmrszd.anshar.transport.JumpPayload;
 import net.minecraft.block.entity.BeaconBlockEntity;
 import net.minecraft.nbt.NbtCompound;
 import net.minecraft.text.Text;
@@ -37,6 +39,14 @@ public class BeaconNode {
             BlockPos.fromLong(tag.getLong("pos")),
             Text.Serialization.fromJson(tag.getString("name")),
             new float[]{tag.getFloat("r"), tag.getFloat("g"), tag.getFloat("b")}
+        );
+    }
+
+    public static BeaconNode fromJumpPayload(JumpPayload payload) {
+        return new BeaconNode(
+                payload.blockPos(),
+                payload.name(),
+                new float[]{payload.r(), payload.g(), payload.b()}
         );
     }
 
