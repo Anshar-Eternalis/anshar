@@ -30,7 +30,7 @@ import java.util.function.Consumer;
 import static com.lgmrszd.anshar.Anshar.MOD_ID;
 
 public class BeaconComponent implements IBeaconComponent {
-    public static final Identifier ENTER_PACKET_ID = new Identifier(MOD_ID, "player_transport_enter");
+    public static final Identifier ENTER_PACKET_ID = Identifier.of(MOD_ID, "player_transport_enter");
     protected static Consumer<BeaconComponent> clientTick = bc -> {};
 
     private static final double beamWidth = 0.25;

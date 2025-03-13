@@ -53,7 +53,7 @@ import net.minecraft.util.math.Vec3d;
 public class PlayerTransportComponent implements ServerTickingComponent, AutoSyncedComponent, ClientTickingComponent {
 
     public static final ComponentKey<PlayerTransportComponent> KEY = ComponentRegistry.getOrCreate(
-        new Identifier(MOD_ID, "player_transport"), PlayerTransportComponent.class
+            Identifier.of(MOD_ID, "player_transport"), PlayerTransportComponent.class
     );
 
     private final PlayerEntity player;
@@ -104,7 +104,7 @@ public class PlayerTransportComponent implements ServerTickingComponent, AutoSyn
                     .getAdvancementTracker()
                     .getProgress(
                             new AdvancementEntry(
-                                    new Identifier(MOD_ID + "/network_jump"),
+                                    Identifier.of(MOD_ID + "/network_jump"),
                                     null
                             )
                     )
@@ -302,8 +302,8 @@ public class PlayerTransportComponent implements ServerTickingComponent, AutoSyn
 
     @Nullable public BeaconNode getTarget(){ return target; }
 
-    public static final Identifier JUMP_PACKET_ID = new Identifier(MOD_ID, "player_transport_jump");
-    public static final Identifier EXPLOSION_PACKET_ID = new Identifier(MOD_ID, "player_transport_explosion");
+    public static final Identifier JUMP_PACKET_ID = Identifier.of(MOD_ID, "player_transport_jump");
+    public static final Identifier EXPLOSION_PACKET_ID = Identifier.of(MOD_ID, "player_transport_explosion");
     public static final int EXPLOSION_MAX_DISTANCE = 32;
 
     public void sendExplosionPacketS2C(boolean skipOurselves, BlockPos pos, int color) {

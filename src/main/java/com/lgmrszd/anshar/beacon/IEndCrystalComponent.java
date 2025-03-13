@@ -19,7 +19,7 @@ import static com.lgmrszd.anshar.Anshar.MOD_ID;
 
 public interface IEndCrystalComponent extends ServerTickingComponent, ClientTickingComponent, AutoSyncedComponent {
     ComponentKey<IEndCrystalComponent> KEY = ComponentRegistry.getOrCreate(
-            new Identifier(MOD_ID, "end_crystal"), IEndCrystalComponent.class
+            Identifier.of(MOD_ID, "end_crystal"), IEndCrystalComponent.class
     );
 
     Vec3d getPos();

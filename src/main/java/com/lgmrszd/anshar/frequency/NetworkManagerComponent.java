@@ -21,7 +21,7 @@ import net.minecraft.world.World;
 public class NetworkManagerComponent implements Component {
     private final HashMap<UUID, FrequencyNetwork> networksByUUID;
     public static final ComponentKey<NetworkManagerComponent> KEY = ComponentRegistry.getOrCreate(
-        new Identifier(MOD_ID, "network_manager"), NetworkManagerComponent.class
+            Identifier.of(MOD_ID, "network_manager"), NetworkManagerComponent.class
     );
 
     public NetworkManagerComponent() {

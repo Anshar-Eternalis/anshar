@@ -9,7 +9,7 @@ import static com.lgmrszd.anshar.Anshar.MOD_ID;
 
 public class ModApi {
     public static final ItemApiLookup<EndCrystalItemContainer, Void> END_CRYSTAL_ITEM = ItemApiLookup.get(
-            new Identifier(MOD_ID, "end_crystal_item"),
+            Identifier.of(MOD_ID, "end_crystal_item"),
             EndCrystalItemContainer.class,
             Void.class
     );

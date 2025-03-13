@@ -36,7 +36,7 @@ public class AnsharDataGenerator implements DataGeneratorEntrypoint {
 							Items.BEACON,
 							Text.translatable("advancements.anshar.root.title"),
 							Text.translatable("advancements.anshar.root.description"),
-							new Identifier("textures/block/obsidian.png"),
+							Identifier.of("textures/block/obsidian.png"),
 							AdvancementFrame.TASK,
 							false,
 							false,

@@ -20,7 +20,7 @@ import java.util.Optional;
 
 public interface IBeaconComponent extends ClientTickingComponent, ServerTickingComponent, AutoSyncedComponent {
     ComponentKey<IBeaconComponent> KEY = ComponentRegistry.getOrCreate(
-        new Identifier(MOD_ID, "beacon"), IBeaconComponent.class
+            Identifier.of(MOD_ID, "beacon"), IBeaconComponent.class
     );
 
 //    void rescanPyramid();
