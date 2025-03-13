@@ -7,21 +7,19 @@ import org.joml.Vector3f;
 import com.lgmrszd.anshar.beacon.BeaconNode;
 
 import net.fabricmc.fabric.api.client.networking.v1.ClientPlayNetworking;
-import net.fabricmc.fabric.api.networking.v1.PacketByteBufs;
-import net.fabricmc.fabric.api.networking.v1.PacketSender;
 import net.minecraft.client.MinecraftClient;
-import net.minecraft.client.network.ClientPlayNetworkHandler;
 import net.minecraft.client.network.ClientPlayerEntity;
 import net.minecraft.client.option.Perspective;
 import net.minecraft.client.particle.ParticleManager;
-import net.minecraft.network.PacketByteBuf;
 import net.minecraft.util.math.random.Random;
+
+import java.util.List;
 
 public class PlayerTransportClient {
     // created when player enters a network to manage their presence there, removed when they exit
 
     private static final int TICKS_TO_JUMP = (int)(20f * 11.5);
-    private static Random random = Random.create();
+    private static final Random random = Random.create();
 
     private static PlayerTransportClient INSTANCE = null;
 
@@ -153,7 +151,7 @@ public class PlayerTransportClient {
     public static void acceptExplosionPacketS2C(ExplosionPayload payload, ClientPlayNetworking.Context context) {
         if (context.client().player == null) return;
         BlockPos pos = payload.blockPos();
-        int Color = payload.color();
+        int color = payload.color();
         context.client().execute(() -> {
             // TODO This has opposite effect of not showing effect when landing, so I commented it out :/
             // we really should delay sending the packet by like two ticks
@@ -161,7 +159,11 @@ public class PlayerTransportClient {
             // (As I made it not create the effect when entering for the player who enters)
 //            var playerPos = MinecraftClient.getInstance().player.getPos();
 //            if (!playerPos.isInRange(pos, PlayerTransportComponent.EXPLOSION_MAX_DISTANCE)) return;
-            context.client().world.addFireworkParticle(pos.getX(), pos.getY(), pos.getZ(), 0, 0, 0, TransportEffects.makeTransportFirework(color));
+            context.client().world.addFireworkParticle(
+                    pos.getX(), pos.getY(), pos.getZ(),
+                    0, 0, 0,
+                    List.of(TransportEffects.makeTransportFirework(color))
+            );
         });
     }
 
