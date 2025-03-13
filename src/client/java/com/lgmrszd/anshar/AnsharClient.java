@@ -2,10 +2,7 @@ package com.lgmrszd.anshar;
 
 import com.lgmrszd.anshar.beacon.BeaconComponentClient;
 import com.lgmrszd.anshar.beacon.EndCrystalComponentClient;
-import com.lgmrszd.anshar.transport.PlayerTransportClient;
-import com.lgmrszd.anshar.transport.PlayerTransportComponent;
-import com.lgmrszd.anshar.transport.TransportEffects;
-import com.lgmrszd.anshar.transport.TransportGateParticle;
+import com.lgmrszd.anshar.transport.*;
 
 import net.fabricmc.api.ClientModInitializer;
 import net.fabricmc.fabric.api.client.event.lifecycle.v1.ClientEntityEvents;
@@ -18,10 +15,9 @@ public class AnsharClient implements ClientModInitializer {
 
 	@Override
 	public void onInitializeClient() {
-		ClientPlayNetworking.registerGlobalReceiver(
-			PlayerTransportComponent.EXPLOSION_PACKET_ID, 
-			PlayerTransportClient::acceptExplosionPacketS2C
-		);
+		ClientPlayNetworking.registerGlobalReceiver(ExplosionPayload.ID, (payload, context) -> {
+			PlayerTransportClient.acceptExplosionPacketS2C(context.client(), payload.blockPos(), payload.color());
+		});
 
 		BeaconComponentClient.init();
 		EndCrystalComponentClient.init();

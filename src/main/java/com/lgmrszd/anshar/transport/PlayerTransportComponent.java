@@ -17,6 +17,7 @@ import com.lgmrszd.anshar.mixin.accessor.ServerPlayNetworkHandlerAccessor;
 import net.minecraft.advancement.AdvancementEntry;
 
 import net.minecraft.block.BlockState;
+import net.minecraft.server.world.ServerWorld;
 import net.minecraft.world.World;
 import org.jetbrains.annotations.Nullable;
 import org.joml.Vector3f;
@@ -306,13 +307,11 @@ public class PlayerTransportComponent implements ServerTickingComponent, AutoSyn
     public static final int EXPLOSION_MAX_DISTANCE = 32;
 
     public void sendExplosionPacketS2C(boolean skipOurselves, BlockPos pos, int color) {
-        var buf = PacketByteBufs.create();
-        buf.writeBlockPos(pos);
-        buf.writeInt(color);
-        for (var player : player.getWorld().getPlayers()) {
+        if (!(player.getWorld() instanceof ServerWorld serverWorld)) return;
+        for (var player : serverWorld.getPlayers()) {
             if (skipOurselves && this.player.equals(player)) continue;
             if (!this.player.getPos().isInRange(player.getPos(), EXPLOSION_MAX_DISTANCE)) continue;
-            ServerPlayNetworking.send((ServerPlayerEntity)player, EXPLOSION_PACKET_ID, buf);
+            ServerPlayNetworking.send(player, new ExplosionPayload(pos, color));
         }
     }
 
