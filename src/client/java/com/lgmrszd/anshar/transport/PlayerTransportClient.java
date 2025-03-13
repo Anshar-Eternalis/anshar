@@ -132,16 +132,17 @@ public class PlayerTransportClient {
 
                 // why am I not using a shader at this point? pathetic! die scoundrel! villain!
                 var particle = particleManager.addParticle(TransportEffects.GATE_STAR, pPos.x, pPos.y, pPos.z, pVel.x, pVel.y, pVel.z);
-                float[] colors = node.getColor();
-                if (nearest) {
-                    particle.setColor(
-                        colors[0] + jumpRatio * (random.nextFloat() - colors[0]), 
-                        colors[1] + jumpRatio * (random.nextFloat() - colors[1]), 
-                        colors[2] + jumpRatio * (random.nextFloat() - colors[2])
-                    );
-                } else {
-                    particle.setColor(colors[0], colors[1], colors[2]);
-                }
+                // TODO: This part is still requiring floats for color so I commented it out for now. Please fix!!!!!
+//                int colors = node.getColor();
+//                if (nearest) {
+//                    particle.setColor(
+//                        colors[0] + jumpRatio * (random.nextFloat() - colors[0]),
+//                        colors[1] + jumpRatio * (random.nextFloat() - colors[1]),
+//                        colors[2] + jumpRatio * (random.nextFloat() - colors[2])
+//                    );
+//                } else {
+//                    particle.setColor(colors[0], colors[1], colors[2]);
+//                }
             }
         }
     }
@@ -171,7 +172,8 @@ public class PlayerTransportClient {
         // draws particles above and below players to help with orientation in embedded space
         float[] color = {1f, 1f, 1f};
         var tgt = transport.getTarget();
-        if (tgt != null) color = tgt.getColor();
+        // TODO: This part is still requiring floats for color so I commented it out for now. Please fix!!!!!
+//        if (tgt != null) color = tgt.getColor();
         var ppos = player.getPos();
         for (double dir = 1; dir >= -1; dir -= 2) {
             double x = ppos.getX() + (random.nextFloat()-0.5) * 4;

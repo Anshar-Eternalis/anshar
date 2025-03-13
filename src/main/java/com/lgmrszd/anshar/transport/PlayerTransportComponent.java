@@ -114,7 +114,7 @@ public class PlayerTransportComponent implements ServerTickingComponent, AutoSyn
             player.setNoGravity(true);
         }
         KEY.sync(player);
-        sendExplosionPacketS2C(true, entrance, target.getColorHex());
+        sendExplosionPacketS2C(true, entrance, target.getColor());
     }
 
     public void exitNetwork() {
@@ -145,7 +145,7 @@ public class PlayerTransportComponent implements ServerTickingComponent, AutoSyn
         while (! (world.isAir(exit) && world.isAir(exit.up()))) exit = exit.up();
 
         this.player.teleport(0.5 + exit.getX(), exit.getY(), 0.5 + exit.getZ(), false);
-        sendExplosionPacketS2C(false, exit, target.getColorHex());
+        sendExplosionPacketS2C(false, exit, target.getColor());
 
         this.networkUUID = null;
         this.target = null;

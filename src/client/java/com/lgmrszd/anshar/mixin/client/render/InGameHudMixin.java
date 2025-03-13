@@ -67,9 +67,7 @@ public class InGameHudMixin {
                 // dest node info
                 var node = transportComponent.getNearestLookedAt();
                 if (node != null) {
-                    int rgb = (int)(node.getColor()[0] * 255);
-                    rgb = (rgb<<8) + (int)(node.getColor()[1] * 255);
-                    rgb = (rgb<<8) + (int)(node.getColor()[2] * 255);
+                    int rgb = node.getColor();
                     anshar$drawText(context, textRenderer, node.getName(), scaledHeight-20, rgb + alpha);
                     
                     var coords = Text.literal(node.getPos().toShortString()).copy().append(" (" + (int) transportComponent.distanceTo(node) + ")");

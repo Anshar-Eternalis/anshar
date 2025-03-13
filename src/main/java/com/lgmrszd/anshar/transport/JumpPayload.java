@@ -9,14 +9,12 @@ import net.minecraft.text.Text;
 import net.minecraft.text.TextCodecs;
 import net.minecraft.util.math.BlockPos;
 
-public record JumpPayload(BlockPos blockPos, Text name, float r, float g, float b) implements CustomPayload {
+public record JumpPayload(BlockPos blockPos, Text name, int color) implements CustomPayload {
     public static final Id<JumpPayload> ID = new Id<>(PlayerTransportComponent.JUMP_PACKET_ID);
     public static final PacketCodec<RegistryByteBuf, JumpPayload> CODEC = PacketCodec.tuple(
             BlockPos.PACKET_CODEC, JumpPayload::blockPos,
             TextCodecs.PACKET_CODEC, JumpPayload::name,
-            PacketCodecs.FLOAT, JumpPayload::r,
-            PacketCodecs.FLOAT, JumpPayload::g,
-            PacketCodecs.FLOAT, JumpPayload::b,
+            PacketCodecs.INTEGER, JumpPayload::color,
             JumpPayload::new
     );
 
@@ -24,9 +22,7 @@ public record JumpPayload(BlockPos blockPos, Text name, float r, float g, float 
         return new JumpPayload(
                 node.getPos(),
                 node.getName(),
-                node.getColor()[0],
-                node.getColor()[1],
-                node.getColor()[2]
+                node.getColor()
         );
     }
     @Override

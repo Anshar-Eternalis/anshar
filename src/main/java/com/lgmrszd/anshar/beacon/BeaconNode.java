@@ -8,28 +8,23 @@ import net.minecraft.nbt.NbtCompound;
 import net.minecraft.registry.RegistryWrapper;
 import net.minecraft.text.Text;
 import net.minecraft.util.math.BlockPos;
+import net.minecraft.util.math.ColorHelper;
 
 /**
  * Immutable Beacon information storage
  */
 public class BeaconNode {
     private final Text name;
-    private final float[] color;
+    private final int color;
     private final BlockPos pos;
 
     public BeaconNode(IBeaconComponent beaconComponent) {
         this.pos = beaconComponent.getBeaconPos();
         this.name = beaconComponent.getName();
-        float[] color = beaconComponent.topColor();
-        if (color != null && color.length == 3){
-            this.color = color;
-        } else {
-            this.color = new float[]{0, 0, 0};
-        }
-        
+        this.color = beaconComponent.topColor();
     }
 
-    private BeaconNode(BlockPos pos, Text name, float[] color) {
+    private BeaconNode(BlockPos pos, Text name, int color) {
         this.pos = pos;
         this.name = name;
         this.color = color;
@@ -37,9 +32,9 @@ public class BeaconNode {
 
     public static BeaconNode fromNBT(NbtCompound tag, RegistryWrapper.WrapperLookup wrapperLookup) {
         return new BeaconNode(
-            BlockPos.fromLong(tag.getLong("pos")),
-            Text.Serialization.fromJson(tag.getString("name"), wrapperLookup),
-            new float[]{tag.getFloat("r"), tag.getFloat("g"), tag.getFloat("b")}
+                BlockPos.fromLong(tag.getLong("pos")),
+                Text.Serialization.fromJson(tag.getString("name"), wrapperLookup),
+                tag.getInt("color")
         );
     }
 
@@ -47,7 +42,7 @@ public class BeaconNode {
         return new BeaconNode(
                 payload.blockPos(),
                 payload.name(),
-                new float[]{payload.r(), payload.g(), payload.b()}
+                payload.color()
         );
     }
 
@@ -55,24 +50,16 @@ public class BeaconNode {
         var tag = new NbtCompound();
         tag.putLong("pos", pos.asLong());
         tag.putString("name", Text.Serialization.toJsonString(this.name, wrapperLookup));
-        tag.putFloat("r", color[0]);
-        tag.putFloat("g", color[1]);
-        tag.putFloat("b", color[2]);
+        tag.putInt("color", color);
         return tag;
     }
 
     public static BeaconNode makeFake(BlockPos pos) {
-        return new BeaconNode(pos, Text.literal("?????"), new float[]{1, 1, 1});
+        return new BeaconNode(pos, Text.literal("?????"), ColorHelper.Argb.getArgb(255, 255, 255));
     }
 
     public Text getName() {return name;}
-    public float[] getColor() {return color;}
+    public int getColor() {return color;}
     public BlockPos getPos() {return pos;}
     public Optional<BeaconBlockEntity> getBeacon() {return Optional.empty();}
-    public int getColorHex() {
-        int rgb = (int)(getColor()[0] * 255);
-        rgb = (rgb<<8) + (int)(getColor()[1] * 255);
-        rgb = (rgb<<8) + (int)(getColor()[2] * 255);
-        return rgb;
-    }
 }

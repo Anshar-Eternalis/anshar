@@ -44,13 +44,13 @@ public class BeaconComponent implements IBeaconComponent {
     protected Vec3d particleVec;
     private int playerScanTicks;
 
-    private float[] cachedColor;
+    private int cachedColor;
 
     public BeaconComponent(BeaconBlockEntity beaconBlockEntity) {
         this.beaconBlockEntity = beaconBlockEntity;
         level = 0;
         particleVec = new Vec3d(1, 0, 0);
-        cachedColor = new float[]{0, 0, 0};
+        cachedColor = 0;
         pyramidFrequency = NullFrequencyIdentifier.get();
         active = false;
     }
@@ -191,8 +191,8 @@ public class BeaconComponent implements IBeaconComponent {
                 playerScanTicks = ServerConfig.beamCheckPeriod.get();
                 serverWorld.getPlayers().forEach(this::tryPutPlayerIntoNetwork);
             }
-            float[] currentTopColor = getTopColor();
-            if (!Arrays.equals(cachedColor, currentTopColor)) {
+            int currentTopColor = getTopColor();
+            if (cachedColor != currentTopColor) {
                 cachedColor = currentTopColor;
                 if (frequencyNetwork != null) frequencyNetwork.updateBeacon(this);
             }
@@ -222,17 +222,17 @@ public class BeaconComponent implements IBeaconComponent {
             }
         }
     }
-    private float[] getTopColor() {
+    private int getTopColor() {
         var segments = beaconBlockEntity.getBeamSegments();
         if (!segments.isEmpty()) {
             return segments.get(segments.size()-1).getColor();
         }
-        return new float[]{0, 0, 0};
+        return 0;
     }
 
     @Override
-    public float[] topColor() {
-        return cachedColor.clone();
+    public int topColor() {
+        return cachedColor;
     }
 
     @Override

@@ -37,7 +37,7 @@ public interface IBeaconComponent extends ClientTickingComponent, ServerTickingC
 
     void tryPutPlayerIntoNetwork(ServerPlayerEntity player);
 
-    float[] topColor();
+    int topColor();
 
     List<IEndCrystalComponent> getConnectedEndCrystals();
 }
