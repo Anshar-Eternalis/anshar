@@ -7,6 +7,8 @@ import java.util.*;
 import java.util.function.Consumer;
 
 import com.lgmrszd.anshar.beacon.BeaconComponent;
+import net.minecraft.registry.RegistryWrapper;
+import net.minecraft.util.crash.ReportType;
 import org.ladysnake.cca.api.v3.component.Component;
 import org.ladysnake.cca.api.v3.component.ComponentKey;
 import org.ladysnake.cca.api.v3.component.ComponentRegistry;
@@ -135,13 +137,13 @@ public class NetworkManagerComponent implements Component {
     }
 
     @Override
-    public void readFromNbt(NbtCompound tag) {
+    public void readFromNbt(NbtCompound tag, RegistryWrapper.WrapperLookup wrapperLookup) {
         try {
             NbtCompound networksTag = tag.getCompound("networks");
             for (String uuid_string : networksTag.getKeys()) {
                 UUID uuid = UUID.fromString(uuid_string);
                 NbtCompound networkTag = networksTag.getCompound(uuid_string);
-                FrequencyNetwork network = FrequencyNetwork.fromNbt(uuid, networkTag);
+                FrequencyNetwork network = FrequencyNetwork.fromNbt(uuid, networkTag, wrapperLookup);
                 if (network == null) {
                     LOGGER.error("Failed to load Network! Network Compound: {}", networkTag);
                     continue;
@@ -151,16 +153,16 @@ public class NetworkManagerComponent implements Component {
         } catch (CrashException e) {
             LOGGER.error("Error while reading Network data from world save!");
             LOGGER.error("crash report as follows:");
-            LOGGER.error("\n"+e.getReport().asString());
+            LOGGER.error("\n"+e.getReport().asString(ReportType.MINECRAFT_CRASH_REPORT));
         }
     }
 
     @Override
-    public void writeToNbt(NbtCompound tag) {
+    public void writeToNbt(NbtCompound tag, RegistryWrapper.WrapperLookup wrapperLookup) {
         NbtCompound networksTag = new NbtCompound();
         networksByUUID.forEach((uuid, network) -> {
             NbtCompound networkTag = new NbtCompound();
-            network.writeToNbt(networkTag);
+            network.writeToNbt(networkTag, wrapperLookup);
             networksTag.put(uuid.toString(), networkTag);
         });
         tag.put("networks", networksTag);

@@ -17,6 +17,8 @@ import com.lgmrszd.anshar.mixin.accessor.ServerPlayNetworkHandlerAccessor;
 import net.minecraft.advancement.AdvancementEntry;
 
 import net.minecraft.block.BlockState;
+import net.minecraft.network.RegistryByteBuf;
+import net.minecraft.registry.RegistryWrapper;
 import net.minecraft.server.world.ServerWorld;
 import net.minecraft.world.World;
 import org.jetbrains.annotations.Nullable;
@@ -142,7 +144,7 @@ public class PlayerTransportComponent implements ServerTickingComponent, AutoSyn
         // TODO: take into account no-collision blocks like grass
         while (! (world.isAir(exit) && world.isAir(exit.up()))) exit = exit.up();
 
-        this.player.teleport(0.5 + exit.getX(), exit.getY(), 0.5 + exit.getZ());
+        this.player.teleport(0.5 + exit.getX(), exit.getY(), 0.5 + exit.getZ(), false);
         sendExplosionPacketS2C(false, exit, target.getColorHex());
 
         this.networkUUID = null;
@@ -153,14 +155,14 @@ public class PlayerTransportComponent implements ServerTickingComponent, AutoSyn
     }
 
     @Override
-    public void readFromNbt(NbtCompound tag) {
+    public void readFromNbt(NbtCompound tag, RegistryWrapper.WrapperLookup wrapperLookup) {
         if (tag.containsUuid("network")) {
             networkUUID = tag.getUuid("network");
-            if (tag.contains("target")) this.target = BeaconNode.fromNBT(tag.getCompound("target"));
+            if (tag.contains("target")) this.target = BeaconNode.fromNBT(tag.getCompound("target"), wrapperLookup);
             if (tag.contains("jump_targets")) {
                 this.jumpCandidates = new HashSet<>();
                 tag.getList("jump_targets", NbtElement.COMPOUND_TYPE).forEach(
-                    element -> jumpCandidates.add(BeaconNode.fromNBT((NbtCompound)element))
+                    element -> jumpCandidates.add(BeaconNode.fromNBT((NbtCompound)element, wrapperLookup))
                 );
             }
             neverJumped = !tag.contains("never_jumped") || tag.getBoolean("never_jumped");
@@ -172,13 +174,13 @@ public class PlayerTransportComponent implements ServerTickingComponent, AutoSyn
     }
 
     @Override
-    public void writeToNbt(NbtCompound tag) {
+    public void writeToNbt(NbtCompound tag, RegistryWrapper.WrapperLookup wrapperLookup) {
         if (networkUUID != null) {
             tag.putUuid("network", networkUUID);
-            if (target != null) tag.put("target", target.toNBT());
+            if (target != null) tag.put("target", target.toNBT(wrapperLookup));
             
             var nodeList = new NbtList();
-            for (BeaconNode node : jumpCandidates) nodeList.add(node.toNBT());
+            for (BeaconNode node : jumpCandidates) nodeList.add(node.toNBT(wrapperLookup));
             tag.put("jump_targets", nodeList);
             tag.putBoolean("never_jumped", neverJumped);
         }
@@ -188,10 +190,10 @@ public class PlayerTransportComponent implements ServerTickingComponent, AutoSyn
     public boolean shouldSyncWith(ServerPlayerEntity serverPlayer) { return player == serverPlayer; }
 
     @Override
-    public void applySyncPacket(PacketByteBuf buf) {
+    public void applySyncPacket(RegistryByteBuf buf) {
         NbtCompound tag = buf.readNbt();
         if (tag != null) {
-            this.readFromNbt(tag);
+            this.readFromNbt(tag, buf.getRegistryManager());
         }
     }
 
@@ -200,7 +202,7 @@ public class PlayerTransportComponent implements ServerTickingComponent, AutoSyn
     }
 
     private void moveToCurrentTarget() {
-        this.player.teleport(target.getPos().getX(), 10000, target.getPos().getZ());
+        this.player.teleport(target.getPos().getX(), 10000, target.getPos().getZ(), false);
     }
 
     private static final double MIN_NODE_SEPARATION_RADS = Math.PI * 0.25;
