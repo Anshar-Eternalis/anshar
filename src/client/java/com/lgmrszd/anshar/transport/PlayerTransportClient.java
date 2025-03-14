@@ -182,7 +182,7 @@ public class PlayerTransportClient {
             double y = ppos.getY() + 1.7 + dir*5;
             double z = ppos.getZ() + (random.nextFloat()-0.5) * 4;
             var particle = particleManager.addParticle(TransportEffects.GATE_STAR, x, y, z, 0, dir/5, 0);
-            particle.setColor(ColorHelper.Argb.getRed(color), ColorHelper.Argb.getGreen(color), ColorHelper.Argb.getBlue(color));
+            particle.setColor(ColorHelper.Argb.getRed(color) / 255f, ColorHelper.Argb.getGreen(color) / 255f, ColorHelper.Argb.getBlue(color) / 255f);
         }
     }
     
