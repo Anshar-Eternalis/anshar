@@ -11,6 +11,7 @@ import fuzs.forgeconfigapiport.fabric.api.neoforge.v4.NeoForgeConfigRegistry;
 import net.fabricmc.fabric.api.event.player.UseBlockCallback;
 import net.fabricmc.fabric.api.event.player.UseItemCallback;
 import net.fabricmc.fabric.api.networking.v1.PayloadTypeRegistry;
+import net.fabricmc.fabric.api.networking.v1.ServerPlayConnectionEvents;
 import net.fabricmc.fabric.api.networking.v1.ServerPlayNetworking;
 import net.minecraft.item.ItemStack;
 import net.minecraft.item.Items;
@@ -60,6 +61,10 @@ public class ModRegistration {
 
         registerCommands();
         registerEvents();
+
+        ServerPlayConnectionEvents.JOIN.register((networkHandler, packetSender, minecraftServer) -> {
+            PlayerTransportComponent.KEY.get(networkHandler.player).exitNetwork();
+        });
     }
 
     private static void registerEvents() {

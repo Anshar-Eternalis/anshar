@@ -14,7 +14,8 @@ import net.minecraft.client.sound.SoundSystem;
 
 @Mixin(SoundSystem.class)
 public class SoundSystemMixin {
-    @Inject(method = "play", at = @At("HEAD"), cancellable = true)
+
+    @Inject(method = "play*", at = @At("HEAD"), cancellable = true)
     public void play(SoundInstance sound, CallbackInfo ci) {
         var client = MinecraftClient.getInstance();
         // cancel all audio  while in embedded space other than those whitelisted with IEmbeddedAudio

@@ -14,6 +14,7 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
 
 @Mixin(EndCrystalEntity.class)
 public abstract class EndCrystalEntityMixin extends EntityMixin {
+
     @Override
     public void anshar$onInteract(PlayerEntity player, Hand hand, CallbackInfoReturnable<ActionResult> cir) {
         IEndCrystalComponent endCrystalComponent = EndCrystalComponent.KEY.get(this);

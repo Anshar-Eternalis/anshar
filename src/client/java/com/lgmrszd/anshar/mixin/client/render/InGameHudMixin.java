@@ -26,15 +26,15 @@ import net.minecraft.util.math.MathHelper;
 
 
 @Mixin(InGameHud.class)
-public class InGameHudMixin {
+public abstract class InGameHudMixin {
     @Shadow @Final private MinecraftClient client;
 
     @Shadow @Final private ChatHud chatHud;
 
     @Shadow private int ticks;
-    
-    @Shadow private TextRenderer getTextRenderer() { return null; }
-    
+
+    @Shadow public abstract TextRenderer getTextRenderer();
+
     @Inject(method = "render", at = @At("HEAD"), cancellable = true)
     public void anshar$render(DrawContext context, RenderTickCounter tickCounter, CallbackInfo ci) {
         PlayerTransportComponent transportComponent = PlayerTransportComponent.KEY.get(client.player);

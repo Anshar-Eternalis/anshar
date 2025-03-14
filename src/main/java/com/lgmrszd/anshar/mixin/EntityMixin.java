@@ -16,6 +16,7 @@ public abstract class EntityMixin {
     @Shadow
     public abstract World getWorld();
 
+    @SuppressWarnings("CancellableInjectionUsage")
     @Inject(at = @At("HEAD"), method = "interact", cancellable = true)
     public void anshar$onInteract(PlayerEntity player, Hand hand, CallbackInfoReturnable<ActionResult> cir) {
 
