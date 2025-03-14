@@ -112,7 +112,6 @@ public class PlayerTransportComponent implements ServerTickingComponent, AutoSyn
                             )
                     )
                     .isDone();
-            player.setNoGravity(true);
         }
         KEY.sync(player);
         sendExplosionPacketS2C(true, entrance, target.getColor());
@@ -147,11 +146,8 @@ public class PlayerTransportComponent implements ServerTickingComponent, AutoSyn
 
         this.player.requestTeleport(0.5 + exit.getX(), exit.getY(), 0.5 + exit.getZ());
         sendExplosionPacketS2C(false, exit, target.getColor());
-
         this.networkUUID = null;
         this.target = null;
-        if (player.isInvisible()) player.setInvisible(false);
-        player.setNoGravity(false);
         KEY.sync(player);
     }
 
@@ -253,10 +249,9 @@ public class PlayerTransportComponent implements ServerTickingComponent, AutoSyn
             // prevent flying kick
             ((ServerPlayNetworkHandlerAccessor)serverPlayer.networkHandler).anshar$setFloatingTicks(0);
 
-            if (player.isSneaking()) {
+            if (player.isSneaking() || player.isSpectator()) {
                 exitNetwork();
             } else {
-                if (!player.isInvisible()) player.setInvisible(true);
                 moveToCurrentTarget();
             }
             

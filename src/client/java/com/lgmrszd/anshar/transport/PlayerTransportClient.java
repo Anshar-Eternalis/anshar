@@ -1,6 +1,7 @@
 package com.lgmrszd.anshar.transport;
 
 import net.minecraft.util.math.BlockPos;
+import net.minecraft.util.math.ColorHelper;
 import org.joml.Matrix3f;
 import org.joml.Vector3f;
 
@@ -132,17 +133,19 @@ public class PlayerTransportClient {
 
                 // why am I not using a shader at this point? pathetic! die scoundrel! villain!
                 var particle = particleManager.addParticle(TransportEffects.GATE_STAR, pPos.x, pPos.y, pPos.z, pVel.x, pVel.y, pVel.z);
-                // TODO: This part is still requiring floats for color so I commented it out for now. Please fix!!!!!
-//                int colors = node.getColor();
-//                if (nearest) {
-//                    particle.setColor(
-//                        colors[0] + jumpRatio * (random.nextFloat() - colors[0]),
-//                        colors[1] + jumpRatio * (random.nextFloat() - colors[1]),
-//                        colors[2] + jumpRatio * (random.nextFloat() - colors[2])
-//                    );
-//                } else {
-//                    particle.setColor(colors[0], colors[1], colors[2]);
-//                }
+                final int color = node.getColor();
+                float red = ColorHelper.Argb.getRed(color) / 255f;
+                float green = ColorHelper.Argb.getGreen(color) / 255f;
+                float blue = ColorHelper.Argb.getBlue(color) / 255f;
+                if (nearest) {
+                    particle.setColor(
+                        red + jumpRatio * (random.nextFloat() - red),
+                        green + jumpRatio * (random.nextFloat() - green),
+                        blue + jumpRatio * (random.nextFloat() - blue)
+                    );
+                } else {
+                    particle.setColor(red, green, blue);
+                }
             }
         }
     }
@@ -170,17 +173,16 @@ public class PlayerTransportClient {
 
     private void spawnOrientationParticles() {
         // draws particles above and below players to help with orientation in embedded space
-        float[] color = {1f, 1f, 1f};
+        int color = ColorHelper.Argb.getArgb(255, 255, 255);
         var tgt = transport.getTarget();
-        // TODO: This part is still requiring floats for color so I commented it out for now. Please fix!!!!!
-//        if (tgt != null) color = tgt.getColor();
+        if (tgt != null) color = tgt.getColor();
         var ppos = player.getPos();
         for (double dir = 1; dir >= -1; dir -= 2) {
             double x = ppos.getX() + (random.nextFloat()-0.5) * 4;
             double y = ppos.getY() + 1.7 + dir*5;
             double z = ppos.getZ() + (random.nextFloat()-0.5) * 4;
             var particle = particleManager.addParticle(TransportEffects.GATE_STAR, x, y, z, 0, dir/5, 0);
-            particle.setColor(color[0], color[1], color[2]);
+            particle.setColor(ColorHelper.Argb.getRed(color), ColorHelper.Argb.getGreen(color), ColorHelper.Argb.getBlue(color));
         }
     }
     
