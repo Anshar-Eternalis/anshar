@@ -8,14 +8,13 @@ import net.fabricmc.fabric.api.particle.v1.FabricParticleTypes;
 
 public class TransportEffects {
     public static FireworkExplosionComponent makeTransportFirework(int color) {
-        FireworkExplosionComponent component = new FireworkExplosionComponent(
+        return new FireworkExplosionComponent(
                 FireworkExplosionComponent.Type.STAR,
                 IntList.of(color),
                 IntList.of(color),
                 false,
                 false
         );
-        return component;
     }
 
     // TODO setup to cancel particles

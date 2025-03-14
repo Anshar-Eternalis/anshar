@@ -9,10 +9,10 @@ import org.spongepowered.asm.mixin.gen.Invoker;
 @Mixin(BeaconBlockEntity.class)
 public interface BeaconBlockEntityAccessor {
     @Accessor("level")
-    int getLevel();
+    int anshar$getLevel();
 
     @Invoker("updateLevel")
-    static int updateLevel(World world, int x, int y, int z) {
+    static int anshar$updateLevel(World world, int x, int y, int z) {
         return 0;
     }
 }

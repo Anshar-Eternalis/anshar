@@ -56,6 +56,8 @@ public class ModRegistration {
 
         Registry.register(Registries.PARTICLE_TYPE, Identifier.of(Anshar.MOD_ID, "gate_star"), TransportEffects.GATE_STAR);
 
+        Registry.register(Registries.DATA_COMPONENT_TYPE, Identifier.of(Anshar.MOD_ID, "beacon_pos"), EndCrystalItemContainer.BEACON_POS_DATA_COMPONENT);
+
         registerCommands();
         registerEvents();
     }

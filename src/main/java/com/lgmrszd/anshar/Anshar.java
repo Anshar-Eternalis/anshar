@@ -14,8 +14,8 @@ public class Anshar implements ModInitializer {
 
     public static final Logger LOGGER = LoggerFactory.getLogger(MOD_ID);
 
-	public static EnteredNetworkCriterion ENTERED_NETWORK = Criteria.register(MOD_ID + "/entered_network", new EnteredNetworkCriterion());
-	public static NetworkJumpCriterion NETWORK_JUMP = Criteria.register(MOD_ID + "/network_jump", new NetworkJumpCriterion());
+	public static final EnteredNetworkCriterion ENTERED_NETWORK = Criteria.register(MOD_ID + "/entered_network", new EnteredNetworkCriterion());
+	public static final NetworkJumpCriterion NETWORK_JUMP = Criteria.register(MOD_ID + "/network_jump", new NetworkJumpCriterion());
 
 	@Override
 	public void onInitialize() {

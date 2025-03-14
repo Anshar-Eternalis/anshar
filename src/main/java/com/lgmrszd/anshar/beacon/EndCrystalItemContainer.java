@@ -5,6 +5,7 @@ import com.lgmrszd.anshar.frequency.NetworkManagerComponent;
 import net.minecraft.block.Blocks;
 import net.minecraft.block.entity.BeaconBlockEntity;
 import net.minecraft.block.entity.BlockEntity;
+import net.minecraft.component.ComponentType;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.decoration.EndCrystalEntity;
 import net.minecraft.entity.player.PlayerEntity;
@@ -29,6 +30,8 @@ import java.util.List;
 import java.util.Optional;
 
 public class EndCrystalItemContainer {
+    public static final ComponentType<BlockPos> BEACON_POS_DATA_COMPONENT = ComponentType.<BlockPos>builder().codec(BlockPos.CODEC).packetCodec(BlockPos.PACKET_CODEC).build();
+
     private final ItemStack stack;
     public EndCrystalItemContainer(ItemStack itemStack) {
         stack = itemStack;
@@ -125,8 +128,8 @@ public class EndCrystalItemContainer {
     }
 
     private static void playLinkingSound(ServerPlayerEntity player, boolean clear) {
-        player.playSound(
-                clear ? SoundEvents.ITEM_ARMOR_EQUIP_NETHERITE : SoundEvents.ITEM_LODESTONE_COMPASS_LOCK,
+        player.getWorld().playSound(player, player.getX(), player.getY(), player.getZ(),
+                clear ? SoundEvents.ITEM_ARMOR_EQUIP_NETHERITE.value() : SoundEvents.ITEM_LODESTONE_COMPASS_LOCK,
                 SoundCategory.BLOCKS,
                 1f,
                 clear ? 2.0f : 1.0f
@@ -134,26 +137,21 @@ public class EndCrystalItemContainer {
     }
 
     public void saveBeaconPos(BlockPos pos) {
-        NbtCompound tag = stack.getOrCreateNbt();
-        NbtCompound posTag = NbtHelper.fromBlockPos(pos);
-        tag.put("BeaconPos", posTag);
-        stack.setNbt(tag);
+        stack.set(BEACON_POS_DATA_COMPONENT, pos);
     }
 
     public void clearBeaconPos(ServerPlayerEntity player) {
         player.sendMessage(Text.translatable("anshar.tooltip.end_crystal.use.unlinked"));
         playLinkingSound(player, true);
-        NbtCompound tag = stack.getNbt();
-        if (tag == null) return;
-        tag.remove("BeaconPos");
-        if (tag.isEmpty()) stack.setNbt(null);
-        else stack.setNbt(tag);
+        if (stack.contains(BEACON_POS_DATA_COMPONENT)) {
+            stack.remove(BEACON_POS_DATA_COMPONENT);
+        }
     }
 
     public Optional<BlockPos> getBeaconPos() {
-        if (!stack.hasNbt()) return Optional.empty();
-        NbtCompound tag = stack.getNbt();
-        if (tag == null || !tag.contains("BeaconPos")) return Optional.empty();
-        return Optional.of(NbtHelper.toBlockPos(tag.getCompound("BeaconPos")));
+        if (!stack.contains(BEACON_POS_DATA_COMPONENT)) return Optional.empty();
+        BlockPos pos = stack.get(BEACON_POS_DATA_COMPONENT);
+        if (pos == null) return Optional.empty();
+        return Optional.of(pos);
     }
 }
