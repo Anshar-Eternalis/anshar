@@ -9,6 +9,7 @@ import java.util.UUID;
 import java.util.stream.Collectors;
 
 import com.lgmrszd.anshar.Anshar;
+import com.lgmrszd.anshar.beacon.BeaconComponent;
 import com.lgmrszd.anshar.beacon.BeaconNode;
 import com.lgmrszd.anshar.frequency.FrequencyNetwork;
 import com.lgmrszd.anshar.frequency.NetworkManagerComponent;
@@ -220,7 +221,7 @@ public class PlayerTransportComponent implements ServerTickingComponent, AutoSyn
                 .filter(node -> distanceTo(node) > MIN_NODE_SEPARATION_DIST)
                 .sorted((a, b) -> Double.compare(distanceTo(a), distanceTo(b)));
             // starting from nearest, add to output set as long as not too close to any others in the set
-            for (BeaconNode node : candidates.collect(Collectors.toList())) {
+            for (BeaconNode node : candidates.toList()) {
                 boolean valid = true;
                 for (BeaconNode prev : out) {
                     var sep = Math.acos(compassNormToNode(prev).dot(compassNormToNode(node)));
@@ -294,7 +295,13 @@ public class PlayerTransportComponent implements ServerTickingComponent, AutoSyn
     public final boolean tryJump(BeaconNode node) {
         if (node != null) {
             target = node;
-            if (player instanceof ServerPlayerEntity serverPlayer) Anshar.NETWORK_JUMP.trigger(serverPlayer);
+            if (player instanceof ServerPlayerEntity serverPlayer) {
+                Anshar.NETWORK_JUMP.trigger(serverPlayer);
+                // setting the target to the received node isn't enough, it doesn't teleport and I don't know why
+                // this is a temp fix
+                // TODO: actually fix this
+                BeaconComponent.enterBeamServer(node.getPos(), serverPlayer);
+            }
             KEY.sync(player);
             return true;
         }

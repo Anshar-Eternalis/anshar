@@ -9,6 +9,7 @@ import com.lgmrszd.anshar.transport.PlayerTransportComponent;
 import net.fabricmc.fabric.api.networking.v1.ServerPlayNetworking;
 import net.minecraft.block.entity.BeaconBlockEntity;
 import net.minecraft.entity.decoration.EndCrystalEntity;
+import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.nbt.NbtCompound;
 import net.minecraft.network.RegistryByteBuf;
 import net.minecraft.particle.ParticleTypes;
@@ -157,12 +158,15 @@ public class BeaconComponent implements IBeaconComponent {
         clientTick.accept(this);
     }
 
-    public static void EnterBeamPacketC2S(EnterBeamPayload payload, ServerPlayNetworking.Context context) {
+    public static void enterBeamPacketC2S(EnterBeamPayload payload, ServerPlayNetworking.Context context) {
         if (!ServerConfig.beamClientCheck.get()) return;
-        BlockPos pos = payload.blockPos();
-        context.server().execute(() -> {
-            if (!(context.player().getWorld().getBlockEntity(pos) instanceof BeaconBlockEntity bbe)) return;
-            KEY.get(bbe).tryPutPlayerIntoNetwork(context.player());
+        enterBeamServer(payload.blockPos(), context.player());
+    }
+
+    public static void enterBeamServer(BlockPos pos, ServerPlayerEntity player) {
+        player.server.execute(() -> {
+            if (!(player.getWorld().getBlockEntity(pos) instanceof BeaconBlockEntity bbe)) return;
+            KEY.get(bbe).tryPutPlayerIntoNetwork(player);
         });
     }
 

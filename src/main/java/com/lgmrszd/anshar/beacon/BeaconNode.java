@@ -58,8 +58,19 @@ public class BeaconNode {
         return new BeaconNode(pos, Text.literal("?????"), ColorHelper.Argb.getArgb(255, 255, 255));
     }
 
-    public Text getName() {return name;}
-    public int getColor() {return color;}
-    public BlockPos getPos() {return pos;}
-    public Optional<BeaconBlockEntity> getBeacon() {return Optional.empty();}
+    public Text getName() {
+        return name;
+    }
+
+    public int getColor() {
+        return color;
+    }
+
+    public BlockPos getPos() {
+        return pos;
+    }
+
+    public Optional<BeaconBlockEntity> getBeacon() {
+        return Optional.empty();
+    }
 }
