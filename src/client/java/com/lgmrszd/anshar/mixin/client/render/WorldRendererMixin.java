@@ -1,11 +1,13 @@
 package com.lgmrszd.anshar.mixin.client.render;
 
+import com.llamalad7.mixinextras.injector.wrapoperation.Operation;
+import com.llamalad7.mixinextras.injector.wrapoperation.WrapOperation;
 import net.minecraft.client.render.*;
 import org.joml.Matrix4f;
 import org.spongepowered.asm.mixin.Mixin;
+import org.spongepowered.asm.mixin.Unique;
 import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
-import org.spongepowered.asm.mixin.injection.Redirect;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 
 import com.lgmrszd.anshar.transport.PlayerTransportComponent;
@@ -18,6 +20,7 @@ import net.minecraft.entity.Entity;
 @Mixin(WorldRenderer.class)
 public class WorldRendererMixin {
 
+    @Unique
     private boolean anshar$isInNetwork = false;
 
     @Inject(method = "render", at = @At("HEAD"))
@@ -27,9 +30,9 @@ public class WorldRendererMixin {
         else anshar$isInNetwork = false;
     }
 
-    @Redirect(method = "render", at = @At(value = "INVOKE", target = "Lnet/minecraft/client/render/BackgroundRenderer;render(Lnet/minecraft/client/render/Camera;FLnet/minecraft/client/world/ClientWorld;IF)V"))
-    public void anshar$backgroundRenderOverride(Camera camera, float tickDelta, ClientWorld world, int viewDistance, float skyDarkness) {
-        if (!anshar$isInNetwork) BackgroundRenderer.render(camera, tickDelta, world, viewDistance, skyDarkness);
+    @WrapOperation(method = "render", at = @At(value = "INVOKE", target = "Lnet/minecraft/client/render/BackgroundRenderer;render(Lnet/minecraft/client/render/Camera;FLnet/minecraft/client/world/ClientWorld;IF)V"))
+    public void anshar$backgroundRenderOverride(Camera camera, float tickDelta, ClientWorld world, int viewDistance, float skyDarkness, Operation<Void> original) {
+        if (!anshar$isInNetwork) original.call(camera, tickDelta, world, viewDistance, skyDarkness);
     }
 
     @Inject(method = "renderSky", at = @At("HEAD"), cancellable = true)

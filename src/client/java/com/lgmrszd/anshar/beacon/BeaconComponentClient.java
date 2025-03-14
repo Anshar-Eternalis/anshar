@@ -61,13 +61,6 @@ public class BeaconComponentClient {
         ClientPlayNetworking.send(new EnterBeamPayload(pos));
     }
 
-//    private static void sendEnterNetworkPacketC2S(BlockPos pos, UUID freqUUID) {
-//        var enterPacket = PacketByteBufs.create();
-//        enterPacket.writeBlockPos(pos);
-//        enterPacket.writeUuid(freqUUID);
-//        ClientPlayNetworking.send(BeaconComponent.ENTER_PACKET_ID, enterPacket);
-//    }
-
     public static void init() {
     }
 }
