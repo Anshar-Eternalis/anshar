@@ -27,6 +27,6 @@ public record JumpPayload(BlockPos blockPos, Text name, int color) implements Cu
     }
     @Override
     public Id<? extends CustomPayload> getId() {
-        return null;
+        return ID;
     }
 }

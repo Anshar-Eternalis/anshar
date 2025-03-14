@@ -47,7 +47,7 @@ public class ModRegistration {
             });
         });
 
-        ServerPlayNetworking.registerGlobalReceiver(EnterBeamPayload.ID, BeaconComponent::EnterBeamPacketC2S);
+        ServerPlayNetworking.registerGlobalReceiver(EnterBeamPayload.ID, BeaconComponent::enterBeamPacketC2S);
 
         // Sounds
         Registry.register(Registries.SOUND_EVENT, ModResources.EMBED_SPACE_AMBIENT_SOUND, ModResources.EMBED_SPACE_AMBIENT_SOUND_EVENT);
