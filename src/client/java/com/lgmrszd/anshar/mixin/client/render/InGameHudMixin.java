@@ -83,7 +83,7 @@ public abstract class InGameHudMixin {
                 int n = MathHelper.floor((double)(this.client.mouse.getX() * (double)window.getScaledWidth() / (double)window.getWidth()));
                 int p = MathHelper.floor((double)(this.client.mouse.getY() * (double)window.getScaledHeight() / (double)window.getHeight()));
                 this.client.getProfiler().push("chat");
-                this.chatHud.render(context, this.ticks, n, p, true);
+                this.chatHud.render(context, this.ticks, n, p, this.chatHud.isChatFocused()); // thanks to unilock for the isChatFocused
                 this.client.getProfiler().pop();
                 RenderSystem.disableBlend();
             }

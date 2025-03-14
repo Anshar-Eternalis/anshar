@@ -26,6 +26,7 @@ public class TransportGateParticle extends SpriteBillboardParticle {
         @Override
         public Particle createParticle(SimpleParticleType defaultParticleType, ClientWorld clientWorld,
         double px, double py, double pz, double vx, double vy, double vz) {
+            // p -> pos, v -> velocity
             return new TransportGateParticle(clientWorld, px, py, pz, vx, vy, vz, this.spriteProvider);
         }
 
