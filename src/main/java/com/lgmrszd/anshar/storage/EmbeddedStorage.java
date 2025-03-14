@@ -20,20 +20,20 @@ import net.minecraft.world.World;
 import java.util.List;
 import java.util.Optional;
 
-
+@SuppressWarnings("unused")
 public class EmbeddedStorage extends EnderChestInventory {
     private static final int CONNECTION_RADIUS = 20;
     
     private static boolean isBeaconValidStorageTarget(BlockPos pos, World world, BeaconBlockEntity beacon){
         var diff = beacon.getPos().subtract(pos);
         var tier = diff.getY() + 1;
-        return tier <= ((BeaconBlockEntityAccessor)beacon).getLevel() && (
+        return tier <= ((BeaconBlockEntityAccessor)beacon).anshar$getLevel() && (
                 (tier == Math.abs(diff.getX()) && Math.abs(diff.getZ()) <= tier) ||
                         (tier == Math.abs(diff.getZ()) && Math.abs(diff.getX()) <= tier)
         );
     }
 
-    public static Optional<BeaconBlockEntity> getConnectedBeacon(World world, BlockPos pos, EnderChestBlockEntity blockEnt) {
+    public static Optional<BeaconBlockEntity> getConnectedBeacon(World world, BlockPos pos, EnderChestBlockEntity ecbe) {
         // check for crystal
         Vec3d scanPos = pos.up().toCenterPos().add(0, -0.5, 0);
         double d = scanPos.getX();
@@ -60,9 +60,9 @@ public class EmbeddedStorage extends EnderChestInventory {
         return Optional.empty();
     }
 
-    public static Optional<EmbeddedStorage> getForEnderChestBlockEntity(EnderChestBlockEntity ECBE) {
-        if (ECBE.getWorld() == null) return Optional.empty();
-        return EmbeddedStorage.getConnectedBeacon(ECBE.getWorld(), ECBE.getPos(), ECBE)
+    public static Optional<EmbeddedStorage> getForEnderChestBlockEntity(EnderChestBlockEntity ecbe) {
+        if (ecbe.getWorld() == null) return Optional.empty();
+        return EmbeddedStorage.getConnectedBeacon(ecbe.getWorld(), ecbe.getPos(), ecbe)
                 .flatMap(beacon -> BeaconComponent.KEY.get(beacon)
                 .getFrequencyNetwork()
                 .map(FrequencyNetwork::getStorage));

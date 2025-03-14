@@ -13,7 +13,7 @@ import net.minecraft.util.math.BlockPos;
 
 public class ModDispenserBehaviors {
     public static void register() {
-        DispenserBehavior oldFireworkBehavior = DispenserBlockAccessor.getBehaviors().get(Items.FIREWORK_ROCKET);
+        DispenserBehavior oldFireworkBehavior = DispenserBlockAccessor.anshar$getBehaviors().get(Items.FIREWORK_ROCKET);
         DispenserBlock.registerBehavior(Items.FIREWORK_ROCKET, (pointer, stack) -> {
             BlockPos facingPos = pointer.pos().offset(pointer.state().get(DispenserBlock.FACING));
             // TODO IDEA gives me weird warning, what??

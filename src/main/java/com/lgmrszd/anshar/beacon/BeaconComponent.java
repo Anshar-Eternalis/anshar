@@ -62,7 +62,7 @@ public class BeaconComponent implements IBeaconComponent {
         int x = pos.getX();
         int y = pos.getY();
         int z = pos.getZ();
-        level = BeaconBlockEntityAccessor.updateLevel(world, x, y, z);
+        level = BeaconBlockEntityAccessor.anshar$updateLevel(world, x, y, z);
         return level == 0 ? NullFrequencyIdentifier.get() :
                 PyramidFrequencyIdentifier.scanForPyramid(world, getBeaconPos(), level);
     }

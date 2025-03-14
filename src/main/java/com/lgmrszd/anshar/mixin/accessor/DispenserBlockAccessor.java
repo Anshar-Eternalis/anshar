@@ -12,7 +12,7 @@ import java.util.Map;
 public interface DispenserBlockAccessor {
     @Accessor("BEHAVIORS")
 
-    static Map<Item, DispenserBehavior> getBehaviors() {
+    static Map<Item, DispenserBehavior> anshar$getBehaviors() {
         return null;
     }
 }

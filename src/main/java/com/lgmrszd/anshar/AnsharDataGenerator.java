@@ -10,9 +10,11 @@ import net.minecraft.advancement.*;
 import net.minecraft.advancement.criterion.ConstructBeaconCriterion;
 import net.minecraft.item.Items;
 import net.minecraft.predicate.NumberRange;
+import net.minecraft.registry.RegistryWrapper;
 import net.minecraft.text.Text;
 import net.minecraft.util.Identifier;
 
+import java.util.concurrent.CompletableFuture;
 import java.util.function.Consumer;
 
 import static com.lgmrszd.anshar.Anshar.MOD_ID;
@@ -25,12 +27,13 @@ public class AnsharDataGenerator implements DataGeneratorEntrypoint {
 	}
 
 	static class AdvancementsProvider extends FabricAdvancementProvider {
-		protected AdvancementsProvider(FabricDataOutput dataGenerator) {
-			super(dataGenerator);
+
+		protected AdvancementsProvider(FabricDataOutput output, CompletableFuture<RegistryWrapper.WrapperLookup> registryLookup) {
+			super(output, registryLookup);
 		}
 
 		@Override
-		public void generateAdvancement(Consumer<AdvancementEntry> consumer) {
+		public void generateAdvancement(RegistryWrapper.WrapperLookup wrapperLookup, Consumer<AdvancementEntry> consumer) {
 			AdvancementEntry rootAdvancement = Advancement.Builder.create()
 					.display(
 							Items.BEACON,
