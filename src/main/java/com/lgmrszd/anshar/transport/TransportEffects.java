@@ -9,7 +9,7 @@ import net.fabricmc.fabric.api.particle.v1.FabricParticleTypes;
 public class TransportEffects {
     public static FireworkExplosionComponent makeTransportFirework(int color) {
         return new FireworkExplosionComponent(
-                FireworkExplosionComponent.Type.STAR,
+                FireworkExplosionComponent.Type.LARGE_BALL,
                 IntList.of(color),
                 IntList.of(color),
                 false,
