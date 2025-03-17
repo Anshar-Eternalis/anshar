@@ -10,6 +10,7 @@ import net.minecraft.block.entity.BeaconBlockEntity;
 import net.minecraft.block.entity.EnderChestBlockEntity;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.decoration.EndCrystalEntity;
+import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.inventory.EnderChestInventory;
 import net.minecraft.text.Text;
 import net.minecraft.util.math.BlockPos;
@@ -64,8 +65,9 @@ public class EmbeddedStorage extends EnderChestInventory {
         if (ecbe.getWorld() == null) return Optional.empty();
         return EmbeddedStorage.getConnectedBeacon(ecbe.getWorld(), ecbe.getPos(), ecbe)
                 .flatMap(beacon -> BeaconComponent.KEY.get(beacon)
-                .getFrequencyNetwork()
-                .map(FrequencyNetwork::getStorage));
+                        .getFrequencyNetwork()
+                        .map(FrequencyNetwork::getStorage)
+                );
     }
 
     public Text getContainerLabelFor(BeaconBlockEntity beacon){
@@ -73,5 +75,10 @@ public class EmbeddedStorage extends EnderChestInventory {
             .append(beacon.getName())
             .append("] ")
             .append(Text.translatable("container.enderchest"));
+    }
+
+    @Override
+    public boolean canPlayerUse(PlayerEntity player) {
+        return true;
     }
 }
