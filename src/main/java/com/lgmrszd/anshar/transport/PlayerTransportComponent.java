@@ -72,6 +72,14 @@ public class PlayerTransportComponent implements ServerTickingComponent, AutoSyn
         this.target = BeaconNode.makeFake(player.getBlockPos());
     }
 
+    public static void jumpPacketC2S(JumpPayload payload, ServerPlayNetworking.Context context) {
+        jumpServer(BeaconNode.fromJumpPayload(payload), context.player());
+    }
+
+    public static void jumpServer(BeaconNode node, ServerPlayerEntity player) {
+        player.server.execute(() -> KEY.get(player).tryJump(node));
+    }
+
     private NetworkManagerComponent getNetworkManager(){
         return NetworkManagerComponent.KEY.get(this.player.getWorld().getLevelProperties());
     }

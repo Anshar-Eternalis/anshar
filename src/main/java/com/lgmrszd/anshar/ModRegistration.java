@@ -1,7 +1,6 @@
 package com.lgmrszd.anshar;
 
 import com.lgmrszd.anshar.beacon.BeaconComponent;
-import com.lgmrszd.anshar.beacon.BeaconNode;
 import com.lgmrszd.anshar.beacon.EndCrystalItemContainer;
 import com.lgmrszd.anshar.config.ServerConfig;
 import com.lgmrszd.anshar.dispenser.ModDispenserBehaviors;
@@ -42,11 +41,7 @@ public class ModRegistration {
         PayloadTypeRegistry.playC2S().register(JumpPayload.ID, JumpPayload.CODEC);
         PayloadTypeRegistry.playC2S().register(EnterBeamPayload.ID, EnterBeamPayload.CODEC);
 
-        ServerPlayNetworking.registerGlobalReceiver(JumpPayload.ID, (payload, context) -> {
-            context.server().execute(() -> {
-                PlayerTransportComponent.KEY.get(context.player()).tryJump(BeaconNode.fromJumpPayload(payload));
-            });
-        });
+        ServerPlayNetworking.registerGlobalReceiver(JumpPayload.ID, PlayerTransportComponent::jumpPacketC2S);
 
         ServerPlayNetworking.registerGlobalReceiver(EnterBeamPayload.ID, BeaconComponent::enterBeamPacketC2S);
 
