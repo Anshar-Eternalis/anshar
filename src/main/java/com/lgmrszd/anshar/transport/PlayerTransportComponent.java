@@ -6,10 +6,8 @@ import java.util.HashSet;
 import java.util.Optional;
 import java.util.Set;
 import java.util.UUID;
-import java.util.stream.Collectors;
 
 import com.lgmrszd.anshar.Anshar;
-import com.lgmrszd.anshar.beacon.BeaconComponent;
 import com.lgmrszd.anshar.beacon.BeaconNode;
 import com.lgmrszd.anshar.frequency.FrequencyNetwork;
 import com.lgmrszd.anshar.frequency.NetworkManagerComponent;
@@ -29,13 +27,11 @@ import org.ladysnake.cca.api.v3.component.ComponentRegistry;
 import org.ladysnake.cca.api.v3.component.sync.AutoSyncedComponent;
 import org.ladysnake.cca.api.v3.component.tick.ClientTickingComponent;
 import org.ladysnake.cca.api.v3.component.tick.ServerTickingComponent;
-import net.fabricmc.fabric.api.networking.v1.PacketByteBufs;
 import net.fabricmc.fabric.api.networking.v1.ServerPlayNetworking;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.nbt.NbtCompound;
 import net.minecraft.nbt.NbtElement;
 import net.minecraft.nbt.NbtList;
-import net.minecraft.network.PacketByteBuf;
 import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.math.BlockPos;
@@ -134,6 +130,7 @@ public class PlayerTransportComponent implements ServerTickingComponent, AutoSyn
             z = player.getRandom().nextBetween(-1, 1);
         } while (x==0&&z==0);
 
+        if (target == null) target = BeaconNode.makeFake(player.getBlockPos());
         x = target.getPos().getX() + x;
         z = target.getPos().getZ() + z;
 
@@ -207,6 +204,7 @@ public class PlayerTransportComponent implements ServerTickingComponent, AutoSyn
     }
 
     private void moveToCurrentTarget() {
+        if (target == null) target = BeaconNode.makeFake(player.getBlockPos());
         this.player.requestTeleport(target.getPos().getX(), 10000, target.getPos().getZ());
     }
 
