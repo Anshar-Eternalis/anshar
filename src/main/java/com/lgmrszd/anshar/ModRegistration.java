@@ -63,7 +63,9 @@ public class ModRegistration {
         registerEvents();
 
         ServerPlayConnectionEvents.JOIN.register((networkHandler, packetSender, minecraftServer) -> {
-            PlayerTransportComponent.KEY.get(networkHandler.player).exitNetwork();
+            var component = PlayerTransportComponent.KEY.get(networkHandler.player);
+            if (component.isInNetwork())
+                component.exitNetwork();
         });
     }
 
