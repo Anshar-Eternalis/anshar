@@ -6,11 +6,16 @@ import net.fabricmc.fabric.api.datagen.v1.DataGeneratorEntrypoint;
 import net.fabricmc.fabric.api.datagen.v1.FabricDataGenerator;
 import net.fabricmc.fabric.api.datagen.v1.FabricDataOutput;
 import net.fabricmc.fabric.api.datagen.v1.provider.FabricAdvancementProvider;
+import net.fabricmc.fabric.api.datagen.v1.provider.FabricTagProvider;
 import net.minecraft.advancement.*;
 import net.minecraft.advancement.criterion.ConstructBeaconCriterion;
+import net.minecraft.block.Block;
+import net.minecraft.block.Blocks;
 import net.minecraft.item.Items;
 import net.minecraft.predicate.NumberRange;
+import net.minecraft.registry.RegistryKeys;
 import net.minecraft.registry.RegistryWrapper;
+import net.minecraft.registry.tag.TagKey;
 import net.minecraft.text.Text;
 import net.minecraft.util.Identifier;
 
@@ -20,10 +25,13 @@ import java.util.function.Consumer;
 import static com.lgmrszd.anshar.Anshar.MOD_ID;
 
 public class AnsharDataGenerator implements DataGeneratorEntrypoint {
+	public static final TagKey<Block> SEND_THROUGH = TagKey.of(RegistryKeys.BLOCK, Identifier.of(MOD_ID, "send_through"));
+
 	@Override
 	public void onInitializeDataGenerator(FabricDataGenerator fabricDataGenerator) {
 		FabricDataGenerator.Pack pack = fabricDataGenerator.createPack();
 		pack.addProvider(AdvancementsProvider::new);
+		pack.addProvider(BlockTagProvider::new);
 	}
 
 	static class AdvancementsProvider extends FabricAdvancementProvider {
@@ -75,6 +83,20 @@ public class AnsharDataGenerator implements DataGeneratorEntrypoint {
 					)
 					.criterion("network_jump", NetworkJumpCriterion.Conditions.create())
 					.build(consumer, MOD_ID + "/network_jump");
+		}
+	}
+
+
+	public static class BlockTagProvider extends FabricTagProvider<Block> {
+		public BlockTagProvider(FabricDataOutput output, CompletableFuture<RegistryWrapper.WrapperLookup> registriesFuture) {
+			super(output, RegistryKeys.BLOCK, registriesFuture);
+		}
+
+		@Override
+		protected void configure(RegistryWrapper.WrapperLookup wrapperLookup) {
+			getOrCreateTagBuilder(SEND_THROUGH)
+					.add(Blocks.NETHERRACK)
+					.setReplace(true);
 		}
 	}
 }

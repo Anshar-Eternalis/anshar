@@ -1,6 +1,7 @@
 package com.lgmrszd.anshar.transport;
 
 import static com.lgmrszd.anshar.Anshar.MOD_ID;
+import static com.lgmrszd.anshar.AnsharDataGenerator.SEND_THROUGH;
 
 import java.util.HashSet;
 import java.util.Optional;
@@ -16,6 +17,7 @@ import com.lgmrszd.anshar.mixin.accessor.ServerPlayNetworkHandlerAccessor;
 import net.minecraft.advancement.AdvancementEntry;
 
 import net.minecraft.block.BlockState;
+import net.minecraft.block.Blocks;
 import net.minecraft.network.RegistryByteBuf;
 import net.minecraft.registry.RegistryWrapper;
 import net.minecraft.server.world.ServerWorld;
@@ -138,9 +140,9 @@ public class PlayerTransportComponent implements ServerTickingComponent, AutoSyn
         int y = world.getTopY();
         BlockPos exit = new BlockPos(x, y, z);
 
-        // First: go down through any light-passing blocks
+        // First: go down through any light-passing blocks and the blocks in the tag
         BlockState blockState = world.getBlockState(exit);
-        while (blockState.getOpacity(world, exit) < 15) {
+        while (blockState.getOpacity(world, exit) < 15 || blockState.isOf(Blocks.BEDROCK) || blockState.isIn(SEND_THROUGH)) {
             exit = exit.down();
             blockState = world.getBlockState(exit);
         }
