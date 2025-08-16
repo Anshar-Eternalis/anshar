@@ -70,6 +70,7 @@ public class AnsharDataGenerator implements DataGeneratorEntrypoint {
 					.criterion("entered_network", EnteredNetworkCriterion.Conditions.create())
 					.build(consumer, MOD_ID + "/network_enter");
 
+            @SuppressWarnings("unused")
 			AdvancementEntry networkJump = Advancement.Builder.create().parent(networkEnter)
 					.display(
 							Items.NETHER_STAR, // The display icon
