@@ -40,3 +40,4 @@ replay_*.log
 *.jfr
 .DS_Store
 remappedSrc/
+.factorypath
