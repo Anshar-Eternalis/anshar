@@ -26,8 +26,8 @@ public class EnteredNetworkCriterion extends AbstractCriterion<EnteredNetworkCri
     public record Conditions(Optional<LootContextPredicate> player) implements AbstractCriterion.Conditions {
         public static final Codec<EnteredNetworkCriterion.Conditions> CODEC = RecordCodecBuilder.create(
                 conditionsInstance -> conditionsInstance.group(
-                        EntityPredicate.LOOT_CONTEXT_PREDICATE_CODEC.optionalFieldOf("player").forGetter(Conditions::player)
-                ).apply(conditionsInstance, Conditions::new));
+                        EntityPredicate.LOOT_CONTEXT_PREDICATE_CODEC.optionalFieldOf("player").forGetter(com.lgmrszd.anshar.advancements.EnteredNetworkCriterion.Conditions::player)
+                ).apply(conditionsInstance, com.lgmrszd.anshar.advancements.EnteredNetworkCriterion.Conditions::new));
 
         public static AdvancementCriterion<EnteredNetworkCriterion.Conditions> create() {
             return Anshar.ENTERED_NETWORK.create(new EnteredNetworkCriterion.Conditions(Optional.empty()));
