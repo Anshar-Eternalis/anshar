@@ -117,7 +117,7 @@ public class EndCrystalComponent implements IEndCrystalComponent {
             if (connected) {
                 if (source.getAttacker() instanceof ServerPlayerEntity serverPlayer && serverPlayer.isSneaking()) {
                     if (!endCrystal.isRemoved()) {
-                        endCrystal.dropStack(new ItemStack(Items.END_CRYSTAL));
+                        endCrystal.dropStack(serverWorld, new ItemStack(Items.END_CRYSTAL));
                         endCrystal.remove(Entity.RemovalReason.KILLED);
                         return true;
                     }
