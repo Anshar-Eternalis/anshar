@@ -17,8 +17,6 @@ import net.minecraft.client.particle.ParticleManager;
 import net.minecraft.client.render.Camera;
 import net.minecraft.client.render.LightmapTextureManager;
 import net.minecraft.client.render.VertexConsumer;
-import net.minecraft.client.render.VertexConsumerProvider;
-import net.minecraft.client.util.math.MatrixStack;
 
 @Mixin(ParticleManager.class)
 public class ParticleManagerMixin {
