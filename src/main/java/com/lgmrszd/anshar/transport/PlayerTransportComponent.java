@@ -142,7 +142,7 @@ public class PlayerTransportComponent implements ServerTickingComponent, AutoSyn
 
         // First: go down through any light-passing blocks and the blocks in the tag
         BlockState blockState = world.getBlockState(exit);
-        while (blockState.getOpacity(world, exit) < 15 || blockState.isOf(Blocks.BEDROCK) || blockState.isIn(SEND_THROUGH)) {
+        while (blockState.getOpacity() < 15 || blockState.isOf(Blocks.BEDROCK) || blockState.isIn(SEND_THROUGH)) {
             exit = exit.down();
             blockState = world.getBlockState(exit);
         }
