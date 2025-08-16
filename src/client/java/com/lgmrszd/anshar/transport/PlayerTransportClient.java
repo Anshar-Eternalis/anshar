@@ -4,7 +4,6 @@ import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.ColorHelper;
 import org.joml.Matrix3f;
 import org.joml.Vector3f;
-import PlayerTransportComponent;
 import com.lgmrszd.anshar.beacon.BeaconNode;
 
 import net.fabricmc.fabric.api.client.networking.v1.ClientPlayNetworking;
