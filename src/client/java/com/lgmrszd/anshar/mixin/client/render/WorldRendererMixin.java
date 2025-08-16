@@ -55,9 +55,10 @@ public class WorldRendererMixin {
         if (anshar$isInNetwork) ci.cancel();
     }
 
-    @Inject(method = "renderWorldBorder", at = @At("HEAD"), cancellable = true)
-    public void anshar$renderWorldBorder(Camera camera, CallbackInfo ci) {
-        if (anshar$isInNetwork) ci.cancel();
-    }
+    // FIXME: this method does not exist anymore, but there is another method in a different class "WorldBorderRendering::render"
+    // @Inject(method = "renderWorldBorder", at = @At("HEAD"), cancellable = true)
+    // public void anshar$renderWorldBorder(Camera camera, CallbackInfo ci) {
+    //     if (anshar$isInNetwork) ci.cancel();
+    // }
     
 }
