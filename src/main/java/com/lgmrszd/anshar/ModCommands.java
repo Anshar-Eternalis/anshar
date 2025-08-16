@@ -289,6 +289,7 @@ public class ModCommands {
         sendFeedback(context, Text.literal(text), false);
     }
 
+    @SuppressWarnings("unused")
     private static void sendFeedback(CommandContext<ServerCommandSource> context, String text, boolean broadcastToOps) {
         sendFeedback(context, Text.literal(text), broadcastToOps);
     }
