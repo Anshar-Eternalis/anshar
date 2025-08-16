@@ -26,8 +26,8 @@ public class NetworkJumpCriterion extends AbstractCriterion<NetworkJumpCriterion
     public record Conditions(Optional<LootContextPredicate> player) implements AbstractCriterion.Conditions {
         public static final Codec<NetworkJumpCriterion.Conditions> CODEC = RecordCodecBuilder.create(
                 conditionsInstance -> conditionsInstance.group(
-                        EntityPredicate.LOOT_CONTEXT_PREDICATE_CODEC.optionalFieldOf("player").forGetter(Conditions::player)
-                ).apply(conditionsInstance, Conditions::new));
+                        EntityPredicate.LOOT_CONTEXT_PREDICATE_CODEC.optionalFieldOf("player").forGetter(com.lgmrszd.anshar.advancements.NetworkJumpCriterion.Conditions::player)
+                ).apply(conditionsInstance, com.lgmrszd.anshar.advancements.NetworkJumpCriterion.Conditions::new));
 
         public static AdvancementCriterion<NetworkJumpCriterion.Conditions> create() {
             return Anshar.NETWORK_JUMP.create(new NetworkJumpCriterion.Conditions(Optional.empty()));

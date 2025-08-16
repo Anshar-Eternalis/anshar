@@ -137,7 +137,7 @@ public class PlayerTransportComponent implements ServerTickingComponent, AutoSyn
         z = target.getPos().getZ() + z;
 
         World world = this.player.getWorld();
-        int y = world.getTopY();
+        int y = world.getTopYInclusive();
         BlockPos exit = new BlockPos(x, y, z);
 
         // First: go down through any light-passing blocks and the blocks in the tag
