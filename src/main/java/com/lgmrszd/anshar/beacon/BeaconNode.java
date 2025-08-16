@@ -55,7 +55,7 @@ public class BeaconNode {
     }
 
     public static BeaconNode makeFake(BlockPos pos) {
-        return new BeaconNode(pos, Text.literal("?????"), ColorHelper.Argb.getArgb(255, 255, 255));
+        return new BeaconNode(pos, Text.literal("?????"), ColorHelper.getArgb(255, 255, 255));
     }
 
     public Text getName() {

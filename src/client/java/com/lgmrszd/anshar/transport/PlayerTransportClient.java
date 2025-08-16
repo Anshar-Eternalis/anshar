@@ -133,9 +133,9 @@ public class PlayerTransportClient {
                 // why am I not using a shader at this point? pathetic! die scoundrel! villain!
                 var particle = particleManager.addParticle(TransportEffects.GATE_STAR, pPos.x, pPos.y, pPos.z, pVel.x, pVel.y, pVel.z);
                 final int color = node.getColor();
-                float red = ColorHelper.Argb.getRed(color) / 255f;
-                float green = ColorHelper.Argb.getGreen(color) / 255f;
-                float blue = ColorHelper.Argb.getBlue(color) / 255f;
+                float red = ColorHelper.getRed(color) / 255f;
+                float green = ColorHelper.getGreen(color) / 255f;
+                float blue = ColorHelper.getBlue(color) / 255f;
                 if (nearest) {
                     particle.setColor(
                         red + jumpRatio * (random.nextFloat() - red),
@@ -172,7 +172,7 @@ public class PlayerTransportClient {
 
     private void spawnOrientationParticles() {
         // draws particles above and below players to help with orientation in embedded space
-        int color = ColorHelper.Argb.getArgb(255, 255, 255);
+        int color = ColorHelper.getArgb(255, 255, 255);
         var tgt = transport.getTarget();
         if (tgt != null) color = tgt.getColor();
         var ppos = player.getPos();
@@ -181,7 +181,7 @@ public class PlayerTransportClient {
             double y = ppos.getY() + 1.7 + dir*5;
             double z = ppos.getZ() + (random.nextFloat()-0.5) * 4;
             var particle = particleManager.addParticle(TransportEffects.GATE_STAR, x, y, z, 0, dir/5, 0);
-            particle.setColor(ColorHelper.Argb.getRed(color) / 255f, ColorHelper.Argb.getGreen(color) / 255f, ColorHelper.Argb.getBlue(color) / 255f);
+            particle.setColor(ColorHelper.getRed(color) / 255f, ColorHelper.getGreen(color) / 255f, ColorHelper.getBlue(color) / 255f);
         }
     }
     
