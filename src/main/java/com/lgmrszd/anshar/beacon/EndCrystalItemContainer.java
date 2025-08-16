@@ -46,7 +46,7 @@ public class EndCrystalItemContainer {
                 clearBeaconPos(serverPlayer);
             } else {
                 saveBeaconPos(targetPos);
-                player.sendMessage(Text.translatable("anshar.tooltip.end_crystal.use.linked"));
+                player.sendMessage(Text.translatable("anshar.tooltip.end_crystal.use.linked"), false);
                 playLinkingSound(serverPlayer, false);
             }
             return ActionResult.SUCCESS;
