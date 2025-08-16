@@ -40,11 +40,11 @@ public final class DebugEvents {
                                         .map(frequencyNetwork -> frequencyNetwork.getId().toString())
                                         .orElse("None")
                         )
-                ));
+                ), false);
             else {
                 player.sendMessage(Text.literal(
                         String.format("Beacon pos: %s, no frequency!", pos)
-                ));
+                ), false);
             }
             return ActionResult.SUCCESS;
         });
@@ -74,13 +74,13 @@ public final class DebugEvents {
                                 if (beacComp.getEffectiveFrequencyID().isValid())
                                     player.sendMessage(Text.literal(
                                             String.format("Nearest beacon pos: %s, frequency: %s", pos, beacComp.getEffectiveFrequencyID().hashCode())
-                                    ));
+                                    ), false);
                                 else {
                                     player.sendMessage(Text.literal(
                                             String.format("Nearest beacon pos: %s, no frequency!", pos)
-                                    ));
+                                    ), false);
                                 }
-                            }, () -> player.sendMessage(Text.literal("No nearest loaded beacon found!")));
+                            }, () -> player.sendMessage(Text.literal("No nearest loaded beacon found!"), false));
 
             return ActionResult.SUCCESS;
         });
