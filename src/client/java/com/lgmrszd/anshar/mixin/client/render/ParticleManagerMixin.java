@@ -2,6 +2,7 @@ package com.lgmrszd.anshar.mixin.client.render;
 
 import com.llamalad7.mixinextras.injector.wrapoperation.Operation;
 import com.llamalad7.mixinextras.injector.wrapoperation.WrapOperation;
+import net.minecraft.client.render.VertexConsumerProvider;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Unique;
 import org.spongepowered.asm.mixin.injection.At;
@@ -24,9 +25,12 @@ public class ParticleManagerMixin {
     @Unique
     private boolean anshar$filterParticles = false;
 
-    @Inject(method = "renderParticles", at = @At("HEAD"))
-    public void renderParticles(LightmapTextureManager lightmapTextureManager, Camera camera, float tickDelta, CallbackInfo ci) {
-        anshar$filterParticles = PlayerTransportComponent.KEY.get(MinecraftClient.getInstance().player).isInNetwork();
+    @Inject(method = "renderParticles(Lnet/minecraft/client/render/Camera;FLnet/minecraft/client/render/VertexConsumerProvider$Immediate;)V", at = @At("HEAD"))
+    public void renderParticles(Camera camera, float tickDelta, VertexConsumerProvider.Immediate vertexConsumers, CallbackInfo ci) {
+        var player = MinecraftClient.getInstance().player;
+        if (player != null) {
+            anshar$filterParticles = PlayerTransportComponent.KEY.get(player).isInNetwork();
+        }
     }
 
     @WrapOperation(method = "renderParticles", at = @At(value = "INVOKE", target = "Lnet/minecraft/client/particle/Particle;buildGeometry(Lnet/minecraft/client/render/VertexConsumer;Lnet/minecraft/client/render/Camera;F)V"))
