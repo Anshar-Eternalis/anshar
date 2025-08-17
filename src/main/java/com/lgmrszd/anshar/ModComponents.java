@@ -4,8 +4,8 @@ import org.ladysnake.cca.api.v3.block.BlockComponentFactoryRegistry;
 import org.ladysnake.cca.api.v3.block.BlockComponentInitializer;
 import org.ladysnake.cca.api.v3.entity.EntityComponentFactoryRegistry;
 import org.ladysnake.cca.api.v3.entity.EntityComponentInitializer;
-import org.ladysnake.cca.api.v3.world.WorldComponentFactoryRegistry;
-import org.ladysnake.cca.api.v3.world.WorldComponentInitializer;
+import org.ladysnake.cca.api.v3.scoreboard.ScoreboardComponentFactoryRegistry;
+import org.ladysnake.cca.api.v3.scoreboard.ScoreboardComponentInitializer;
 
 import net.minecraft.block.entity.BeaconBlockEntity;
 
@@ -19,7 +19,7 @@ import com.lgmrszd.anshar.beacon.IEndCrystalComponent;
 import net.minecraft.entity.decoration.EndCrystalEntity;
 import net.minecraft.entity.player.PlayerEntity;
 
-public final class ModComponents implements BlockComponentInitializer, WorldComponentInitializer, EntityComponentInitializer {
+public final class ModComponents implements BlockComponentInitializer, ScoreboardComponentInitializer, EntityComponentInitializer {
     @Override
     public void registerBlockComponentFactories(BlockComponentFactoryRegistry registry) {
         registry.registerFor(BeaconBlockEntity.class, IBeaconComponent.KEY, BeaconComponent::new);
@@ -27,12 +27,12 @@ public final class ModComponents implements BlockComponentInitializer, WorldComp
 
     @Override
     public void registerEntityComponentFactories(EntityComponentFactoryRegistry registry) {
-        registry.registerFor(EndCrystalEntity.class, IEndCrystalComponent.KEY, e -> new EndCrystalComponent(e));
-        registry.registerFor(PlayerEntity.class, PlayerTransportComponent.KEY, e -> new PlayerTransportComponent(e));
+        registry.registerFor(EndCrystalEntity.class, IEndCrystalComponent.KEY, EndCrystalComponent::new);
+        registry.registerFor(PlayerEntity.class, PlayerTransportComponent.KEY, PlayerTransportComponent::new);
     }
 
-	@Override
-	public void registerWorldComponentFactories(WorldComponentFactoryRegistry registry) {
-        registry.register(NetworkManagerComponent.KEY, p -> new NetworkManagerComponent());
-	}
+    @Override
+    public void registerScoreboardComponentFactories(ScoreboardComponentFactoryRegistry registry) {
+        registry.registerScoreboardComponent(NetworkManagerComponent.KEY, NetworkManagerComponent::new);
+    }
 }

@@ -64,7 +64,7 @@ public final class DebugEvents {
         });
 
         registerDebugEvent(Items.NETHER_STAR, (player, world, hand, hitResult) -> {
-            NetworkManagerComponent networkManagerComponent = NetworkManagerComponent.KEY.get(world.getLevelProperties());
+            NetworkManagerComponent networkManagerComponent = NetworkManagerComponent.KEY.get(world.getScoreboard());
             networkManagerComponent
                     .getNearestConnectedBeacon(world, hitResult.getBlockPos())
                     .ifPresentOrElse(

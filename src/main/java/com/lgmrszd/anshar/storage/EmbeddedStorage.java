@@ -55,7 +55,7 @@ public class EmbeddedStorage extends EnderChestInventory {
             }
         }
         // if no crystal, check for pyramid (closer the better)
-        for (BeaconBlockEntity beacon : NetworkManagerComponent.KEY.get(world.getLevelProperties()).getConnectedBeaconsInRadius(world, pos, CONNECTION_RADIUS * 1.0)) {
+        for (BeaconBlockEntity beacon : NetworkManagerComponent.KEY.get(world.getScoreboard()).getConnectedBeaconsInRadius(world, pos, CONNECTION_RADIUS * 1.0)) {
             if (isBeaconValidStorageTarget(pos, world, beacon)) return Optional.of(beacon);
         }
         return Optional.empty();
