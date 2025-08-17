@@ -3,6 +3,7 @@ package com.lgmrszd.anshar.mixin.client.render;
 import com.llamalad7.mixinextras.injector.wrapoperation.Operation;
 import com.llamalad7.mixinextras.injector.wrapoperation.WrapOperation;
 import net.minecraft.client.render.*;
+import net.minecraft.client.util.ObjectAllocator;
 import org.joml.Matrix4f;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Unique;
@@ -24,7 +25,7 @@ public class WorldRendererMixin {
     private boolean anshar$isInNetwork = false;
 
     @Inject(method = "render", at = @At("HEAD"))
-    public void anshar$render(RenderTickCounter tickCounter, boolean renderBlockOutline, Camera camera, GameRenderer gameRenderer, LightmapTextureManager lightmapTextureManager, Matrix4f matrix4f, Matrix4f matrix4f2, CallbackInfo ci) {
+    public void anshar$render(ObjectAllocator allocator, RenderTickCounter tickCounter, boolean renderBlockOutline, Camera camera, GameRenderer gameRenderer, Matrix4f positionMatrix, Matrix4f projectionMatrix, CallbackInfo ci) {
         Entity entity = camera.getFocusedEntity();
         if (entity instanceof ClientPlayerEntity player) anshar$isInNetwork = PlayerTransportComponent.KEY.get(player).isInNetwork();
         else anshar$isInNetwork = false;
