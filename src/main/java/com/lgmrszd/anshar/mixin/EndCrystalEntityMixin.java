@@ -5,6 +5,7 @@ import com.lgmrszd.anshar.beacon.IEndCrystalComponent;
 import net.minecraft.entity.damage.DamageSource;
 import net.minecraft.entity.decoration.EndCrystalEntity;
 import net.minecraft.entity.player.PlayerEntity;
+import net.minecraft.server.world.ServerWorld;
 import net.minecraft.util.ActionResult;
 import net.minecraft.util.Hand;
 import org.spongepowered.asm.mixin.Mixin;
@@ -26,8 +27,9 @@ public abstract class EndCrystalEntityMixin extends EntityMixin {
     }
 
     @Inject(at = @At("HEAD"), method = "damage", cancellable = true)
-    public void anshar$onDamage(DamageSource source, float amount, CallbackInfoReturnable<Boolean> cir) {
-        if (this.getWorld().isClient()) return;
+    public void anshar$onDamage(ServerWorld world, DamageSource source, float amount, CallbackInfoReturnable<Boolean> cir) {
+        // TODO: checking for a client world here is probably obsolete
+        if (world.isClient()) return;
         IEndCrystalComponent endCrystalComponent = EndCrystalComponent.KEY.get(this);
         if (!endCrystalComponent.onCrystalDamage(source)) cir.setReturnValue(false);
     }
