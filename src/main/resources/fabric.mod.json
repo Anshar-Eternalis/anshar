@@ -35,8 +35,7 @@
 		{
 			"config": "anshar.client.mixins.json",
 			"environment": "client"
-		},
-		"anshar.compat.mixins.json"
+		}
 	],
 	"custom": {
 		"cardinal-components" : [
