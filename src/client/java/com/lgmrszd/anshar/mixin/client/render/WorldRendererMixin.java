@@ -2,8 +2,10 @@ package com.lgmrszd.anshar.mixin.client.render;
 
 import com.llamalad7.mixinextras.injector.wrapoperation.Operation;
 import com.llamalad7.mixinextras.injector.wrapoperation.WrapOperation;
+import net.minecraft.client.option.CloudRenderMode;
 import net.minecraft.client.render.*;
 import net.minecraft.client.util.ObjectAllocator;
+import net.minecraft.util.math.Vec3d;
 import org.joml.Matrix4f;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Unique;
@@ -47,7 +49,7 @@ public class WorldRendererMixin {
     }
 
     @Inject(method = "renderClouds", at = @At("HEAD"), cancellable = true)
-    public void anshar$renderClouds(MatrixStack matrices, Matrix4f matrix4f, Matrix4f matrix4f2, float tickDelta, double cameraX, double cameraY, double cameraZ, CallbackInfo ci) {
+    public void anshar$renderClouds(FrameGraphBuilder frameGraphBuilder, Matrix4f positionMatrix, Matrix4f projectionMatrix, CloudRenderMode renderMode, Vec3d cameraPos, float ticks, int color, float cloudHeight, CallbackInfo ci) {
         if (anshar$isInNetwork) ci.cancel();
     }
 
