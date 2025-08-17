@@ -37,7 +37,7 @@ public class WorldRendererMixin {
     }
 
     @Inject(method = "renderSky", at = @At("HEAD"), cancellable = true)
-    public void anshar$renderSky(Matrix4f matrix4f, Matrix4f projectionMatrix, float tickDelta, Camera camera, boolean thickFog, Runnable fogCallback, CallbackInfo ci) {
+    public void anshar$renderSky(FrameGraphBuilder frameGraphBuilder, Camera camera, float tickDelta, Fog fog, CallbackInfo ci) {
         if (anshar$isInNetwork) ci.cancel();
     }
 
