@@ -4,8 +4,9 @@ import org.ladysnake.cca.api.v3.block.BlockComponentFactoryRegistry;
 import org.ladysnake.cca.api.v3.block.BlockComponentInitializer;
 import org.ladysnake.cca.api.v3.entity.EntityComponentFactoryRegistry;
 import org.ladysnake.cca.api.v3.entity.EntityComponentInitializer;
-import org.ladysnake.cca.api.v3.level.LevelComponentFactoryRegistry;
-import org.ladysnake.cca.api.v3.level.LevelComponentInitializer;
+import org.ladysnake.cca.api.v3.world.WorldComponentFactoryRegistry;
+import org.ladysnake.cca.api.v3.world.WorldComponentInitializer;
+
 import net.minecraft.block.entity.BeaconBlockEntity;
 
 import com.lgmrszd.anshar.frequency.NetworkManagerComponent;
@@ -18,16 +19,10 @@ import com.lgmrszd.anshar.beacon.IEndCrystalComponent;
 import net.minecraft.entity.decoration.EndCrystalEntity;
 import net.minecraft.entity.player.PlayerEntity;
 
-public final class ModComponents implements BlockComponentInitializer, LevelComponentInitializer, EntityComponentInitializer {
-
+public final class ModComponents implements BlockComponentInitializer, WorldComponentInitializer, EntityComponentInitializer {
     @Override
     public void registerBlockComponentFactories(BlockComponentFactoryRegistry registry) {
         registry.registerFor(BeaconBlockEntity.class, IBeaconComponent.KEY, BeaconComponent::new);
-    }
-
-    @Override
-    public void registerLevelComponentFactories(LevelComponentFactoryRegistry registry) {
-        registry.register(NetworkManagerComponent.KEY, p -> new NetworkManagerComponent());
     }
 
     @Override
@@ -35,4 +30,9 @@ public final class ModComponents implements BlockComponentInitializer, LevelComp
         registry.registerFor(EndCrystalEntity.class, IEndCrystalComponent.KEY, EndCrystalComponent::new);
         registry.registerFor(PlayerEntity.class, PlayerTransportComponent.KEY, PlayerTransportComponent::new);
     }
+
+	@Override
+	public void registerWorldComponentFactories(WorldComponentFactoryRegistry registry) {
+        registry.register(NetworkManagerComponent.KEY, p -> new NetworkManagerComponent());
+	}
 }
