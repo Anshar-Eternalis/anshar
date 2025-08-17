@@ -23,7 +23,7 @@ import net.minecraft.client.render.VertexConsumer;
 public class ParticleManagerMixin {
 
     @Unique
-    private boolean anshar$filterParticles = false;
+    private static boolean anshar$filterParticles = false;
 
     @Inject(method = "renderParticles(Lnet/minecraft/client/render/Camera;FLnet/minecraft/client/render/VertexConsumerProvider$Immediate;)V", at = @At("HEAD"))
     public void renderParticles(Camera camera, float tickDelta, VertexConsumerProvider.Immediate vertexConsumers, CallbackInfo ci) {
@@ -33,8 +33,8 @@ public class ParticleManagerMixin {
         }
     }
 
-    @WrapOperation(method = "renderParticles", at = @At(value = "INVOKE", target = "Lnet/minecraft/client/particle/Particle;buildGeometry(Lnet/minecraft/client/render/VertexConsumer;Lnet/minecraft/client/render/Camera;F)V"))
-    public void proxyBuildGeometry(Particle particle, VertexConsumer vertexConsumer, Camera camera, float tickDelta, Operation<Void> original) {
+    @WrapOperation(method = "renderParticles(Lnet/minecraft/client/render/Camera;FLnet/minecraft/client/render/VertexConsumerProvider$Immediate;Lnet/minecraft/client/particle/ParticleTextureSheet;Ljava/util/Queue;)V", at = @At(value = "INVOKE", target = "Lnet/minecraft/client/particle/Particle;render(Lnet/minecraft/client/render/VertexConsumer;Lnet/minecraft/client/render/Camera;F)V"))
+    private static void proxyBuildGeometry(Particle particle, VertexConsumer vertexConsumer, Camera camera, float tickDelta, Operation<Void> original) {
         if (anshar$filterParticles && !(particle instanceof TransportGateParticle)) return;
         original.call(particle, vertexConsumer, camera, tickDelta);
     } 
