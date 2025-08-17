@@ -79,7 +79,7 @@ public class PlayerTransportComponent implements ServerTickingComponent, AutoSyn
     }
 
     private NetworkManagerComponent getNetworkManager(){
-        return NetworkManagerComponent.KEY.get(this.player.getWorld().getLevelProperties());
+        return NetworkManagerComponent.KEY.get(this.player.getWorld().getScoreboard());
     }
 
     private Optional<FrequencyNetwork> getNetwork(){

@@ -8,7 +8,10 @@ import java.util.function.Consumer;
 
 import com.lgmrszd.anshar.beacon.BeaconComponent;
 import net.minecraft.registry.RegistryWrapper;
+import net.minecraft.scoreboard.Scoreboard;
+import net.minecraft.server.MinecraftServer;
 import net.minecraft.util.crash.ReportType;
+import org.jetbrains.annotations.Nullable;
 import org.ladysnake.cca.api.v3.component.Component;
 import org.ladysnake.cca.api.v3.component.ComponentKey;
 import org.ladysnake.cca.api.v3.component.ComponentRegistry;
@@ -19,15 +22,19 @@ import net.minecraft.util.crash.CrashException;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.ChunkSectionPos;
 import net.minecraft.world.World;
+import org.ladysnake.cca.api.v3.component.sync.AutoSyncedComponent;
 
 public class NetworkManagerComponent implements Component {
     private final HashMap<UUID, FrequencyNetwork> networksByUUID;
+    private final Scoreboard provider;
+
     public static final ComponentKey<NetworkManagerComponent> KEY = ComponentRegistry.getOrCreate(
             Identifier.of(MOD_ID, "network_manager"), NetworkManagerComponent.class
     );
 
-    public NetworkManagerComponent() {
-        networksByUUID = new HashMap<>();
+    public NetworkManagerComponent(Scoreboard provider, @Nullable MinecraftServer server) {
+        this.networksByUUID = new HashMap<>();
+        this.provider = provider;
     }
 
     public Collection<FrequencyNetwork> getNetworks() {

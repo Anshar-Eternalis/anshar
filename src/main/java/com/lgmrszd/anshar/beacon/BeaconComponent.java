@@ -13,6 +13,7 @@ import net.minecraft.nbt.NbtCompound;
 import net.minecraft.network.RegistryByteBuf;
 import net.minecraft.particle.ParticleTypes;
 import net.minecraft.registry.RegistryWrapper;
+import net.minecraft.scoreboard.Scoreboard;
 import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.server.world.ServerWorld;
 import net.minecraft.sound.SoundCategory;
@@ -121,7 +122,7 @@ public class BeaconComponent implements IBeaconComponent {
 
     private void updateNetwork() {
         World world = beaconBlockEntity.getWorld();
-        NetworkManagerComponent networkManagerComponent = NetworkManagerComponent.KEY.get(world.getLevelProperties());
+        NetworkManagerComponent networkManagerComponent = NetworkManagerComponent.KEY.get(world.getScoreboard());
         networkManagerComponent.updateBeaconNetwork(this, pyramidFrequency, frequencyNetwork1 -> {
             frequencyNetwork = frequencyNetwork1;
         });

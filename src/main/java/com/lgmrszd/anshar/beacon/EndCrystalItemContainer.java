@@ -74,7 +74,7 @@ public class EndCrystalItemContainer {
 
 
             Optional<BlockPos> beaconPos = getBeaconPos()
-                    .or(() -> NetworkManagerComponent.KEY.get(world.getLevelProperties())
+                    .or(() -> NetworkManagerComponent.KEY.get(world.getScoreboard())
                             .getNearestConnectedBeacon(world, up)
                             .map(BlockEntity::getPos)
                     )

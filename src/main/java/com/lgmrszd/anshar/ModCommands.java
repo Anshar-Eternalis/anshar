@@ -37,7 +37,7 @@ public class ModCommands {
     private static final SuggestionProvider<ServerCommandSource> NETWORK_UUID_SUGGESTIONS = (context, builder) ->
             CommandSource.suggestMatching(() -> {
                 ServerWorld world = context.getSource().getWorld();
-                return NetworkManagerComponent.KEY.get(world.getLevelProperties()).getNetworks().stream().map(frequencyNetwork -> frequencyNetwork.getId().toString()).sorted().iterator();
+                return NetworkManagerComponent.KEY.get(world.getScoreboard()).getNetworks().stream().map(frequencyNetwork -> frequencyNetwork.getId().toString()).sorted().iterator();
             }, builder);
 
     public static void register() {
@@ -92,7 +92,7 @@ public class ModCommands {
         ServerWorld world = context.getSource().getWorld();
         if (world == null) return -1;
         final UUID networkID = UuidArgumentType.getUuid(context, "Network ID");
-        return NetworkManagerComponent.KEY.get(world.getLevelProperties())
+        return NetworkManagerComponent.KEY.get(world.getScoreboard())
                 .getNetwork(networkID)
                 .map(frequencyNetwork -> {
                     sendFeedback(
@@ -127,7 +127,7 @@ public class ModCommands {
         ServerPlayerEntity player = context.getSource().getPlayer();
         if (player == null) return -1;
         final UUID networkID = UuidArgumentType.getUuid(context, "Network ID");
-        return NetworkManagerComponent.KEY.get(world.getLevelProperties())
+        return NetworkManagerComponent.KEY.get(world.getScoreboard())
                 .getNetwork(networkID)
                 .map(frequencyNetwork -> {
                     EmbeddedStorage inventory = frequencyNetwork.getStorage();
@@ -149,7 +149,7 @@ public class ModCommands {
         ServerWorld world = context.getSource().getWorld();
         if (world == null) return -1;
         sendFeedback(context, "Frequency Networks:");
-        NetworkManagerComponent.KEY.get(world.getLevelProperties()).getNetworks().forEach(frequencyNetwork -> {
+        NetworkManagerComponent.KEY.get(world.getScoreboard()).getNetworks().forEach(frequencyNetwork -> {
             String network_data = String.format(
                     "UUID: %s, Beacons: %d, Item Stacks stored: %d",
                     frequencyNetwork.getId(),
@@ -170,7 +170,7 @@ public class ModCommands {
         ServerWorld world = context.getSource().getWorld();
         if (world == null) return -1;
         BlockPos pos = BlockPosArgumentType.getLoadedBlockPos(context, "pos");
-        NetworkManagerComponent.KEY.get(world.getLevelProperties())
+        NetworkManagerComponent.KEY.get(world.getScoreboard())
                 .getNearestConnectedBeacon(world, pos)
                 .ifPresentOrElse(beaconBlockEntity ->
                                 sendFeedback(context,
@@ -193,7 +193,7 @@ public class ModCommands {
         BlockPos pos = BlockPosArgumentType.getLoadedBlockPos(context, "pos");
         Identifier dim = world.getRegistryKey().getValue();
         sendFeedback(context, "Looking for nearest beacon at [%s] in dimension [%s]".formatted(pos.toShortString(), dim.toString()));
-        Collection<FrequencyNetwork> networks = NetworkManagerComponent.KEY.get(world.getLevelProperties()).getNetworks();
+        Collection<FrequencyNetwork> networks = NetworkManagerComponent.KEY.get(world.getScoreboard()).getNetworks();
         sendFeedback(context, "Total networks: %d".formatted(networks.size()));
         List<FrequencyNetwork> networksThisDim = networks.stream().filter(frequencyNetwork -> frequencyNetwork.getFreqID().isValidInDim(dim)).toList();
         sendFeedback(context, "Total networks in this dimension: %d".formatted(networksThisDim.size()));
@@ -267,7 +267,7 @@ public class ModCommands {
             return -1;
         }
         final UUID networkID = UuidArgumentType.getUuid(context, "Network ID");
-        return NetworkManagerComponent.KEY.get(world.getLevelProperties())
+        return NetworkManagerComponent.KEY.get(world.getScoreboard())
                 .getNetwork(networkID)
                 .map(frequencyNetwork -> {
                     ptc.enterNetwork(frequencyNetwork, player.getBlockPos());
