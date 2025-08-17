@@ -54,7 +54,7 @@ public class WorldRendererMixin {
     }
 
     @Inject(method = "renderWeather", at = @At("HEAD"), cancellable = true)
-    public void anshar$renderWeather(LightmapTextureManager manager, float tickDelta, double cameraX, double cameraY, double cameraZ, CallbackInfo ci) {
+    public void anshar$renderWeather(FrameGraphBuilder frameGraphBuilder, Vec3d pos, float tickDelta, Fog fog, CallbackInfo ci) {
         if (anshar$isInNetwork) ci.cancel();
     }
 
