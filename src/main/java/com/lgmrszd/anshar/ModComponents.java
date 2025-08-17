@@ -27,8 +27,8 @@ public final class ModComponents implements BlockComponentInitializer, WorldComp
 
     @Override
     public void registerEntityComponentFactories(EntityComponentFactoryRegistry registry) {
-        registry.registerFor(EndCrystalEntity.class, IEndCrystalComponent.KEY, EndCrystalComponent::new);
-        registry.registerFor(PlayerEntity.class, PlayerTransportComponent.KEY, PlayerTransportComponent::new);
+        registry.registerFor(EndCrystalEntity.class, IEndCrystalComponent.KEY, e -> new EndCrystalComponent(e));
+        registry.registerFor(PlayerEntity.class, PlayerTransportComponent.KEY, e -> new PlayerTransportComponent(e));
     }
 
 	@Override
