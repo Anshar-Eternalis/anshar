@@ -33,10 +33,11 @@ public class WorldRendererMixin {
         else anshar$isInNetwork = false;
     }
 
-    @WrapOperation(method = "render", at = @At(value = "INVOKE", target = "Lnet/minecraft/client/render/BackgroundRenderer;render(Lnet/minecraft/client/render/Camera;FLnet/minecraft/client/world/ClientWorld;IF)V"))
-    public void anshar$backgroundRenderOverride(Camera camera, float tickDelta, ClientWorld world, int viewDistance, float skyDarkness, Operation<Void> original) {
-        if (!anshar$isInNetwork) original.call(camera, tickDelta, world, viewDistance, skyDarkness);
-    }
+    // FIXME: BackgroundRenderer is used differently now. A candidate might be the fog calculation in "WorldRenderer::renderMain"
+    // @WrapOperation(method = "render", at = @At(value = "INVOKE", target = "Lnet/minecraft/client/render/BackgroundRenderer;render(Lnet/minecraft/client/render/Camera;FLnet/minecraft/client/world/ClientWorld;IF)V"))
+    // public void anshar$backgroundRenderOverride(Camera camera, float tickDelta, ClientWorld world, int viewDistance, float skyDarkness, Operation<Void> original) {
+    //     if (!anshar$isInNetwork) original.call(camera, tickDelta, world, viewDistance, skyDarkness);
+    // }
 
     @Inject(method = "renderSky", at = @At("HEAD"), cancellable = true)
     public void anshar$renderSky(FrameGraphBuilder frameGraphBuilder, Camera camera, float tickDelta, Fog fog, CallbackInfo ci) {
