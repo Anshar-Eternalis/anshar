@@ -1,13 +1,14 @@
 package com.lgmrszd.anshar.mixin.client.render;
 
-import com.llamalad7.mixinextras.injector.wrapoperation.Operation;
-import com.llamalad7.mixinextras.injector.wrapoperation.WrapOperation;
+import com.llamalad7.mixinextras.injector.v2.WrapWithCondition;
+import com.mojang.blaze3d.systems.RenderSystem;
 import net.minecraft.client.option.CloudRenderMode;
 import net.minecraft.client.render.*;
 import net.minecraft.client.util.ObjectAllocator;
 import net.minecraft.util.math.Vec3d;
 import org.joml.Matrix4f;
 import org.spongepowered.asm.mixin.Mixin;
+import org.spongepowered.asm.mixin.Shadow;
 import org.spongepowered.asm.mixin.Unique;
 import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
@@ -17,11 +18,10 @@ import com.lgmrszd.anshar.transport.PlayerTransportComponent;
 
 import net.minecraft.client.network.ClientPlayerEntity;
 import net.minecraft.client.util.math.MatrixStack;
-import net.minecraft.client.world.ClientWorld;
 import net.minecraft.entity.Entity;
 
 @Mixin(WorldRenderer.class)
-public class WorldRendererMixin {
+public abstract class WorldRendererMixin {
 
     @Unique
     private boolean anshar$isInNetwork = false;
@@ -33,11 +33,19 @@ public class WorldRendererMixin {
         else anshar$isInNetwork = false;
     }
 
-    // FIXME: BackgroundRenderer is used differently now. A candidate might be the fog calculation in "WorldRenderer::renderMain"
-    // @WrapOperation(method = "render", at = @At(value = "INVOKE", target = "Lnet/minecraft/client/render/BackgroundRenderer;render(Lnet/minecraft/client/render/Camera;FLnet/minecraft/client/world/ClientWorld;IF)V"))
-    // public void anshar$backgroundRenderOverride(Camera camera, float tickDelta, ClientWorld world, int viewDistance, float skyDarkness, Operation<Void> original) {
-    //     if (!anshar$isInNetwork) original.call(camera, tickDelta, world, viewDistance, skyDarkness);
-    // }
+    @WrapWithCondition(
+            method = "render",
+            at = @At(value = "INVOKE", target = "Lnet/minecraft/client/render/RenderPass;setRenderer(Ljava/lang/Runnable;)V")
+    ) public boolean anshar$setRenderer(RenderPass instance, Runnable runnable) {
+        if (anshar$isInNetwork) {
+            instance.setRenderer(() -> {
+                RenderSystem.clearColor(0, 0, 0, 0.0F);
+                RenderSystem.clear(16640);
+            });
+            return false;
+        }
+        return true;
+    }
 
     @Inject(method = "renderSky", at = @At("HEAD"), cancellable = true)
     public void anshar$renderSky(FrameGraphBuilder frameGraphBuilder, Camera camera, float tickDelta, Fog fog, CallbackInfo ci) {
